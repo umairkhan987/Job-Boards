@@ -8,13 +8,26 @@ from accounts.models import User
 from django_currentuser.middleware import get_current_user
 
 skills = (
-    ('angular', 'Angular'),
-    ('react', 'React'),
-    ('vue', 'Vue'),
-    ('css', 'CSS'),
-    ('html', 'Html'),
-    ('bootstrap', 'Bootstrap'),
-    ('javaScript', 'JavaScript')
+    ('Angular', 'Angular'),
+    ('React', 'React'),
+    ('Vue', 'Vue'),
+    ('CSS', 'CSS'),
+    ('Html', 'Html'),
+    ('Bootstrap', 'Bootstrap'),
+    ('JavaScript', 'JavaScript'),
+    ('C#', 'C#'),
+    ('C++', 'C++'),
+    ('Java', 'Java'),
+    ('Python', 'Python'),
+    ('Php', 'Php'),
+    ('Ruby', 'Ruby'),
+    ('Objective-C', 'Objective-C'),
+    ('Swift', 'Swift'),
+    ('Logo Design', 'Logo Design'),
+    ('Game Design', 'Game Design'),
+    ('PhotoShop Editing', 'PhotoShop Editing'),
+    ('Banner Ads', 'Banner Ads'),
+    ('Business Card', 'Business Card'),
 )
 
 

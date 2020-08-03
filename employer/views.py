@@ -9,7 +9,7 @@ from .forms import TaskForm
 from .models import PostTask
 
 
-def findFreelancer(request):
+def find_freelancer(request):
     try:
         if 'sortBy' in request.GET:
             print(request.GET)
@@ -23,14 +23,14 @@ def findFreelancer(request):
         raise Http404(str(e))
 
 
-def freelancerProfile(request, id):
+def freelancer_profile(request, id):
     profile = get_object_or_404(Profile, pk=id)
     return render(request, 'Employer/freelancerProfile.html', {"profile": profile})
 
 
 @login_required
 @employer_required
-def postATask(request):
+def post_a_task(request):
     form = TaskForm()
     if request.method == "POST":
         form = TaskForm(request.POST, request.FILES)
@@ -44,7 +44,7 @@ def postATask(request):
 
 @login_required
 @employer_required
-def myTasks(request):
+def my_tasks(request):
     tasks = PostTask.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'Employer/myTasks.html', {"tasks": tasks})
 
@@ -52,7 +52,7 @@ def myTasks(request):
 @login_required
 @employer_required
 @valid_user_for_task
-def editTask(request, id):
+def edit_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
     form = TaskForm(instance=task)
     if request.method == "POST":
@@ -66,7 +66,7 @@ def editTask(request, id):
 @login_required
 @employer_required
 @valid_user_for_task
-def deleteTask(request, id):
+def delete_task(request, id):
     try:
         if request.method == "POST" and request.is_ajax():
             task = get_object_or_404(PostTask, pk=id)
@@ -77,3 +77,11 @@ def deleteTask(request, id):
 
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
+
+
+@login_required
+@employer_required
+@valid_user_for_task
+def manage_proposal(request, id):
+    task = PostTask.objects.get(pk=id)
+    return render(request, 'Employer/ManageProposal.html', {"task": task})

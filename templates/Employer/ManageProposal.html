@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Dashboard Content -->
+	<div class="dashboard-content-container">
+		<div class="dashboard-content-inner" >
+
+			<!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Manage Bidders</h3>
+				<span class="margin-top-7">Bids for <a href="#">{{ task.title }}</a></span>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="#">Home</a></li>
+						<li><a href="{% url 'my_tasks' %}">My Jobs</a></li>
+						<li>Manage Bidders</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-material-outline-supervisor-account"></i> {{ task.proposals.count }} Bidders</h3>
+							<div class="sort-by">
+								<select class="selectpicker hide-tick">
+									<option>Highest First</option>
+									<option>Lowest First</option>
+									<option>Fastest First</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="content">
+                            {% if task.proposals.all|length > 0 %}
+                                <ul class="dashboard-box-list">
+                                    {% for proposal in task.proposals.all %}
+                                        <li>
+                                        <!-- Overview -->
+                                        <div class="freelancer-overview manage-candidates">
+                                            <div class="freelancer-overview-inner">
+
+                                                <!-- Avatar -->
+                                                <div class="freelancer-avatar">
+                                                    <div class="verified-badge"></div>
+                                                    <a href="{% url 'freelancer_profile' proposal.user.id %}">
+                                                        {% if proposal.user.profileImg %}
+                                                            <img src="{{ proposal.user.profileImg.url }}" alt="">
+                                                            {% else %}
+                                                            <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No-Image">
+                                                        {% endif %}
+                                                    </a>
+                                                </div>
+
+                                                <!-- Name -->
+                                                <div class="freelancer-name">
+                                                    <h4>{{proposal.user.first_name}} {{ proposal.user.last_name }}</h4>
+
+                                                    <!-- Details -->
+                                                    <span class="freelancer-detail-item"><a href="#"><i class="icon-feather-mail"></i> <span class="__cf_email__">{{ proposal.user.email }}</span></a></span>
+
+                                                    <!-- Rating -->
+                                                    <div class="freelancer-rating">
+                                                        <div class="star-rating" data-rating="{{ proposal.user.profile.rating }}"></div>
+                                                    </div>
+
+                                                    <!-- Bid Details -->
+                                                    <ul class="dashboard-task-info bid-info">
+                                                        <li><strong>$ {{ proposal.rate }}</strong><span>{{ task.project_type }} Price</span></li>
+                                                        <li><strong> {{ proposal.days }} Days</strong><span>Delivery Time</span></li>
+                                                    </ul>
+
+                                                    <!-- Buttons -->
+                                                    <div class="buttons-to-right always-visible margin-top-25 margin-bottom-0">
+                                                        <a href="#small-dialog-1"  class="popup-with-zoom-anim button ripple-effect"><i class="icon-material-outline-check"></i> Accept Offer</a>
+                                                        <a href="#small-dialog-2" class="popup-with-zoom-anim button dark ripple-effect"><i class="icon-feather-mail"></i> Send Message</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                             {% else %}
+                                <div class="margin-top-10 margin-bottom-10">
+                                    <p style="text-align-last: center">Currently no one have placed any bid yet.</p>
+                                </div>
+                             {% endif %}
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!-- Row / End -->
+
+            {# TODO: Add Pagination #}
+            <div class="margin-top-90"></div>
+		</div>
+	</div>
+	<!-- Dashboard Content / End -->
+
+    <!-- Bid Acceptance Popup -->
+<div id="small-dialog-1" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab1">Accept Offer</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Accept Offer From David</h3>
+					<div class="bid-acceptance margin-top-15">
+						$3200
+					</div>
+
+				</div>
+
+				<form id="terms">
+					<div class="radio">
+						<input id="radio-1" name="radio" type="radio" required>
+						<label for="radio-1"><span class="radio-label"></span>  I have read and agree to the Terms and Conditions</label>
+					</div>
+				</form>
+
+				<!-- Button -->
+				<button class="margin-top-15 button full-width button-sliding-icon ripple-effect" type="submit" form="terms">Accept <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Bid Acceptance Popup / End -->
+
+
+<!-- Send Direct Message Popup -->
+<div id="small-dialog-2" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab2">Send Message</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab2">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Direct Message To David</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="send-pm">
+					<textarea name="textarea" cols="10" placeholder="Message" class="with-border" required></textarea>
+				</form>
+
+				<!-- Button -->
+				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="send-pm">Send <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Send Direct Message Popup / End -->
+
+{% endblock %}

@@ -13,6 +13,9 @@
 				<nav id="breadcrumbs" class="dark">
 					<ul>
 						<li><a href="{% url 'index' %}">Home</a></li>
+                        {% if 'employer/postTask/' not in request.path %}
+                            <li><a href="{% url 'my_tasks' %}">My Jobs</a></li>
+                        {% endif %}
 						<li>Post a Task</li>
 					</ul>
 				</nav>
@@ -192,7 +195,14 @@
 				</div>
 
 				<div class="col-xl-12">
-					<button type="button" onclick="document.getElementById('post_task_form').submit();"  class="button ripple-effect big margin-top-30"><i class="icon-feather-plus"></i> Post a Task</button>
+					<button type="button" onclick="document.getElementById('post_task_form').submit();"  class="button ripple-effect big margin-top-30">
+                        <i class="icon-feather-plus"></i>
+                        {% if 'employer/postTask/' not in request.path %}
+                            Update a Task
+                        {% else %}
+                            Post a Task
+                        {% endif %}
+                    </button>
 				</div>
 
 			</div>
