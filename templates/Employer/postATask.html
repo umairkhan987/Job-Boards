@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+    <!-- Dashboard Content -->
+		<div class="dashboard-content-inner" >
+
+			<!-- Dashboard Headline -->
+			<div class="dashboard-headline">
+				<h3>Post a Task</h3>
+
+				<!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'index' %}">Home</a></li>
+						<li>Post a Task</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Row -->
+			<div class="row">
+
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-feather-folder-plus"></i> Task Submission Form</h3>
+						</div>
+
+						<div class="content with-padding padding-bottom-10">
+                          <form id="post_task_form" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+							<div class="row">
+                                <!-- Title -->
+								<div class="col-xl-4">
+									<div class="submit-field">
+										<h5>Project Title</h5>
+                                        {% render_field form.title class="with-border" placeholder="e.g. build me a website" %}
+{#										<input type="text" name="{{form.title.name}}" class="with-border" placeholder="e.g. build me a website">#}
+                                        {% if form.title.errors %}
+                                                <div id="title-error" class="alert alert-danger"><strong>{{ form.title.errors.0 }}</strong></div>
+                                        {% endif %}
+									</div>
+								</div>
+
+                                <!-- Skills -->
+								<div class="col-xl-4">
+									<div class="submit-field">
+                                    <h5>What skills are required?
+                                        <i class="help-icon" data-tippy-placement="right"
+                                           title="Up to 5 skills that best describe your project"></i>
+                                    </h5>
+                                     <select class="selectpicker" name="skills" multiple title="Choose the skills...."
+                                               data-max-options="5" data-size="7" data-live-search="true">
+                                            {% for value, text in form.skills.field.choices %}
+                                                <option value="{{ value }}" {% if value in form.skills.value %} selected="selected" {% endif %} >{{ text }}</option>
+                                            {% endfor %}
+                                     </select>
+                                    {% if form.skills.errors %}
+                                        <div id="title-error" class="alert alert-danger margin-top-15"><strong>{{ form.skills.errors.0 }}</strong></div>
+                                    {% endif %}
+
+{#                                    {% render_field form.skills class="selectpicker" data-max-options="5" data-live-search="true" data-size="7" title="Choose the skills" %}#}
+                                        <br/>
+                                        <div id="skills-error" class="alert alert-danger" style="display:none"></div>
+									</div>
+								</div>
+
+                                <!-- Tags -->
+								<div class="col-xl-4">
+									<div class="submit-field">
+									<h5>Tagline <i class="help-icon" data-tippy-placement="right"
+                                          title="Separate Tag with '+' sign "></i>
+                                    </h5>
+                                    {% render_field form.tags placeholder="eg. iOS Expert + Node Dev" class="with-border" %}
+									</div>
+								</div>
+
+                                <!-- Budget -->
+								<div class="col-xl-8">
+									<div class="submit-field">
+										<h5>What is your estimated budget?</h5>
+										<div class="row">
+											<div class="col-xl-6">
+												<div class="input-with-icon">
+                                                    {% render_field form.min_price class="with-border" placeholder="Minimum" %}
+													<i class="currency">USD</i>
+												</div>
+                                                {% if form.min_price.errors %}
+                                                    <div id="title-error" class="alert alert-danger"><strong>{{ form.min_price.errors.0 }}</strong></div>
+                                                {% endif %}
+											</div>
+											<div class="col-xl-6">
+												<div class="input-with-icon">
+                                                    {% render_field form.max_price class="with-border" placeholder="Maximum" %}
+													<i class="currency">USD</i>
+												</div>
+                                                {% if form.max_price.errors %}
+                                                    <div id="title-error" class="alert alert-danger"><strong>{{ form.max_price.errors.0 }}</strong></div>
+                                                {% endif %}
+											</div>
+										</div>
+									</div>
+								</div>
+
+                                <!-- Experience Level -->
+								<div class="col-xl-4">
+									<div class="submit-field">
+                                    	<h5>Experience Level</h5>
+                                        <div class="btn-group bootstrap-select">
+                                         {% render_field form.exp_level class="selectpicker" title="Choose experience level" tabindex="-98" %}
+
+                                        </div>
+                                        {% if form.exp_level.errors %}
+                                                <div id="title-error" class="alert alert-danger margin-top-15"><strong>{{ form.exp_level.errors.0 }}</strong></div>
+                                           {% endif %}
+									</div>
+								</div>
+
+                                <!-- Project Type -->
+								<div class="col-xl-4">
+									<div class="submit-field">
+                                        <h5>Project Type</h5>
+                                    	<div class="feedback-yes-no">
+                                                {% for type in form.project_type %}
+                                                       <div class="radio">
+                                                       {{ type.tag }}
+                                                       <label for="{{ type.id_for_label  }}"><span class="radio-label"></span> {{ type.choice_label }}</label>
+                                                       </div>
+                                                {% endfor %}
+										</div>
+									</div>
+								</div>
+
+                                <!-- Required days -->
+								<div id="reqDaysDiv" class="col-xl-4">
+									<div class="submit-field">
+										<h5>Set your <strong>required days</strong></h5>
+										<!-- Fields -->
+                                        <div class="row">
+                                          <div class="col-xl-6">
+                                                <div class="bidding-field">
+                                                <!-- Quantity Buttons -->
+                                                    <div class="qtyButtons">
+                                                        <div class="qtyDec"></div>
+                                                        {% render_field form.no_of_days  %}
+                                                        <div class="qtyInc"></div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                          <div class="col-xl-6">
+                                              <div class="bidding-field">
+                                                  <input type="text" value="Days" disabled>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        </div>
+									</div>
+                                <script type="text/javascript">
+                                    const type = document.querySelector('input[name=project_type]:checked').value;
+                                    if(type === 'hourly')
+                                        document.getElementById('reqDaysDiv').style.display = 'none';
+                                </script>
+                                <!-- Project description -->
+								<div class="col-xl-12">
+									<div class="submit-field">
+										<h5>Describe Your Project</h5>
+                                        {% render_field form.description cols="30" rows="5" class="with-border" %}
+										<div class="uploadButton margin-top-30">
+{#                                            {% render_field form.task_file class="uploadButton-input" id="upload" accept="image/*, application/pdf" %}#}
+                                            <input type="file" name="task_file" class="uploadButton-input" id="upload" accept="image/*, application/pdf" >
+                                            <label class="uploadButton-button ripple-effect" for="upload">Upload Files</label>
+											<span id="task_file_span" class="uploadButton-file-name">
+                                            {% if form.getFileName %}
+                                                {{ form.getFileName }}
+											{% else %}
+                                                Images or documents that might be helpful in describing your project
+											{% endif %}
+                                            </span>
+										</div>
+									</div>
+								</div>
+							</div>
+                          </form>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xl-12">
+					<button type="button" onclick="document.getElementById('post_task_form').submit();"  class="button ripple-effect big margin-top-30"><i class="icon-feather-plus"></i> Post a Task</button>
+				</div>
+
+			</div>
+			<!-- Row / End -->
+		</div>
+	<!-- Dashboard Content / End -->
+
+    <div class="margin-bottom-50"></div>
+{% endblock %}

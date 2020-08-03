@@ -1,0 +1,22 @@
+
+.setting-container {
+    overflow: hidden;
+    background-color: #fafafa;
+}
+
+.dropdown-toggle::after {
+    /*border-top: none;*/
+    content: none;
+}
+.dropup .dropdown-toggle::after{
+    content: none;
+}
+.tooltip {
+    opacity: unset !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Titlebar -->
+<div class="single-page-header" data-background-image="{% static 'images/single-task.jpg' %}">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="single-page-header-inner">
+					<div class="left-side">
+{#						<div class="header-image"><a href="single-company-profile.html"><img src="images/browse-companies-02.png" alt=""></a></div>#}
+						<div class="header-details">
+							<h3>{{task.title}}</h3>
+                            {% if task.user.first_name %}
+    							<h5><li class="icon-feather-user"></li> {{ task.user.first_name.capitalize }} {{ task.user.last_name.capitalize }}</h5>
+                            {% endif %}
+							<ul>
+								<li><i class="icon-material-outline-folder "></i> Type: <strong>{{ task.project_type.capitalize }}</strong></li>
+								{% if task.project_type == 'fixed' %}
+                                    <li><i class="icon-line-awesome-hourglass-half"></i> Days: <strong>{{ task.no_of_days }}</strong></li>
+								{% endif %}
+								<li><i class="icon-material-outline-business-center"></i> Level: <strong>{{task.exp_level.capitalize}}</strong></li>
+							</ul>
+						</div>
+					</div>
+					<div class="right-side">
+						<div class="salary-box">
+							<div class="salary-type">Project Budget</div>
+							<div class="salary-amount">${{ task.min_price }} - ${{ task.max_price }}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Page Content -->
+<div class="container">
+	<div class="row">
+
+		<!-- Content -->
+		<div class="col-xl-8 col-lg-8 content-right-offset">
+
+			<!-- Description -->
+			<div class="single-page-section">
+				<h3 class="margin-bottom-25">Project Description</h3>
+				<p>{{ task.description }}</p>
+			</div>
+
+			<!-- Atachments -->
+			<div class="single-page-section">
+				<h3>Attachments</h3>
+				<div class="attachments-container">
+                    {% if task.task_file %}
+					    <a href="{{ task.task_file.url }}" class="attachment-box ripple-effect"><span>{{ task.filename }}</span></a>
+                    {% else %}
+					    <a href="javascript:" style="cursor: not-allowed" class="attachment-box ripple-effect"><span>No File</span></a>
+                    {% endif %}
+				</div>
+			</div>
+
+			<!-- Skills -->
+			{% if task.skills %}
+            <div class="single-page-section">
+				<h3>Skills Required</h3>
+				<div class="task-tags">
+				    {% for skill in task.skills %}
+                        <span>{{ skill.capitalize }}</span>
+				    {% endfor %}
+				</div>
+			</div>
+            {% endif %}
+			<div class="clearfix"></div>
+
+
+			<div class="boxed-list margin-bottom-60">
+				<div class="boxed-list-headline">
+					<h3><i class="icon-material-outline-group"></i> Freelancers Bidding</h3>
+				</div>
+                {% if task.proposals.all %}
+				    <ul class="boxed-list-ul">
+					    {% for proposal in task.proposals.all|slice:":4" %}
+                        <li>
+						<div class="bid">
+							<!-- Avatar -->
+							<div class="bids-avatar">
+								<div class="freelancer-avatar">
+									<div class="verified-badge"></div>
+									<a href="javascript:">
+                                        {% if proposal.user.profileImg %}
+                                            <img src="{{ proposal.user.profileImg.url }}" alt="">
+                                        {% else %}
+                                            <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                        {% endif %}
+                                    </a>
+								</div>
+							</div>
+
+							<!-- Content -->
+							<div class="bids-content">
+								<!-- Name -->
+								<div class="freelancer-name">
+									<h4><a href="javascript:">{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a></h4>
+									<div class="star-rating" data-rating="{{ proposal.user.profile.rating }}"></div>
+								</div>
+							</div>
+
+							<!-- Bid -->
+							<div class="bids-bid">
+								<div class="bid-rate">
+									<div class="rate">$ {{ proposal.rate }}</div>
+									<span>in {{ proposal.days }} days</span>
+								</div>
+							</div>
+						</div>
+					</li>
+					    {% endfor %}
+				    </ul>
+                    {% else %}
+                    <div class="margin-top-20">
+                        <span>Currently no bid is placed</span>
+                    </div>
+                {% endif %}
+
+			</div>
+
+		</div>
+
+
+		<!-- Sidebar -->
+		<div class="col-xl-4 col-lg-4">
+			<div class="sidebar-container">
+                {# TODO: Change color #}
+				<div class="countdown green margin-bottom-35">{{ task.job_status.capitalize}}</div>
+
+				<div class="sidebar-widget">
+					<div class="bidding-widget">
+						<div class="bidding-headline"><h3>Bid on this job!</h3></div>
+						<div class="bidding-inner">
+
+                            <form id="submit-proposal" action="{% url 'submit_proposals' %}"  method="post" >
+                                {% csrf_token %}
+                                <input type="hidden" name="task_id" value="{{ task.id }}">
+							<!-- Headline -->
+							<span class="bidding-detail">Set your <strong>minimal rate</strong></span>
+							<!-- Price Slider -->
+							<div class="bidding-value">$<span id="biddingVal"></span></div>
+							<input class="bidding-slider" type="text" name="rate" value="" data-slider-handle="custom" data-slider-currency="$" data-slider-min="10" data-slider-max="500" data-slider-value="{{ task.get_avg_value }}" data-slider-step="5" data-slider-tooltip="hide" />
+
+							<!-- Headline -->
+							<span class="bidding-detail margin-top-30">Set your <strong>delivery time</strong></span>
+
+							<!-- Fields -->
+							<div class="bidding-fields">
+								<div class="bidding-field">
+									<!-- Quantity Buttons -->
+									<div class="qtyButtons">
+										<div class="qtyDec"></div>
+										<input type="text" name="days" value="{% widthratio task.no_of_days 2 1 %}">
+										<div class="qtyInc"></div>
+									</div>
+								</div>
+								<div class="bidding-field">
+									<select disabled class="selectpicker default">
+										<option selected>Days</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Button -->
+							<button type="submit" class="button ripple-effect move-on-hover full-width margin-top-30"
+                            {% if task.user_submitted_proposal %}
+                                    disabled
+                                    style="cursor: not-allowed; background-color: #e0e0e0; color: #666"
+                            {% endif %}>
+                            {% if task.user_submitted_proposal %}
+                                <span>Bid Placed</span>
+                            {% else %}
+                                <span>Place a Bid </span>
+                            {% endif %}
+                            </button>
+                            </form>
+						</div>
+						<div class="bidding-signup">Don't have an account? <a href="#sign-in-dialog" class="register-tab sign-in popup-with-zoom-anim">Sign Up</a></div>
+					</div>
+				</div>
+
+				<!-- Sidebar Widget -->
+				<div class="sidebar-widget">
+					<h3>Bookmark or Share</h3>
+
+					<!-- Bookmark Button -->
+					<button class="bookmark-button margin-bottom-25">
+						<span class="bookmark-icon"></span>
+						<span class="bookmark-text">Bookmark</span>
+						<span class="bookmarked-text">Bookmarked</span>
+					</button>
+
+					<!-- Copy URL -->
+					<div class="copy-url">
+						<input id="copy-url" type="text" value="" class="with-border">
+						<button class="copy-url-button ripple-effect" data-clipboard-target="#copy-url" title="Copy to Clipboard" data-tippy-placement="top"><i class="icon-material-outline-file-copy"></i></button>
+					</div>
+
+					<!-- Share Buttons -->
+					<div class="share-buttons margin-top-25">
+						<div class="share-buttons-trigger"><i class="icon-feather-share-2"></i></div>
+						<div class="share-buttons-content">
+							<span>Interesting? <strong>Share It!</strong></span>
+							<ul class="share-buttons-icons">
+								<li><a href="#" data-button-color="#3b5998" title="Share on Facebook" data-tippy-placement="top"><i class="icon-brand-facebook-f"></i></a></li>
+								<li><a href="#" data-button-color="#1da1f2" title="Share on Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+								<li><a href="#" data-button-color="#dd4b39" title="Share on Google Plus" data-tippy-placement="top"><i class="icon-brand-google-plus-g"></i></a></li>
+								<li><a href="#" data-button-color="#0077b5" title="Share on LinkedIn" data-tippy-placement="top"><i class="icon-brand-linkedin-in"></i></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<!-- Spacer -->
+<div class="margin-top-15"></div>
+<!-- Spacer / End-->
+
+{% endblock content %}

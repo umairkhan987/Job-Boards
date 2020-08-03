@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+    <!-- Dashboard Content -->
+
+    <div class="setting-container">
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content-inner">
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>Settings</h3>
+            </div>
+
+            <!-- Row -->
+            <div class="row">
+
+                <!-- My Account Setting -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box margin-top-0">
+                        <!-- Headline -->
+                        <div class="headline">
+                            <h3><i class="icon-material-outline-account-circle"></i> My Account</h3>
+                        </div>
+
+                        <div class="text-danger" style="{text-align: center}">
+                            <strong id="setting-change-error" class="form-error"></strong>
+                        </div>
+
+                        <div class="content with-padding padding-bottom-0">
+
+                            <form id="accountForm" action="{% url 'update-account' %}" method="post"
+                                  enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <div class="avatar-wrapper" data-tippy-placement="bottom"
+                                             title="Edit Profile Pic">
+                                            <img class="profile-pic" id="old_profile"
+                                                 src="{% if user.profileImg %}
+                                                 {{ user.profileImg.url }}
+                                                 {% else %}
+                                                 {% static 'images/user-avatar-placeholder.png' %}
+                                                 {% endif %} "
+                                                 alt=""/>
+                                            <div class="upload-button"></div>
+                                            <input type="file" class="file-upload" name="profileImg" accept="image/*"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <div class="row">
+
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>First Name</h5>
+                                                    <input type="text" name="first_name" class="with-border"
+                                                           value="{{ user.first_name }}" placeholder="First Name">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>Last Name</h5>
+                                                    <input type="text" name="last_name" class="with-border"
+                                                           value="{{ user.last_name }}" placeholder="Last Name">
+                                                </div>
+                                            </div>
+
+                                            {#                                            <div class="col-xl-6">#}
+                                            {#                                                <div class="submit-field">#}
+                                            {#                                                    <h5>Phone Number</h5>#}
+                                            {#                                                    <input type="text" name="phoneNo" class="with-border"#}
+                                            {#                                                           placeholder="Phone Number">#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                            {##}
+                                            {#                                            <div class="col-xl-6">#}
+                                            {#                                                <div class="submit-field">#}
+                                            {#                                                    <h5>Email</h5>#}
+                                            {#                                                    <input type="text" name="email" class="with-border"#}
+                                            {#                                                           placeholder="Email">#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+
+                                            <div class="col-xl-12">
+                                                <div class="submit-field">
+                                                    <!-- Button -->
+                                                    <button type="submit"
+                                                            class="button ripple-effect big float-right margin-bottom-25">
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.is_Freelancer %}
+                    <!-- FreeLancer Profile -->
+                    <div class="col-xl-12">
+                        <div class="dashboard-box">
+
+                            <!-- Headline -->
+                            <div class="headline">
+                                <h3><i class="icon-material-outline-face"></i> My Profile</h3>
+                            </div>
+
+                            <div class="content">
+                                <form id="profileForm" action="{% url 'update-profile' %}" method="post">
+                                    {% csrf_token %}
+
+                                    <ul class="fields-ul">
+                                        <li>
+                                            <div class="row">
+
+                                                <!-- Minimal Rate -->
+                                                <div class="col-xl-4">
+                                                    <div class="submit-field">
+                                                        <div class="bidding-widget">
+                                                            <!-- Headline -->
+                                                            <span class="bidding-detail">Set your <strong>minimal hourly rate</strong></span>
+
+                                                            <!-- Slider -->
+                                                            <div class="bidding-value margin-bottom-10">$<span
+                                                                    id="biddingVal"></span></div>
+                                                            <input class="bidding-slider" name="rate" type="text"
+                                                                   data-slider-handle="custom" data-slider-currency="$"
+                                                                   data-slider-min="5" data-slider-max="200"
+                                                                   data-slider-value="{{ user.profile.rate }}" data-slider-step="1"
+                                                                   data-slider-tooltip="hide"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Skills -->
+                                                <div class="col-xl-4">
+                                                    <div class="submit-field">
+                                                        <h5>Skills <i class="help-icon" data-tippy-placement="right"
+                                                                      title="Add up to 5 skills"></i></h5>
+
+                                                        <!-- Skills List -->
+                                                        <div class="keywords-container margin-top-10">
+                                                            <div class="keyword-input-container">
+                                                                <select class="selectpicker" name="skills" multiple
+                                                                        title="Choose the skills...."
+                                                                        data-max-options="5" data-live-search="true">
+                                                                    <optgroup label="Web Dev">
+                                                                        <option>Angular</option>
+                                                                        <option>React</option>
+                                                                        <option>Vue</option>
+                                                                        <option>Bootstrap</option>
+                                                                        <option>CSS</option>
+                                                                        <option>Html</option>
+                                                                        <option>JavaScript</option>
+                                                                        <option>Wordpress</option>
+                                                                    </optgroup>
+                                                                    <optgroup label="Software Dev">
+                                                                        <option>C#</option>
+                                                                        <option>C++</option>
+                                                                        <option>Java</option>
+                                                                        <option>Python</option>
+                                                                        <option>Php</option>
+                                                                        <option>Ruby</option>
+                                                                        <option>Objective-C</option>
+                                                                        <option>Swift</option>
+                                                                    </optgroup>
+                                                                    <optgroup label="Graphic & Design">
+                                                                        <option>Logo Design</option>
+                                                                        <option>Game Design</option>
+                                                                        <option>PhotoShop Editing</option>
+                                                                        <option>Web & Mobile Des</option>
+                                                                        <option>Banner Ads</option>
+                                                                        <option>Business Card</option>
+                                                                    </optgroup>
+                                                                </select>
+                                                            </div>
+                                                            <div class="clearfix"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Attachments -->
+                                                <div class="col-xl-4">
+                                                    <div class="submit-field">
+                                                        <h5>Attachments</h5>
+
+                                                        <!-- Attachments -->
+                                                        <div class="attachments-container margin-top-0 margin-bottom-0">
+                                                            <div id="attachmentBox" class="attachment-box ripple-effect"
+                                                                 style="display: none">
+                                                            </div>
+                                                        </div>
+                                                        <div class="clearfix"></div>
+
+                                                        <!-- Upload Button -->
+                                                        <div class="uploadButton margin-top-0">
+                                                            <input class="uploadButton-input" name="userCV" type="file"
+                                                                   accept=".doc, .docx, application/pdf" id="upload" />
+                                                            <label class="uploadButton-button ripple-effect" for="upload">
+                                                                   Upload File
+                                                            </label>
+                                                            <span id="uploadFileName" class="uploadButton-file-name">Maximum file size: 10 MB</span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li>
+                                            <div class="row">
+                                                <!-- TagLine -->
+                                                <div class="col-xl-6">
+                                                    <div class="submit-field">
+                                                        <h5>Tagline
+                                                            <i class="help-icon" data-tippy-placement="right"
+                                                               title="Separate Tag with '+' sign like (iOS Expert + Node Dev)"></i></h5>
+                                                        <input type="text" name="tags" value="{{ user.profile.tags }}" class="with-border">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Country -->
+                                                <div class="col-xl-6">
+                                                    <div class="submit-field">
+                                                        <h5>Nationality</h5>
+                                                        <select id="country" name="country" class="selectpicker with-border" data-size="7"
+                                                                title="Select Country" data-live-search="true">
+                                                            <option>Australia</option>
+                                                            <option >Belgium</option>
+                                                            <option >Brazil</option>
+                                                            <option>Canada</option>
+                                                            <option>Colombia</option>
+                                                            <option>Cyprus</option>
+                                                            <option>Denmark</option>
+                                                            <option>Egypt</option>
+                                                            <option>Hong Kong</option>
+                                                            <option>Iceland</option>
+                                                            <option>India</option>
+                                                            <option>Norway</option>
+                                                            <option>Pakistan</option>
+                                                            <option>Panama</option>
+                                                            <option>Poland</option>
+                                                            <option>Portugal</option>
+                                                            <option>Qatar</option>
+                                                            <option>Russia</option>
+                                                            <option>Turkey</option>
+                                                            <option>UK</option>
+                                                            <option >USA</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Introduction -->
+                                                <div class="col-xl-12">
+                                                    <div class="submit-field">
+                                                        <h5>Introduce Yourself</h5>
+                                                        <textarea name="introduction"  cols="30" rows="5" class="with-border">{{ user.profile.introduction }}</textarea>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </li>
+
+                                        <li>
+                                            <!-- Save Button -->
+                                            <div class="row">
+                                                <div class="col-xl-12">
+                                                    <button type="submit"
+                                                            class="button ripple-effect big float-right margin-bottom-20">
+                                                        Save Profile
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Change Password -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box">
+                        <!-- Headline -->
+                        <div class="headline">
+                            <h3><i class="icon-material-outline-lock"></i> Password & Security</h3>
+                        </div>
+                        <div class="content with-padding">
+                            <form action="{% url 'change-password' %}" method="post" id="changePasswordForm">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Current Password</h5>
+                                            <input type="password" name="old_password" placeholder="Current Password"
+                                                   class="with-border" required>
+                                            <div id="old_password-error" class="alert alert-danger"
+                                                 style="display: none">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>New Password</h5>
+                                            <input type="password" name="new_password1" class="with-border"
+                                                   placeholder="New Password" required>
+                                            <div id="new_password-error" class="alert alert-danger"
+                                                 style="display: none">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>Repeat New Password</h5>
+                                            <input type="password" name="new_password2" class="with-border"
+                                                   placeholder="Repeat Password" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <div class="submit-field">
+                                            <button type="submit" class="button ripple-effect big float-right">
+                                                Save Changes
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                            <div class="text-danger" style="text-align: center;">
+                                <strong id="password-change-error" class="form-error"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Row / End -->
+
+            <!-- Footer -->
+            <div class="dashboard-footer-spacer"></div>
+            <div class="small-footer margin-top-15">
+                <div class="small-footer-copyrights">
+                    © 2018 <strong>Hireo</strong>. All Rights Reserved.
+                </div>
+                <ul class="footer-social-links">
+                    <li>
+                        <a href="#" title="Facebook" data-tippy-placement="top">
+                            <i class="icon-brand-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Twitter" data-tippy-placement="top">
+                            <i class="icon-brand-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Google Plus" data-tippy-placement="top">
+                            <i class="icon-brand-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="LinkedIn" data-tippy-placement="top">
+                            <i class="icon-brand-linkedin-in"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <!-- Footer / End -->
+        </div>
+        <!-- Dashboard Content / End -->
+
+
+    </div>
+
+
+{% endblock %}

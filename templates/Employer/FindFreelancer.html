@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- Spacer -->
+    <div class="margin-top-90"></div>
+    <!-- Spacer / End-->
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row">
+
+            <!-- Left Side -->
+            <div class="col-xl-3 col-lg-4">
+                <div class="sidebar-container">
+
+                    <form method="get">
+                        <!-- Keywords -->
+                        <div class="sidebar-widget">
+                            <h3>Keywords</h3>
+                            <div class="input-with-icon">
+                                <div id="autocomplete-container">
+                                    <input id="search-input" name="search" type="text" placeholder="Search">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hourly Rate -->
+                        <div class="sidebar-widget">
+                            <h3>Hourly Rate</h3>
+                            <div class="margin-top-55"></div>
+
+                            <!-- Range Slider -->
+                            <input class="range-slider" name="rate" type="text" value=""
+                                   data-slider-currency="$" data-slider-min="10" data-slider-max="250"
+                                   data-slider-step="5" data-slider-value="[10,250]"/>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="sidebar-widget">
+                            <h3>Skills</h3>
+                            <select class="selectpicker default" multiple data-selected-text-format="count"
+                                    data-max-options="5" name="category"
+                                    data-size="7" data-live-search="true" title="Select skills..">
+                                <optgroup label="Web Dev">
+                                    <option>Angular</option>
+                                    <option>React</option>
+                                    <option>Vue</option>
+                                    <option data-divider="true"></option>
+                                    <option>Bootstrap</option>
+                                    <option>CSS</option>
+                                    <option>Html</option>
+                                    <option>JavaScript</option>
+                                    <option>Wordpress</option>
+                                </optgroup>
+                                <optgroup label="Software Dev">
+                                    <option>C#</option>
+                                    <option>C++</option>
+                                    <option>Java</option>
+                                    <option>Python</option>
+                                    <option>Php</option>
+                                    <option>Ruby</option>
+                                    <option>Objective-C</option>
+                                    <option>Swift</option>
+                                </optgroup>
+                                <optgroup label="Graphic & Design">
+                                    <option>Logo Design</option>
+                                    <option>Game Design</option>
+                                    <option>PhotoShop Editing</option>
+                                    <option>Web & Mobile Des</option>
+                                    <option>Banner Ads</option>
+                                    <option>Business Card</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="sidebar-widget">
+                            <button type="submit" class="button ripple-effect full-width">Search</button>
+                        </div>
+                    </form>
+
+                    <div class="clearfix"></div>
+
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="col-xl-9 col-lg-8 content-left-offset">
+
+                <h3 class="page-title">Search Results</h3>
+
+                <div class="notify-box margin-top-15">
+                    <div class="switch-container">
+                        <label class="switch"><input type="checkbox"><span class="switch-button"></span><span
+                                class="switch-text">Turn on email alerts for this search</span></label>
+                    </div>
+
+                    <div class="sort-by">
+                        <span>Sort by:</span>
+                        <select name="sortBy" onchange=" document.getElementById('sortByForm').submit();"
+                                class="selectpicker hide-tick">
+                            <option>Relevance</option>
+                            <option>Newest</option>
+                            <option>Oldest</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <!-- Freelancers List Container -->
+                <div class="freelancers-container freelancers-list-layout margin-top-35">
+
+                    {% if freelancers|length > 0 %}
+                        {% for freelancer in freelancers %}
+                            <!--Freelancer -->
+                            <div class="freelancer">
+
+                                <!-- Overview -->
+                                <div class="freelancer-overview">
+                                    <div class="freelancer-overview-inner">
+
+                                        <!-- Bookmark Icon -->
+                                        <span class="bookmark-icon"></span>
+
+                                        <!-- Avatar -->
+                                        <div class="freelancer-avatar">
+                                            <div class="verified-badge"></div>
+                                            <a href="{% url 'freelancer_profile' freelancer.id %}">
+                                                {% if freelancer.user.profileImg %}
+                                                    <img src="{{ freelancer.user.profileImg.url }}" alt="">
+                                                    {% else %}
+                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No-Image" />
+                                                {% endif %}
+
+                                            </a>
+                                        </div>
+
+                                        <!-- Name -->
+                                        <div class="freelancer-name">
+                                            <h4>{{ freelancer.user.first_name }} {{ freelancer.user.last_name }}</h4>
+                                            <span>{{ freelancer.tags }}</span>
+                                            <!-- Rating -->
+                                            <div class="freelancer-rating">
+                                                <div class="star-rating" data-rating="{{ freelancer.rating }}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Details -->
+                                <div class="freelancer-details">
+                                    <div class="freelancer-details-list">
+                                        <ul>
+                                            <li>Location <strong>
+                                                <i class="icon-material-outline-location-on"></i>
+                                                {{ freelancer.country }}</strong>
+                                            </li>
+                                            <li>Rate <strong>${{freelancer.rate}} / hr</strong></li>
+                                            <li>Job Success <strong>95%</strong></li>
+                                        </ul>
+                                    </div>
+                                    <a href="{% url 'freelancer_profile' freelancer.id %}"
+                                       class="button button-sliding-icon ripple-effect">View Profile <i
+                                            class="icon-material-outline-arrow-right-alt"></i></a>
+                                </div>
+                            </div>
+                            <!-- Freelancer / End -->
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+                <!-- Freelancers Container / End -->
+
+
+                <!-- Pagination -->
+                <div class="clearfix"></div>
+                {% if freelancers|length > 6 %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Pagination -->
+                            <div class="pagination-container margin-top-40 margin-bottom-60">
+                                <nav class="pagination">
+                                    <ul>
+                                        <li class="pagination-arrow"><a href="#" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                        <li><a href="#" class="ripple-effect">1</a></li>
+                                        <li><a href="#" class="current-page ripple-effect">2</a></li>
+                                        <li><a href="#" class="ripple-effect">3</a></li>
+                                        <li><a href="#" class="ripple-effect">4</a></li>
+                                        <li class="pagination-arrow"><a href="#" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pagination / End -->
+                {% else %}
+                    <div class="margin-top-90"></div>
+                {% endif %}
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
