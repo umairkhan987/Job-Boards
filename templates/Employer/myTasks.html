@@ -61,6 +61,8 @@
 										<li><strong>{{ task.proposals.count }}</strong><span>Bids</span></li>
 										<li><strong>$ {{ task.get_avg_bids }}</strong><span>Avg. Bid</span></li>
 										<li><strong>$ {{ task.min_price }} - ${{ task.max_price }}</strong><span>{{ task.project_type }}</span></li>
+                                        {% if task.project_type == 'fixed' %}<li><strong>{{ task.no_of_days }}</strong><span>Days</span></li>{% endif %}
+
 									</ul>
 
 									<!-- Buttons -->

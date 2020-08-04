@@ -5,7 +5,6 @@ $(document).ready(function () {
         const url = $(this).attr('action');
         const data = $(this).serialize();
 
-        const completeURL = window.location.href.replace(window.location.pathname, "/freelancer/myProposals/");
 
         $.ajax({
             type: 'ajax',
@@ -15,6 +14,7 @@ $(document).ready(function () {
             success: function (data) {
                 console.log(data);
                 if (data.success) {
+                    const completeURL = window.location.href.replace(window.location.pathname, data.url);
                     snackbar_msg(data.msg);
                     setTimeout(() => {
                         window.location.replace(completeURL);
@@ -31,11 +31,21 @@ $(document).ready(function () {
     });
 
     let URL = null;
-    $('a.show-popup').click(function (event) {
+    $('a.delete-popup').click(function (event) {
         const title = $(this).attr('data-content');
         URL = $(this).attr('data-url');
-        $('#task_name').html(title);
+        $('#popup-tabs').html("Delete Proposal");
+        $('#delete-proposal-p').html(`Are you sure you want to delete this job. <strong>${title}</strong>`);
+        $('#delete-confirm-popup').html("Delete");
     });
+
+    $('a.cancel-task-popup').click(function (event) {
+       URL =  $(this).attr('data-url');
+       $('#popup-tabs').html("Cancel Task");
+       $('#delete-proposal-p').html("Are you sure you want to cancel this job.");
+       $('#delete-confirm-popup').html("Yes");
+    });
+
 
     $('#delete-confirm-popup').click(function () {
         const data = $('#csrf_token-form').serialize();

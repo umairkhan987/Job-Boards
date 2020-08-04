@@ -1,26 +1,30 @@
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse, JsonResponse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.utils import timezone
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import F
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import Profile
+from freelancers.models import Proposal
 from .forms import TaskForm
 from .models import PostTask
 
 
 def find_freelancer(request):
+    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at'))
+    page = request.GET.get('page', 1)
+    paginator = Paginator(freelancer_list, 5)
+
     try:
-        if 'sortBy' in request.GET:
-            print(request.GET)
+        freelancers = paginator.page(page)
+    except PageNotAnInteger:
+        freelancers = paginator.page(1)
+    except EmptyPage:
+        freelancers = paginator.page(paginator.num_pages)
 
-        if request.GET is not None and len(request.GET).__gt__(1):
-            print(request.GET)
-
-        freelancers = Profile.objects.filter(created_at__lt=F('updated_at'))
-        return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
-    except Exception as e:
-        raise Http404(str(e))
+    return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
 
 
 def freelancer_profile(request, id):
@@ -85,3 +89,26 @@ def delete_task(request, id):
 def manage_proposal(request, id):
     task = PostTask.objects.get(pk=id)
     return render(request, 'Employer/ManageProposal.html', {"task": task})
+
+
+@login_required
+@employer_required
+def accept_proposal(request, id):
+    try:
+        proposal = get_object_or_404(Proposal, pk=id)
+        if not proposal:
+            raise Http404("Not Found")
+        if proposal.task.user != request.user:
+            raise Http404("You are not permitted to perform this action.")
+        if request.method == "POST" and request.is_ajax():
+            proposal.user.profile.total_hired += 1
+            proposal.task.job_status = 'In Progress'
+            proposal.proposal_accept_date = timezone.now()
+            proposal.accept = True
+
+            proposal.user.profile.save()
+            proposal.task.save()
+            proposal.save()
+            return JsonResponse({"success": True, "msg": "Proposal accepted.", "url": redirect('my_tasks').url})
+    except Exception as e:
+        raise Http404(str(e))

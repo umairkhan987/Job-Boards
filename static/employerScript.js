@@ -105,15 +105,41 @@ $(document).ready(function () {
         })
     });
 
-    // const search = window.location.search.split('=').pop();
-    // console.log("search "+ search);
+    let proposal_url = null;
+    $('a.accept-offer').click(function () {
+       const proposal = $(this).attr('data-content').split(",");
+       proposal_url = $(this).attr('data-url');
+        $('#first_name').html(proposal[0]);
+        $('#accept_offer_rate').html(`$${proposal[1]} - in ${proposal[2]} Days `);
+    });
 
-    // $('select[name=sortBy]').val(search).change();
+    // Submit accept proposal
+    $('#terms').submit(function (event) {
+        event.preventDefault();
+        const data = $(this).serialize();
 
-    // $('#sortBy').change(function () {
-    //     let sortBy = $('#sortBy').val();
-    //     console.log("Change value " + sortBy);
-    // });
+        if(proposal_url === null){
+            console.log("Proposal url is null");
+            return;
+        }
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: proposal_url,
+            data: data,
+            success:function (data) {
+                $.magnificPopup.close();
+                console.log(data);
+                if(data.success){
+                    snackbar_msg(data.msg);
+                    setTimeout(()=>{
+                        window.location = data.url;
+                    }, 1000)
+                }
+            }
+        })
+    });
 
     // snackbar for display msg
     function snackbar_msg(msg) {

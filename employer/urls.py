@@ -9,6 +9,7 @@ urlpatterns = [
     path('tasks/', views.my_tasks, name="my_tasks"),
     path('task/<int:id>/edit/', views.edit_task, name='edit_task'),
     path('task/<int:id>/delete/', views.delete_task, name='delete_task'),
-    path('proposal/<int:id>/manage/', views.manage_proposal, name='manage_proposal')
+    path('proposal/<int:id>/manage/', views.manage_proposal, name='manage_proposal'),
+    path('accept/<int:id>/proposal/', views.accept_proposal, name="accept_proposal"),
 
 ]

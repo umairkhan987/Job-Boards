@@ -32,8 +32,8 @@
 
                             <!-- Range Slider -->
                             <input class="range-slider" name="rate" type="text" value=""
-                                   data-slider-currency="$" data-slider-min="10" data-slider-max="250"
-                                   data-slider-step="5" data-slider-value="[10,250]"/>
+                                   data-slider-currency="$" data-slider-min="10" data-slider-max="1000"
+                                   data-slider-step="5" data-slider-value="[10,1000]"/>
                         </div>
 
                         <!-- Category -->
@@ -46,12 +46,10 @@
                                     <option>Angular</option>
                                     <option>React</option>
                                     <option>Vue</option>
-                                    <option data-divider="true"></option>
                                     <option>Bootstrap</option>
                                     <option>CSS</option>
                                     <option>Html</option>
                                     <option>JavaScript</option>
-                                    <option>Wordpress</option>
                                 </optgroup>
                                 <optgroup label="Software Dev">
                                     <option>C#</option>
@@ -67,7 +65,6 @@
                                     <option>Logo Design</option>
                                     <option>Game Design</option>
                                     <option>PhotoShop Editing</option>
-                                    <option>Web & Mobile Des</option>
                                     <option>Banner Ads</option>
                                     <option>Business Card</option>
                                 </optgroup>
@@ -88,11 +85,9 @@
 
 		<div class="col-xl-9 col-lg-8 content-left-offset">
 
-			<h3 class="page-title">Search Results</h3>
-
 			<div class="notify-box margin-top-15">
 				<div class="switch-container">
-					<label class="switch"><input type="checkbox"><span class="switch-button"></span><span class="switch-text">Turn on email alerts for this search</span></label>
+        			<h4 class="page-title">Search Results</h4>
 				</div>
 
 				<div class="sort-by">
@@ -101,7 +96,6 @@
 						<option>Relevance</option>
 						<option>Newest</option>
 						<option>Oldest</option>
-						<option>Random</option>
 					</select>
 				</div>
 			</div>
@@ -122,7 +116,7 @@
 							<h3 class="task-listing-title">{{ task.title }}</h3>
 							<ul class="task-icons">
 								<li><i class="icon-material-outline-business-center"></i> {{ task.exp_level.capitalize }}</li>
-								<li><i class="icon-material-outline-access-time"></i> {{ task.updated_at | timesince }} ago</li>
+								<li><i class="icon-material-outline-access-time"></i> {{ task.created_at | timesince }} ago</li>
 							</ul>
 							<p class="task-listing-text">{{ task.description | truncatewords:"20" }}</p>
                             {% if task.skills %}
@@ -165,19 +159,32 @@
 
 				<!-- Pagination -->
 				<div class="clearfix"></div>
-                {% if tasks|length > 6 %}
+                {% if tasks.has_other_pages %}
 				    <div class="row">
 					<div class="col-md-12">
 						<!-- Pagination -->
 						<div class="pagination-container margin-top-30 margin-bottom-60">
 							<nav class="pagination">
 								<ul>
-									<li class="pagination-arrow"><a href="#" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-left"></i></a></li>
-									<li><a href="#" class="ripple-effect">1</a></li>
-									<li><a href="#" class="current-page ripple-effect">2</a></li>
-									<li><a href="#" class="ripple-effect">3</a></li>
-									<li><a href="#" class="ripple-effect">4</a></li>
-									<li class="pagination-arrow"><a href="#" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                    {% if tasks.has_previous %}
+									    <li class="pagination-arrow"><a href="?page={{ tasks.previous_page_number }}" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                    {% else %}
+                                        <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-left"></i></a> </li>
+                                    {% endif %}
+
+                                    {% for i in tasks.paginator.page_range %}
+                                        {% if tasks.number == i %}
+                                            <li><a href="#" class="current-page ripple-effect">{{ i }}</a></li>
+                                        {% else %}
+                                            <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+
+									{% if tasks.has_next %}
+									    <li class="pagination-arrow"><a href="?page={{ tasks.next_page_number }}" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                    {% else %}
+                                        <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                    {% endif %}
 								</ul>
 							</nav>
 						</div>

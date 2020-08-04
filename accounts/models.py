@@ -65,6 +65,8 @@ class Profile(models.Model):
     introduction = models.TextField(blank=True, max_length=2000)
     userCV = models.FileField(upload_to=upload_user_cv, blank=True, null=True)
     rating = models.FloatField(blank=True, default=0)
+    total_hired = models.IntegerField(default=0)
+    total_job_done = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -81,6 +83,11 @@ class Profile(models.Model):
             return os.path.basename(self.userCV.name)
         else:
             return None
+
+    def calculate_success_rate(self):
+        if self.total_job_done < 1:
+            return 0
+        return (self.total_job_done / self.total_hired) * 100
 
 
 # create Employer Profile if user Signup as Employer using Signals

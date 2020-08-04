@@ -185,8 +185,8 @@
 				<!-- Profile Overview -->
 				<div class="profile-overview">
 					<div class="overview-item"><strong>${{ profile.rate }}</strong><span>Hourly Rate</span></div>
-					<div class="overview-item"><strong>53</strong><span>Jobs Done</span></div>
-					<div class="overview-item"><strong>22</strong><span>Rehired</span></div>
+					<div class="overview-item"><strong>{{ profile.total_job_done }}</strong><span>Jobs Done</span></div>
+					<div class="overview-item"><strong>{{ profile.total_hired }}</strong><span>Hired</span></div>
 				</div>
 
 				<!-- Button -->
@@ -198,8 +198,8 @@
 
 						<!-- Indicator -->
 						<div class="indicator">
-							<strong>88%</strong>
-							<div class="indicator-bar" data-indicator-percentage="88"><span></span></div>
+							<strong>{{ profile.calculate_success_rate }}%</strong>
+							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_success_rate }}"><span></span></div>
 							<span>Job Success</span>
 						</div>
 

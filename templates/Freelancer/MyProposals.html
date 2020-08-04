@@ -46,9 +46,9 @@
 											<div class="job-listing-description">
 												<h3 class="job-listing-title">{{ proposal.task.title }}
                                                     {% if proposal.accept %}
-                                                        <span class="dashboard-status-button green">Accept</span>
+                                                        <span class="dashboard-status-button green">Accepted</span>
                                                     {% else %}
-                                                        <span class="dashboard-status-button yellow">Pending</span>
+                                                        <span class="dashboard-status-button yellow">{{proposal.task.job_status}}</span>
                                                     {% endif %}
                                                 </h3>
 
@@ -70,7 +70,13 @@
 
 									<!-- Buttons -->
 									<div class="buttons-to-right always-visible">
-										<a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico show-popup" title="Cancel Bid" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></a>
+                                        {% if proposal.accept %}
+                                            <a href="#" class="popup-with-zoom-anim button ripple-effect"><i class="icon-material-outline-check"></i> Complete Job</a>
+                                            <a href="#small-dialog" data-url="{% url 'cancel_task' proposal.id %}" class="popup-with-zoom-anim button red ripple-effect cancel-task-popup"><i class="icon-feather-alert-circle"></i> Cancel Job</a>
+                                        {% else %}
+                                            <a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Cancel Bid"><i class="icon-feather-trash-2"></i></a>
+                                        {% endif %}
+
 									</div>
 
 								</li>
@@ -94,12 +100,11 @@
 
     <!-- Delete proposal Popup -->
     <div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
-
 	<!--Tabs -->
 	<div class="sign-in-form">
 
 		<ul class="popup-tabs-nav">
-			<li><a href="#tab">Delete Proposal</a></li>
+			<li><a href="#tab" id="popup-tabs" >Delete Proposal</a></li>
 		</ul>
 
 		<div class="popup-tabs-container">
@@ -109,7 +114,7 @@
 
 				<!-- Welcome Text -->
 				<div class="welcome-text">
-                    <p>Are you sure you want to delete <strong id="task_name"></strong></p>
+                    <p id="delete-proposal-p">Are you sure you want to delete</p>
 				</div>
 
                 <form method="post" id="csrf_token-form">
@@ -124,7 +129,7 @@
 
                     <div class="col-lg-4" style="text-align: center">
                         <!-- Button -->
-                        <a href="javascript:" id="delete-confirm-popup" class="button ripple-effect " style="background-color: #de5959">Delete <i class="icon-feather-trash-2"></i></a>
+                        <a href="javascript:" id="delete-confirm-popup" class="button ripple-effect " style="background-color: #de5959">Delete</a>
                     </div>
                 </div>
 			</div>
