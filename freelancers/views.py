@@ -10,7 +10,7 @@ from .models import Proposal
 
 
 def findTasks(request):
-    task_lists = PostTask.objects.all().order_by('-created_at')
+    task_lists = PostTask.objects.all().exclude(job_status__exact="Completed").order_by('-created_at')
     page = request.GET.get('page', 1)
 
     paginator = Paginator(task_lists, 5)
@@ -52,11 +52,17 @@ def submit_proposals(request):
 @login_required
 @freelancer_required
 def my_proposals(request):
+    proposal_list = Proposal.objects.filter(user=request.user).order_by('-created_at').order_by('status')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(proposal_list, 3)
+
     try:
-        proposals = Proposal.objects.filter(user=request.user).order_by('-created_at')
-        return render(request, 'Freelancer/MyProposals.html', {"proposals": proposals})
-    except Exception as e:
-        raise Http404(str(e))
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+    return render(request, 'Freelancer/MyProposals.html', {"proposals": proposals})
 
 
 @login_required
@@ -67,7 +73,7 @@ def delete_proposal(request, id):
         if request.method == "POST" and request.is_ajax():
             proposal = get_object_or_404(Proposal, pk=id)
 
-            if proposal.accept:
+            if proposal.status is not None:
                 return JsonResponse({"success": False, "errors": "You are not permitted to delete this Proposal"})
 
             proposal.delete()
@@ -84,12 +90,30 @@ def cancel_task(request, id):
         if request.method == "POST" and request.is_ajax():
             proposal = get_object_or_404(Proposal, pk=id)
             proposal.task.job_status = "Pending"
-            proposal.user.profile.total_job_done -= 1
-            proposal.accept = False
+            proposal.status = "cancelled"
 
             proposal.task.save()
             proposal.user.profile.save()
             proposal.save()
             return JsonResponse({"success": True, "msg": "Job cancelled."})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+
+
+@login_required
+@freelancer_required
+@valid_user_for_proposal
+def task_completed(request, id):
+    try:
+        if request.method == "POST" and request.is_ajax():
+            proposal = get_object_or_404(Proposal, pk=id)
+            proposal.task.job_status = 'Completed'
+            proposal.user.profile.total_job_done += 1
+            proposal.status = 'completed'
+
+            proposal.task.save()
+            proposal.user.profile.save()
+            proposal.save()
+            return JsonResponse({"success": True, "msg": "Job Completed."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})

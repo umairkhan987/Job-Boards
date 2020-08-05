@@ -9,7 +9,9 @@
 			<!-- Dashboard Headline -->
 			<div class="dashboard-headline">
 				<h3>Manage Bidders</h3>
-				<span class="margin-top-7">Bids for <a href="#">{{ task.title }}</a></span>
+				<span class="margin-top-7">Bids for <a href="#">{{ task.title }}</a>
+                    {% if task.job_status == 'Completed' %} is Completed {% endif %}
+                </span>
 
 				<!-- Breadcrumbs -->
 				<nav id="breadcrumbs" class="dark">
@@ -63,14 +65,18 @@
 
                                                 <!-- Name -->
                                                 <div class="freelancer-name">
-                                                    <h4><a href="{% url 'freelancer_profile' proposal.user.id %}"> {{proposal.user.first_name}} {{ proposal.user.last_name }}</a></h4>
+                                                    <h4><a href="{% url 'freelancer_profile' proposal.user.id %}"> {{proposal.user.first_name}} {{ proposal.user.last_name }}</a>
+                                                        {% if proposal.status == 'completed' and task.job_status == 'Completed' %}
+                                                            <span class="dashboard-status-button green">Completed this task</span>
+                                                        {% endif %}
+                                                    </h4>
 
                                                     <!-- Details -->
                                                     <span class="freelancer-detail-item"><i class="icon-feather-mail"></i> <span class="__cf_email__">{{ proposal.user.email }}</span></span>
 
                                                     <!-- Rating -->
                                                     <div class="freelancer-rating">
-                                                        <div class="star-rating" data-rating="{{ proposal.user.profile.rating }}"></div>
+                                                        <div class="star-rating" data-rating="{{ proposal.user.profile.calculate_rating }}"></div>
                                                     </div>
 
                                                     <!-- Bid Details -->
@@ -81,7 +87,13 @@
 
                                                     <!-- Buttons -->
                                                     <div class="buttons-to-right always-visible margin-top-25 margin-bottom-0">
-                                                        <a href="#small-dialog-1" data-url="{% url 'accept_proposal' proposal.id %}" data-content="{{ proposal.user.first_name }},{{ proposal.rate }},{{ proposal.days }}"  class="popup-with-zoom-anim button ripple-effect accept-offer"><i class="icon-material-outline-check"></i> Accept Offer</a>
+                                                        {% if proposal.status == 'accepted' %}
+                                                            <a href="javascript:" class=" green button ripple-effect"><i class="icon-material-outline-check"></i>Offer Accepted</a>
+                                                        {% elif proposal.status == 'cancelled' %}
+                                                            <a href="javascript:" class=" red button ripple-effect">Cancelled by user</a>
+                                                        {% elif proposal.staus is None and task.job_status == "Pending" %}
+                                                            <a href="#small-dialog-1" data-url="{% url 'accept_proposal' proposal.id %}" data-content="{{ proposal.user.first_name }},{{ proposal.rate }},{{ proposal.days }}"  class="popup-with-zoom-anim button ripple-effect accept-offer"><i class="icon-material-outline-check"></i> Accept Offer</a>
+                                                        {% endif %}
                                                         <a href="#small-dialog-2" data-firstName="{{ proposal.user.first_name }}" class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
                                                     </div>
                                                 </div>

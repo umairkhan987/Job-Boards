@@ -5,22 +5,20 @@ $(document).ready(function () {
         const url = $(this).attr('action');
         const data = $(this).serialize();
 
-
         $.ajax({
             type: 'ajax',
             method: 'POST',
             url: url,
             data: data,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if (data.success) {
-                    const completeURL = window.location.href.replace(window.location.pathname, data.url);
                     snackbar_msg(data.msg);
                     setTimeout(() => {
-                        window.location.replace(completeURL);
+                        window.location = data.url;
                     }, 1000);
                 } else {
-                    snackbar_msg(data.errors);
+                    snackbar_error_msg(data.errors);
                 }
             }
         })
@@ -40,19 +38,19 @@ $(document).ready(function () {
     });
 
     $('a.cancel-task-popup').click(function (event) {
-       URL =  $(this).attr('data-url');
-       $('#popup-tabs').html("Cancel Task");
-       $('#delete-proposal-p').html("Are you sure you want to cancel this job.");
-       $('#delete-confirm-popup').html("Yes");
+        URL = $(this).attr('data-url');
+        $('#popup-tabs').html("Cancel Task");
+        $('#delete-proposal-p').html("Are you sure you want to cancel this job.");
+        $('#delete-confirm-popup').html("Yes");
     });
 
 
     $('#delete-confirm-popup').click(function () {
         const data = $('#csrf_token-form').serialize();
 
-        if(URL === null) {
-         console.log("url is null");
-         return;
+        if (URL === null) {
+            console.log("url is null");
+            return;
         }
 
         $.ajax({
@@ -69,12 +67,55 @@ $(document).ready(function () {
                         window.location.reload();
                     }, 1000);
                 } else {
-                    snackbar_msg(data.errors);
+                    snackbar_error_msg(data.errors);
                 }
             }
         })
     });
 
+
+    // complete job button click
+    $('#complete_job_Btn').click(function (event) {
+        const url = $(this).attr('data-url');
+        const token = getCookie('csrftoken');
+        console.log("Ajax submitted");
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: url,
+            data: {csrfmiddlewaretoken: token},
+            success: function (data) {
+                console.log(data);
+                if(data.success){
+                    snackbar_msg(data.msg);
+                    setTimeout(()=>{
+                        window.location.reload();
+                    }, 1000);
+                }
+                else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     // snackbar for display msg
     function snackbar_msg(msg) {
@@ -88,4 +129,19 @@ $(document).ready(function () {
             backgroundColor: '#2a41e8'
         });
     }
+
+    // snackbar for display error msg
+    function snackbar_error_msg(msg) {
+        Snackbar.show({
+            text: msg,
+            pos: 'bottom-center',
+            showAction: true,
+            actionText: "X",
+            actionTextColor: '#fff',
+            duration: 5000,
+            textColor: '#fff',
+            backgroundColor: '#DC3139'
+        });
+    }
+
 });

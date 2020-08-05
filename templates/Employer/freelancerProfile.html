@@ -18,7 +18,7 @@
 						<div class="header-details">
 							<h3>{{ profile.user.first_name }} {{ profile.user.last_name }}<span>{{profile.tags}}</span></h3>
 							<ul>
-								<li><div class="star-rating" data-rating="{{ profile.rating }}"></div></li>
+								<li><div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div></li>
 								<li>{{ profile.country }}</li>
 								<li><div class="verified-badge-with-title">Verified</div></li>
 							</ul>
@@ -48,15 +48,17 @@
 				<div class="boxed-list-headline">
 					<h3><i class="icon-material-outline-thumb-up"></i> Work History and Feedback</h3>
 				</div>
-				<ul class="boxed-list-ul">
-					<li>
+                {% if profile.get_work_history|length > 0 %}
+                    <ul class="boxed-list-ul">
+                     {% for work in profile.get_work_history %}
+					    <li>
 						<div class="boxed-list-item">
 							<!-- Content -->
 							<div class="item-content">
-								<h4>Web, Database and API Developer <span>Rated as Freelancer</span></h4>
+								<h4>{{work.task.title}}</h4>
 								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="5.0"></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> August 2018</div>
+									<div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div>
+									<div class="detail-item"><i class="icon-material-outline-date-range"></i>{{ work.updated_at|date }}</div>
 								</div>
 								<div class="item-description">
 									<p>Excellent programmer - fully carried out my project in a very professional manner. </p>
@@ -64,52 +66,17 @@
 							</div>
 						</div>
 					</li>
-					<li>
-						<div class="boxed-list-item">
-							<!-- Content -->
-							<div class="item-content">
-								<h4>WordPress Theme Installation <span>Rated as Freelancer</span></h4>
-								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="5.0"></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> June 2018</div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="boxed-list-item">
-							<!-- Content -->
-							<div class="item-content">
-								<h4>Fix Python Selenium Code <span>Rated as Employer</span></h4>
-								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="5.0"></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> May 2018</div>
-								</div>
-								<div class="item-description">
-									<p>I was extremely impressed with the quality of work AND how quickly he got it done. He then offered to help with another side part of the project that we didn't even think about originally.</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="boxed-list-item">
-							<!-- Content -->
-							<div class="item-content">
-								<h4>PHP Core Website Fixes <span>Rated as Freelancer</span></h4>
-								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="5.0"></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> May 2018</div>
-								</div>
-								<div class="item-description">
-									<p>Awesome work, definitely will rehire. Poject was completed not only with the requirements, but on time, within our small budget.</p>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
+				    {% endfor %}
+				    </ul>
+                {% else %}
+                    <div class="margin-top-30">
+                        <span>Currently no work is done.</span>
+                    </div>
+                {% endif %}
 
 				<!-- Pagination -->
 				<div class="clearfix"></div>
+                {% if profile.get_work_history|length > 3 %}
 				<div class="pagination-container margin-top-40 margin-bottom-10">
 					<nav class="pagination">
 						<ul>
@@ -119,62 +86,12 @@
 						</ul>
 					</nav>
 				</div>
-				<div class="clearfix"></div>
+            {% endif %}
+            <div class="clearfix"></div>
 				<!-- Pagination / End -->
 
 			</div>
 			<!-- Boxed List / End -->
-
-			<!-- Boxed List -->
-			<div class="boxed-list margin-bottom-60">
-				<div class="boxed-list-headline">
-					<h3><i class="icon-material-outline-business"></i> Employment History</h3>
-				</div>
-				<ul class="boxed-list-ul">
-					<li>
-						<div class="boxed-list-item">
-							<!-- Avatar -->
-							<div class="item-image">
-								<img src="images/browse-companies-03.png" alt="">
-							</div>
-
-							<!-- Content -->
-							<div class="item-content">
-								<h4>Development Team Leader</h4>
-								<div class="item-details margin-top-7">
-									<div class="detail-item"><a href="#"><i class="icon-material-outline-business"></i> Acodia</a></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> May 2018 - Present</div>
-								</div>
-								<div class="item-description">
-									<p>Focus the team on the tasks at hand or the internal and external customer requirements.</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="boxed-list-item">
-							<!-- Avatar -->
-							<div class="item-image">
-								<img src="images/browse-companies-04.png" alt="">
-							</div>
-
-							<!-- Content -->
-							<div class="item-content">
-								<h4><a href="#">Lead UX/UI Designer</a></h4>
-								<div class="item-details margin-top-7">
-									<div class="detail-item"><a href="#"><i class="icon-material-outline-business"></i> Acorta</a></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i> April 2014 - May 2018</div>
-								</div>
-								<div class="item-description">
-									<p>I designed and implemented 10+ custom web-based CRMs, workflow systems, payment solutions and mobile apps.</p>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-			<!-- Boxed List / End -->
-
 		</div>
 
 
@@ -198,8 +115,8 @@
 
 						<!-- Indicator -->
 						<div class="indicator">
-							<strong>{{ profile.calculate_success_rate }}%</strong>
-							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_success_rate }}"><span></span></div>
+							<strong>{{ profile.calculate_success_rate|floatformat:"0" }}%</strong>
+							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_success_rate|floatformat:"0" }}"><span></span></div>
 							<span>Job Success</span>
 						</div>
 

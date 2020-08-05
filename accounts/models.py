@@ -64,13 +64,10 @@ class Profile(models.Model):
     country = models.CharField(blank=True, max_length=250)
     introduction = models.TextField(blank=True, max_length=2000)
     userCV = models.FileField(upload_to=upload_user_cv, blank=True, null=True)
-    rating = models.FloatField(blank=True, default=0)
     total_hired = models.IntegerField(default=0)
     total_job_done = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # jobCompleted = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.email
@@ -88,6 +85,14 @@ class Profile(models.Model):
         if self.total_job_done < 1:
             return 0
         return (self.total_job_done / self.total_hired) * 100
+
+    def calculate_rating(self):
+        if self.total_job_done < 1:
+            return 0
+        return (self.total_job_done / self.total_hired) * 5
+
+    def get_work_history(self):
+        return self.user.proposals.filter(status__exact='completed')
 
 
 # create Employer Profile if user Signup as Employer using Signals

@@ -9,9 +9,13 @@ class Proposal(models.Model):
     task = models.ForeignKey(PostTask, on_delete=models.DO_NOTHING, related_name='proposals')
     rate = models.IntegerField(default=0)
     days = models.IntegerField(default=1)
-    accept = models.BooleanField(default=False)
+    status = models.CharField(blank=True, null=True, max_length=250)
+    rating = models.FloatField(default=0.0)
+    onBudget = models.IntegerField(default=0)
+    onTime = models.IntegerField(default=0)
+    comment = models.TextField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
-    proposal_accept_date = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.task.title + "  " + self.user.email

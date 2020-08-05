@@ -29,6 +29,14 @@
 						<!-- Headline -->
 						<div class="headline">
 							<h3><i class="icon-material-outline-assignment"></i> My Tasks</h3>
+                            <div class="sort-by">
+								<select class="selectpicker hide-tick">
+									<option>Relevance</option>
+									<option>Pending</option>
+									<option>In Progress</option>
+									<option>Completed</option>
+								</select>
+							</div>
 						</div>
 
 						<div class="content">
@@ -44,7 +52,16 @@
 
 											<!-- Details -->
 											<div class="job-listing-description">
-												<h3 class="job-listing-title">{{ task.title }}<span class="dashboard-status-button yellow">{{ task.job_status }}</span></h3>
+												<h3 class="job-listing-title">{{ task.title }}
+                                                    {% if task.job_status == "Pending" %}
+                                                        <span class="dashboard-status-button yellow">{{ task.job_status }}</span>
+                                                    {% elif task.job_status == 'Completed' %}
+                                                        <span class="dashboard-status-button green">{{ task.job_status }}</span>
+                                                    {% else %}
+                                                        <span class="dashboard-status-button blue">{{ task.job_status }}</span>
+                                                    {% endif %}
+
+                                                </h3>
 
 												<!-- Job Listing Footer -->
 												<div class="job-listing-footer">
@@ -87,7 +104,47 @@
 			</div>
 			<!-- Row / End -->
 
-            <div class="margin-bottom-90"></div>
+        			<!-- Pagination -->
+               {% if tasks.has_other_pages %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Pagination -->
+                            <div class="pagination-container margin-top-40 margin-bottom-60">
+                                <nav class="pagination">
+                                    <ul>
+                                        {% if tasks.has_previous %}
+                                            <li class="pagination-arrow"><a href="?page={{ tasks.previous_page_number }}" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                        {% else %}
+                                            <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                         {% endif %}
+
+                                        {% for i in tasks.paginator.page_range %}
+                                            {% if tasks.number == i %}
+                                                <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                            {% else %}
+                                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                        {% if tasks.has_next %}
+                                        <li class="pagination-arrow"><a href="?page={{ tasks.next_page_number }}" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                        {% else %}
+                                            <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pagination / End -->
+                {% else %}
+                    <div class="margin-top-90"></div>
+                {% endif %}
 		</div>
 	</div>
 	<!-- Dashboard Content / End -->

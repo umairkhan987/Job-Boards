@@ -49,7 +49,18 @@ def post_a_task(request):
 @login_required
 @employer_required
 def my_tasks(request):
-    tasks = PostTask.objects.filter(user=request.user).order_by('-created_at')
+    # TODO: order by based on list of string [In progress, Pending, Completed]
+    task_list = PostTask.objects.filter(user=request.user).order_by('-created_at')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(task_list, 3)
+
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
+
     return render(request, 'Employer/myTasks.html', {"tasks": tasks})
 
 
@@ -57,6 +68,7 @@ def my_tasks(request):
 @employer_required
 @valid_user_for_task
 def edit_task(request, id):
+    # TODO: if task is in progress we can't edit it.
     task = get_object_or_404(PostTask, pk=id)
     form = TaskForm(instance=task)
     if request.method == "POST":
@@ -74,6 +86,9 @@ def delete_task(request, id):
     try:
         if request.method == "POST" and request.is_ajax():
             task = get_object_or_404(PostTask, pk=id)
+            if task.job_status == "In Progress":
+                return JsonResponse({"success": False, "errors": "Not perform this action because it's in progress."})
+
             title = task.title
             task.task_file.delete()
             task.delete()
@@ -96,19 +111,29 @@ def manage_proposal(request, id):
 def accept_proposal(request, id):
     try:
         proposal = get_object_or_404(Proposal, pk=id)
-        if not proposal:
-            raise Http404("Not Found")
-        if proposal.task.user != request.user:
-            raise Http404("You are not permitted to perform this action.")
+        if not proposal and request.is_ajax():
+            return JsonResponse({"success": False, "errors": "Proposal not found."})
+        if proposal.task.user != request.user and request.is_ajax():
+            return JsonResponse({"success": False, "errors": "You are not permitted to perform this action."})
+
+        task = proposal.task
+        if task.proposals.filter(status='accepted').exists() and request.is_ajax():
+            return JsonResponse({"success": False, "errors": "Sorry your are not assign this job to multiple user."})
+        if task.proposals.filter(status='completed').exists() and request.is_ajax():
+            return JsonResponse({"success": False, "errors": "Your job is completed"})
+
         if request.method == "POST" and request.is_ajax():
             proposal.user.profile.total_hired += 1
             proposal.task.job_status = 'In Progress'
             proposal.proposal_accept_date = timezone.now()
-            proposal.accept = True
+            proposal.status = "accepted"
 
             proposal.user.profile.save()
             proposal.task.save()
             proposal.save()
             return JsonResponse({"success": True, "msg": "Proposal accepted.", "url": redirect('my_tasks').url})
+
+        if request.method == "POST" and not request.is_ajax():
+            raise Http404("Invalid request.")
     except Exception as e:
         raise Http404(str(e))

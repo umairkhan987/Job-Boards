@@ -91,7 +91,7 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 $.magnificPopup.close();
-                console.log(data);
+                // console.log(data);
              if(data.success){
                  snackbar_msg(data.msg);
                  setTimeout(()=>{
@@ -99,7 +99,7 @@ $(document).ready(function () {
                  }, 1000);
              }
              else{
-                 snackbar_msg(data.errors);
+                 snackbar_error_msg(data.errors);
              }
             }
         })
@@ -130,12 +130,15 @@ $(document).ready(function () {
             data: data,
             success:function (data) {
                 $.magnificPopup.close();
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
                     setTimeout(()=>{
                         window.location = data.url;
                     }, 1000)
+                }
+                else{
+                    snackbar_error_msg(data.errors);
                 }
             }
         })
@@ -151,6 +154,20 @@ $(document).ready(function () {
             duration: 3000,
             textColor: '#fff',
             backgroundColor: '#2a41e8'
+        });
+    }
+
+    // snackbar for display error msg
+    function snackbar_error_msg(msg) {
+        Snackbar.show({
+            text: msg,
+            pos: 'bottom-center',
+            showAction: true,
+            actionText: "X",
+            actionTextColor: '#fff',
+            duration: 5000,
+            textColor: '#fff',
+            backgroundColor: '#DC3139'
         });
     }
 });

@@ -20,3 +20,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.dashboard-status-button.blue {
+    background: #E9F7FE;
+    color:#319BC0;
+}

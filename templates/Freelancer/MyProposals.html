@@ -29,6 +29,15 @@
 						<!-- Headline -->
 						<div class="headline">
 							<h3><i class="icon-material-outline-gavel"></i> Bids List</h3>
+                             <div class="sort-by">
+								<select class="selectpicker hide-tick">
+									<option>Relevance</option>
+									<option>Accepted</option>
+									<option>Cancelled</option>
+									<option>Completed</option>
+									<option>Pending</option>
+								</select>
+							</div>
 						</div>
 
 						<div class="content">
@@ -45,10 +54,14 @@
 											<!-- Details -->
 											<div class="job-listing-description">
 												<h3 class="job-listing-title">{{ proposal.task.title }}
-                                                    {% if proposal.accept %}
+                                                    {% if proposal.status == 'accepted' %}
                                                         <span class="dashboard-status-button green">Accepted</span>
+                                                    {% elif proposal.status == 'cancelled' %}
+                                                        <span class="dashboard-status-button red">Cancelled</span>
+                                                    {% elif proposal.status == 'completed' %}
+                                                        <span class="dashboard-status-button blue">Completed</span>
                                                     {% else %}
-                                                        <span class="dashboard-status-button yellow">{{proposal.task.job_status}}</span>
+                                                        <span class="dashboard-status-button yellow">Pending</span>
                                                     {% endif %}
                                                 </h3>
 
@@ -70,10 +83,10 @@
 
 									<!-- Buttons -->
 									<div class="buttons-to-right always-visible">
-                                        {% if proposal.accept %}
-                                            <a href="#" class="popup-with-zoom-anim button ripple-effect"><i class="icon-material-outline-check"></i> Complete Job</a>
+                                        {% if proposal.status == 'accepted' %}
+                                            <a href="javascript:" id="complete_job_Btn" data-url="{% url 'task_completed' proposal.id %}" class="button ripple-effect"><i class="icon-material-outline-check"></i> Complete Job</a>
                                             <a href="#small-dialog" data-url="{% url 'cancel_task' proposal.id %}" class="popup-with-zoom-anim button red ripple-effect cancel-task-popup"><i class="icon-feather-alert-circle"></i> Cancel Job</a>
-                                        {% else %}
+                                        {% elif proposal.status is None %}
                                             <a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Cancel Bid"><i class="icon-feather-trash-2"></i></a>
                                         {% endif %}
 
@@ -93,7 +106,50 @@
 					</div>
 				</div>
 			</div>
-            <div class="margin-bottom-90"></div>
+        	<!-- Row End-->
+
+
+        	<!-- Pagination -->
+               {% if proposals.has_other_pages %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- Pagination -->
+                            <div class="pagination-container margin-top-40 margin-bottom-60">
+                                <nav class="pagination">
+                                    <ul>
+                                        {% if proposals.has_previous %}
+                                            <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                        {% else %}
+                                            <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                         {% endif %}
+
+                                        {% for i in proposals.paginator.page_range %}
+                                            {% if proposals.number == i %}
+                                                <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                            {% else %}
+                                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                        {% if proposals.has_next %}
+                                        <li class="pagination-arrow"><a href="?page={{ proposals.next_page_number }}" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                        {% else %}
+                                            <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                                class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pagination / End -->
+                {% else %}
+                    <div class="margin-top-90"></div>
+                {% endif %}
 		</div>
 	</div>
 	<!-- Dashboard Content / End -->
