@@ -11,5 +11,7 @@ urlpatterns = [
     path('task/<int:id>/delete/', views.delete_task, name='delete_task'),
     path('proposal/<int:id>/manage/', views.manage_proposal, name='manage_proposal'),
     path('accept/<int:id>/proposal/', views.accept_proposal, name="accept_proposal"),
-
+    path('dashboard/', views.dashboard, name="emp_dashboard"),
+    path('reviews/', views.reviews, name="reviews"),
+    path('reviews/<int:id>/', views.post_reviews, name="post_reviews")
 ]

@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-import datetime
 
 
 #  We use it because we change default username with email
@@ -54,6 +53,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def task_completed(self):
+        return self.tasks.filter(job_status__exact="Completed").count()
+
+    def task_InProgress(self):
+        return self.tasks.filter(job_status__exact="In Progress").count()
 
 
 class Profile(models.Model):

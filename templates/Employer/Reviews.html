@@ -1,0 +1,226 @@
+{% extends 'common/_dashboard.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+    <!-- Dashboard Content data-simplebar -->
+    <div class="dashboard-content-container">
+        <div class="dashboard-content-inner">
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>Reviews</h3>
+
+              <!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'index' %}">Home</a></li>
+						<li>Reviews</li>
+					</ul>
+				</nav>
+            </div>
+
+            <!-- Row -->
+			<div class="row">
+				<!-- Dashboard Box -->
+				<div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-material-outline-face"></i> Rate Freelancers</h3>
+						</div>
+
+						<div class="content">
+                            {% if proposals|length > 0 %}
+                                <ul class="dashboard-box-list">
+								    {% for proposal in proposals %}
+                                        {% if proposal.rating == 0.0 %}
+                                            <li>
+									    <div class="boxed-list-item">
+										    <!-- Content -->
+										    <div class="item-content">
+											    <h4>{{ proposal.task.title }}</h4>
+											    <span class="company-not-rated margin-bottom-5">Not Rated</span>
+										    </div>
+									    </div>
+    									<a href="#small-dialog-2" data-url="{% url 'post_reviews' proposal.id %}" data-content="{{ proposal.user.first_name }},{{ proposal.user.last_name }},{{ proposal.task.title }}" class="reviews-popup popup-with-zoom-anim button ripple-effect margin-top-5 margin-bottom-10"><i class="icon-material-outline-thumb-up"></i> Leave a Review</a>
+								        </li>
+                                        {% else %}
+                                            <li>
+								        	    <div class="boxed-list-item">
+										            <!-- Content -->
+										            <div class="item-content">
+											        <h4>{{proposal.task.title}}</h4>
+											        <div class="item-details margin-top-10">
+												        <div class="star-rating" data-rating="{{ proposal.rating }}"></div>
+												        <div class="detail-item"><i class="icon-material-outline-date-range"></i> {{ proposal.updated_at|date }}</div>
+											        </div>
+											        <div class="item-description">
+												        <p>{{ proposal.comment }}</p>
+											        </div>
+										            </div>
+									            </div>
+{#									<a href="#small-dialog-1" class="popup-with-zoom-anim button gray ripple-effect margin-top-5 margin-bottom-10"><i class="icon-feather-edit"></i> Edit Review</a>#}
+								            </li>
+                                        {% endif %}
+								    {% endfor %}
+							    </ul>
+                            {% else %}
+                                <div class="margin-top-10 margin-bottom-10">
+                                    <p style="text-align-last: center">No task is competed. So without completed task you can't give rating.</p>
+                                </div>
+                            {% endif %}
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!-- Row / End -->
+
+            <!-- Pagination -->
+					<div class="clearfix"></div>
+					<div class="pagination-container margin-top-40" >
+                        {% if proposals.has_other_pages %}
+						<nav class="pagination" style="justify-content: center">
+							<ul>
+                                {% if proposals.has_previous %}
+                                    <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% else %}
+                                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% endif %}
+
+								{% for i in proposals.paginator.page_range %}
+                                    {% if proposals.number == i %}
+                                        <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% if proposals.has_next %}
+                                <li class="pagination-arrow"><a href="?page={{ proposals.next_page_number }}" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% else %}
+                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% endif %}
+							</ul>
+						</nav>
+                        {% endif %}
+					</div>
+					<div class="clearfix"></div>
+					<!-- Pagination / End -->
+
+            <!-- Footer -->
+            <div class="dashboard-footer-spacer"></div>
+            <div class="small-footer">
+                <div class="small-footer-copyrights">
+                    © 2018 <strong>Hireo</strong>. All Rights Reserved.
+                </div>
+                <ul class="footer-social-links">
+                    <li>
+                        <a href="#" title="Facebook" data-tippy-placement="top">
+                            <i class="icon-brand-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Twitter" data-tippy-placement="top">
+                            <i class="icon-brand-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Google Plus" data-tippy-placement="top">
+                            <i class="icon-brand-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="LinkedIn" data-tippy-placement="top">
+                            <i class="icon-brand-linkedin-in"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <!-- Footer / End -->
+        </div>
+    </div>
+    <!-- Dashboard Content / End -->
+
+    <!-- Leave a Review for Freelancer Popup -->
+<div id="small-dialog-2" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab2">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3>Leave a Review</h3>
+					<span>Rate <a href="javascript:" id="username_anchor"></a> for the project <a href="javascript" id="project_title_anchor">Simple Chrome Extension</a> </span>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="leave-review-form">
+                    {% csrf_token %}
+					<div class="feedback-yes-no">
+						<strong>Was this delivered on budget?</strong>
+						<div class="radio">
+							<input id="radio-1"  value="yes" name="onBudget" type="radio" required>
+							<label for="radio-1"><span class="radio-label"></span> Yes</label>
+						</div>
+
+						<div class="radio">
+							<input id="radio-2" value="no" name="onBudget" type="radio" required>
+							<label for="radio-2"><span class="radio-label"></span> No</label>
+						</div>
+					</div>
+
+					<div class="feedback-yes-no">
+						<strong>Was this delivered on time?</strong>
+						<div class="radio">
+							<input id="radio-3" value="yes" name="onTime" type="radio" required>
+							<label for="radio-3"><span class="radio-label"></span> Yes</label>
+						</div>
+
+						<div class="radio">
+							<input id="radio-4" value="no" name="onTime" type="radio" required>
+							<label for="radio-4"><span class="radio-label"></span> No</label>
+						</div>
+					</div>
+
+					<div class="feedback-yes-no">
+						<strong>Your Rating</strong>
+						<div class="leave-rating">
+							<input type="radio" name="rating" id="rating-radio-1" value="5" required>
+							<label for="rating-radio-1" class="icon-material-outline-star"></label>
+							<input type="radio" name="rating" id="rating-radio-2" value="4" required>
+							<label for="rating-radio-2" class="icon-material-outline-star"></label>
+							<input type="radio" name="rating" id="rating-radio-3" value="3" required>
+							<label for="rating-radio-3" class="icon-material-outline-star"></label>
+							<input type="radio" name="rating" id="rating-radio-4" value="2" required>
+							<label for="rating-radio-4" class="icon-material-outline-star"></label>
+							<input type="radio" name="rating" id="rating-radio-5" value="1" required>
+							<label for="rating-radio-5" class="icon-material-outline-star"></label>
+						</div><div class="clearfix"></div>
+					</div>
+					<textarea class="with-border" placeholder="Comment" name="comment" cols="7" required></textarea>
+				</form>
+				<!-- Button -->
+				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="leave-review-form">Leave a Review <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- Leave a Review Popup / End -->
+
+{% endblock %}

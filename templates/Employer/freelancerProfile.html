@@ -51,21 +51,27 @@
                 {% if profile.get_work_history|length > 0 %}
                     <ul class="boxed-list-ul">
                      {% for work in profile.get_work_history %}
-					    <li>
+                         {% if work.rating != 0 %}
+    					    <li>
 						<div class="boxed-list-item">
 							<!-- Content -->
 							<div class="item-content">
 								<h4>{{work.task.title}}</h4>
 								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div>
+									<div class="star-rating" data-rating="{{ work.rating }}"></div>
 									<div class="detail-item"><i class="icon-material-outline-date-range"></i>{{ work.updated_at|date }}</div>
 								</div>
 								<div class="item-description">
-									<p>Excellent programmer - fully carried out my project in a very professional manner. </p>
+									<p>{{ work.comment }}</p>
 								</div>
 							</div>
 						</div>
 					</li>
+                             {% else %}
+                             <div class="margin-top-30">
+                                <span>Currently employer did not gives any review.</span>
+                             </div>
+                         {% endif %}
 				    {% endfor %}
 				    </ul>
                 {% else %}

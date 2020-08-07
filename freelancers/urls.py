@@ -10,4 +10,5 @@ urlpatterns = [
     path('proposal/<int:id>/delete/', views.delete_proposal, name="delete_proposal"),
     path('task/<int:id>/cancel/', views.cancel_task, name="cancel_task"),
     path('task/<int:id>/completed/', views.task_completed, name="task_completed"),
+    path('dashboard/', views.dashboard, name='freelancer_dashboard'),
 ]

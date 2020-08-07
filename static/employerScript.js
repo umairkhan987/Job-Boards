@@ -79,7 +79,7 @@ $(document).ready(function () {
 
     $('#delete-confirm-popup').click(function () {
         const data = $('#csrf_token-form').serialize();
-        if(URL === null){
+        if (URL === null) {
             console.log("url is null");
             return;
         }
@@ -92,23 +92,22 @@ $(document).ready(function () {
             success: function (data) {
                 $.magnificPopup.close();
                 // console.log(data);
-             if(data.success){
-                 snackbar_msg(data.msg);
-                 setTimeout(()=>{
-                 window.location.reload();
-                 }, 1000);
-             }
-             else{
-                 snackbar_error_msg(data.errors);
-             }
+                if (data.success) {
+                    snackbar_msg(data.msg);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    snackbar_error_msg(data.errors);
+                }
             }
         })
     });
 
     let proposal_url = null;
     $('a.accept-offer').click(function () {
-       const proposal = $(this).attr('data-content').split(",");
-       proposal_url = $(this).attr('data-url');
+        const proposal = $(this).attr('data-content').split(",");
+        proposal_url = $(this).attr('data-url');
         $('#first_name').html(proposal[0]);
         $('#accept_offer_rate').html(`$${proposal[1]} - in ${proposal[2]} Days `);
     });
@@ -118,7 +117,7 @@ $(document).ready(function () {
         event.preventDefault();
         const data = $(this).serialize();
 
-        if(proposal_url === null){
+        if (proposal_url === null) {
             console.log("Proposal url is null");
             return;
         }
@@ -128,21 +127,62 @@ $(document).ready(function () {
             method: 'POST',
             url: proposal_url,
             data: data,
-            success:function (data) {
+            success: function (data) {
                 $.magnificPopup.close();
                 // console.log(data);
+                if (data.success) {
+                    snackbar_msg(data.msg);
+                    setTimeout(() => {
+                        window.location = data.url;
+                    }, 1000)
+                } else {
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        })
+    });
+
+    let review_url=null;
+    $('a.reviews-popup').click(function () {
+        const data = $(this).attr('data-content').split(',');
+        review_url = $(this).attr('data-url');
+        $('#username_anchor').html(data[0]+" "+data[1]);
+        $('#project_title_anchor').html(data[2]);
+    });
+
+    // Leave Review submit
+    $('#leave-review-form').submit(function (event) {
+        event.preventDefault();
+        const data= $(this).serialize();
+        // console.log("Leave form submit ", data);
+
+        if(review_url == null){
+            console.log("Leave Review url is null");
+            return;
+        }
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: review_url,
+            data: data,
+            success: function (data) {
+                $.magnificPopup.close();
+                console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
                     setTimeout(()=>{
-                        window.location = data.url;
+                        window.location.reload();
                     }, 1000)
                 }
                 else{
                     snackbar_error_msg(data.errors);
                 }
             }
-        })
+        });
     });
+
+
 
     // snackbar for display msg
     function snackbar_msg(msg) {

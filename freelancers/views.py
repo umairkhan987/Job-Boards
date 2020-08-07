@@ -117,3 +117,9 @@ def task_completed(request, id):
             return JsonResponse({"success": True, "msg": "Job Completed."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
+
+
+@login_required
+@freelancer_required
+def dashboard(request):
+    return render(request, 'Freelancer/Dashboard.html', {})

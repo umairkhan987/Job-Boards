@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load  static %}
+
+
+{% block content %}
+
+    <!-- Dashboard Container -->
+<div class="dashboard-container">
+	<!-- Dashboard Sidebar -->
+	<div class="dashboard-sidebar">
+		<div class="dashboard-sidebar-inner">
+			<div class="dashboard-nav-container">
+
+				<!-- Responsive Navigation Trigger -->
+				<a href="#" class="dashboard-responsive-nav-trigger">
+					<span class="hamburger hamburger--collapse" >
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</span>
+					<span class="trigger-title">Dashboard Navigation</span>
+				</a>
+
+				<!-- Navigation -->
+				<div class="dashboard-nav">
+					<div class="dashboard-nav-inner">
+
+						<ul data-submenu-title="Start">
+							<li  class="{% if 'dashboard/' in request.path %}active{% endif %}">
+                                <a href="{% if request.user.is_Employer %}
+                                            {% url 'emp_dashboard' %}
+                                            {% else %}
+                                            {% url 'freelancer_dashboard' %}
+                                {% endif %} ">
+                                    <i class="icon-material-outline-dashboard"></i> Dashboard
+                                </a>
+                            </li>
+							<li class="{% if 'messages/' in request.path %}active{% endif %}"><a href="{% url 'messages' %}"><i class="icon-material-outline-question-answer"></i> Messages <span class="nav-tag">2</span></a></li>
+							<li class="{% if 'bookmarks/' in request.path %}active{% endif %}"><a href="{% url 'bookmarks' %}"><i class="icon-material-outline-star-border"></i> Bookmarks</a></li>
+							{% if request.user.is_Employer %}
+                                <li class="{% if 'reviews/' in request.path %}active{% endif %}"><a href="{% url 'reviews' %}"><i class="icon-material-outline-rate-review"></i> Reviews</a></li>
+							{% endif %}
+						</ul>
+
+						<ul data-submenu-title="Account">
+							<li><a href="{% url 'settings' %}"><i class="icon-material-outline-settings"></i> Settings</a></li>
+							<li><a href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="icon-material-outline-power-settings-new"></i> Logout</a></li>
+						</ul>
+
+					</div>
+				</div>
+				<!-- Navigation / End -->
+
+			</div>
+		</div>
+	</div>
+	<!-- Dashboard Sidebar / End -->
+
+    {% block dashboard_content %}{% endblock dashboard_content %}
+</div>
+<!-- Dashboard Container / End -->
+
+{% endblock %}

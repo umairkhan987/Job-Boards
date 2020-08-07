@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import F
 
 from accounts.decorators import employer_required, valid_user_for_task
-from accounts.models import Profile
+from accounts.models import Profile, User
 from freelancers.models import Proposal
 from .forms import TaskForm
 from .models import PostTask
@@ -137,3 +137,55 @@ def accept_proposal(request, id):
             raise Http404("Invalid request.")
     except Exception as e:
         raise Http404(str(e))
+
+
+@login_required
+@employer_required
+def dashboard(request):
+    user = User.objects.get(email=request.user.email)
+    pending = user.tasks.filter(job_status__exact="Pending").count()
+    total_Proposals = Proposal.objects.filter(task__in=request.user.tasks.all()).count()
+    data = [user.tasks.count(), user.task_completed(), user.task_InProgress(), pending, total_Proposals, 0]
+    return render(request, 'Employer/Dashboard.html', {"data": data})
+
+
+@login_required
+@employer_required
+def reviews(request):
+    proposal_list = Proposal.objects.filter(
+        task__in=request.user.tasks.filter(job_status__exact="Completed"),
+        status__exact='completed').order_by('rating')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(proposal_list, 3)
+
+    try:
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+
+    return render(request, 'Employer/Reviews.html', {"proposals": proposals})
+
+
+@login_required
+@employer_required
+def post_reviews(request, id):
+    if request.method == "POST" and request.is_ajax():
+        proposal = get_object_or_404(Proposal, pk=id)
+        if not request.user.tasks.filter(proposals=proposal).exists():
+            return JsonResponse({"success": False, 'errors': "You are not permitted to perform this action."})
+
+        budget = request.POST.get('onBudget')
+        time = request.POST.get('onTime')
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+
+        proposal.onBudget = True if budget == "yes" else False
+        proposal.onTime = True if time == "yes" else False
+        proposal.rating = rating
+        proposal.comment = comment
+        proposal.save()
+        return JsonResponse({"success": True, 'msg': "Review submitted"})
+    else:
+        raise Http404("Invalid request")

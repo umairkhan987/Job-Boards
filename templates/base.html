@@ -20,7 +20,7 @@
 
     {% block content %}{% endblock content %}
 
-    {% if not 'settings' in request.path %}
+    {% if not 'settings' in request.path and not 'dashboard' in request.path and not 'messages' in request.path and not 'bookmarks' in request.path and not 'reviews' in request.path %}
         {% include 'common/footer.html' %}
     {% endif %}
 

@@ -24,11 +24,11 @@
                             <li><a class="{% if 'freelancers' in request.path or "employer/profile" in request.path %} current{% endif %}" href="{% url 'find_freelancer' %}">Find a Freelancer</a></li>
                             <li><a class="{% if 'postTask' in request.path %} current{% endif %}" href="{% url 'post_task' %}">Post a Task</a></li>
                             <li><a class="{% if 'employer/tasks' in request.path %} current{% endif %}" href="{% url 'my_tasks' %}">My Jobs</a></li>
-                            <li><a href="{% url 'index' %}">Dashboard</a></li>
+                            <li><a class="{% if 'employer/dashboard' in request.path %} current{% endif %}" href="{% url 'emp_dashboard' %}">Dashboard</a></li>
                         {% elif user.is_Freelancer %}
                             <li><a class="{% if 'freelancer/tasks' in request.path or "freelancer/task/" in request.path %} current{% endif %}" href="{% url 'find_tasks' %}">Find Work</a></li>
                             <li><a class="{% if 'freelancer/myProposals/' in request.path %} current{% endif %}" href="{% url 'my_proposals' %}">My Jobs</a></li>
-                            <li><a href="{% url 'index' %}">Dashboard</a></li>
+                            <li><a class="{% if 'freelancer/dashboard' in request.path %} current{% endif %}" href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -230,7 +230,11 @@
 								</div>
 						</div>
 						<ul class="user-menu-small-nav">
-							<li><a href="dashboard.html"><i class="icon-material-outline-dashboard"></i> Dashboard</a></li>
+                            {% if request.user.is_Employer %}
+			    				<li><a href="{% url 'emp_dashboard' %}"><i class="icon-material-outline-dashboard"></i> Dashboard</a></li>
+                            {% else %}
+			    				<li><a href="{% url 'freelancer_dashboard' %}"><i class="icon-material-outline-dashboard"></i> Dashboard</a></li>
+                            {% endif %}
 							<li><a href="{% url 'settings' %}"><i class="icon-material-outline-settings"></i> Settings</a></li>
 							<li><a href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="icon-material-outline-power-settings-new"></i> Logout</a></li>
