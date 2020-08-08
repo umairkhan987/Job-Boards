@@ -3,7 +3,7 @@
 
 {% block content %}
 <!-- Title bar -->
-<div class="single-page-header freelancer-header" data-background-image="images/single-freelancer.jpg">
+<div class="single-page-header freelancer-header" data-background-image="{% static 'images/single-freelancer.jpg' %}">
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
@@ -176,24 +176,25 @@
 				</div>
 
 				<!-- Widget -->
-            {% if profile.userCV %}
 				<div class="sidebar-widget">
 					<h3>Attachments</h3>
 					<div class="attachments-container">
+			        {% if profile.userCV %}
 						<a href="{{ profile.userCV.url }}" class="attachment-box ripple-effect"><span>{{ profile.get_file_name }}</span></a>
+                    {% else %}
+                        <a href="javascript"  class="attachment-box ripple-effect" style="cursor: not-allowed"><span>No File</span></a>
+                    {% endif %}
 					</div>
 				</div>
-            {% endif %}
 
 				<!-- Sidebar Widget -->
 				<div class="sidebar-widget">
 					<h3>Bookmark</h3>
-
 					<!-- Bookmark Button -->
-					<button class="bookmark-button margin-bottom-25">
-						<span class="bookmark-icon"></span>
-						<span class="bookmark-text">Bookmark</span>
-						<span class="bookmarked-text">Bookmarked</span>
+					<button id="bookmark_Btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if profile.get_bookmark_profile %}bookmarked{% endif %} ">
+						    <span class="bookmark-icon"></span>
+						    <span class="bookmark-text">Bookmark</span>
+                            <span class="bookmarked-text">Bookmarked</span>
 					</button>
 				</div>
 
@@ -238,7 +239,7 @@
 
 					<div class="input-with-icon-left">
 						<i class="icon-material-baseline-mail-outline"></i>
-						<input type="text" class="input-text with-border" name="emailaddress" id="emailaddress" placeholder="Email Address"/>
+						<input type="text" class="input-text with-border" name="emailaddress"  placeholder="Email Address"/>
 					</div>
 
 					<textarea name="textarea" cols="10" placeholder="Message" class="with-border"></textarea>
@@ -250,46 +251,48 @@
 					</div>
 
 				</form>
-
 				<!-- Button -->
 				<button class="button margin-top-35 full-width button-sliding-icon ripple-effect" type="submit">Make an Offer <i class="icon-material-outline-arrow-right-alt"></i></button>
 
 			</div>
-			<!-- Login -->
-			<div class="popup-tab-content" id="loginn">
 
-				<!-- Welcome Text -->
-				<div class="welcome-text">
-					<h3>Discuss Your Project With Tom</h3>
-				</div>
-
-				<!-- Form -->
-				<form method="post" id="make-an-offer-form">
-
-					<div class="input-with-icon-left">
-						<i class="icon-material-outline-account-circle"></i>
-						<input type="text" class="input-text with-border" name="name2" id="name2" placeholder="First and Last Name" required/>
-					</div>
-
-					<div class="input-with-icon-left">
-						<i class="icon-material-baseline-mail-outline"></i>
-						<input type="text" class="input-text with-border" name="emailaddress2" id="emailaddress2" placeholder="Email Address" required/>
-					</div>
-
-					<textarea name="textarea" cols="10" placeholder="Message" class="with-border"></textarea>
-
-					<div class="uploadButton margin-top-25">
-						<input class="uploadButton-input" type="file" accept="image/*, application/pdf" id="upload-cv" multiple/>
-						<label class="uploadButton-button" for="upload-cv">Add Attachments</label>
-						<span class="uploadButton-file-name">Allowed file types: zip, pdf, png, jpg <br> Max. files size: 50 MB.</span>
-					</div>
-
-				</form>
-
-				<!-- Button -->
-				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="make-an-offer-form">Make an Offer <i class="icon-material-outline-arrow-right-alt"></i></button>
-
-			</div>
+			<!-- Login
+{#			<div class="popup-tab-content" id="loginn">#}
+{##}
+{#				<!-- Welcome Text -->#}
+{#				<div class="welcome-text">#}
+{#					<h3>Discuss Your Project With Tom</h3>#}
+{#				</div>#}
+{##}
+{#				<!-- Form -->#}
+{#				<form method="post" id="make-an-offer-form">#}
+{##}
+{#					<div class="input-with-icon-left">#}
+{#						<i class="icon-material-outline-account-circle"></i>#}
+{#						<input type="text" class="input-text with-border" name="name2" id="name2" placeholder="First and Last Name" required/>#}
+{#					</div>#}
+{##}
+{#					<div class="input-with-icon-left">#}
+{#						<i class="icon-material-baseline-mail-outline"></i>#}
+{#						<input type="text" class="input-text with-border" name="emailaddress2" id="emailaddress2" placeholder="Email Address" required/>#}
+{#					</div>#}
+{##}
+{#					<textarea name="textarea" cols="10" placeholder="Message" class="with-border"></textarea>#}
+{##}
+{#					<div class="uploadButton margin-top-25">#}
+{#						<input class="uploadButton-input" type="file" accept="image/*, application/pdf" id="upload-cv" multiple/>#}
+{#						<label class="uploadButton-button" for="upload-cv">Add Attachments</label>#}
+{#						<span class="uploadButton-file-name">Allowed file types: zip, pdf, png, jpg <br> Max. files size: 50 MB.</span>#}
+{#					</div>#}
+{##}
+{#				</form>#}
+{##}
+{#				<!-- Button -->#}
+{#				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="make-an-offer-form">Make an Offer <i class="icon-material-outline-arrow-right-alt"></i></button>#}
+{##}
+{#			</div>#}
+{#        #}
+-->
 
 		</div>
 	</div>

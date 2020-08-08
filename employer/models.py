@@ -36,7 +36,7 @@ def upload_project_file(instance, filename):
 
 
 class PostTask(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="tasks")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="tasks")
     title = models.CharField(max_length=250)
     skills = MultiSelectField(choices=skills, max_choices=5, min_choices=1)
     tags = models.CharField(max_length=250, blank=True, null=True)

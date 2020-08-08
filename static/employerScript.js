@@ -182,7 +182,79 @@ $(document).ready(function () {
         });
     });
 
+    // bookmark freelancer profile
+    $('#bookmark_Btn').click(function () {
+        const id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+        const url = $(this).attr('data-url');
 
+        const data = {
+            "id": id,
+             "csrfmiddlewaretoken": getCookie('csrftoken'),
+        };
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: url,
+            data: data,
+            success:function (data) {
+                // console.log(data);
+                if(data.success){
+                    snackbar_msg(data.msg);
+                }
+                else{
+                    console.log(data.errors);
+                }
+            }
+
+        })
+    });
+
+    $('a.delete-bookmark-Btn').click(function () {
+        const id = $(this).attr('data-id');
+        const url = $(this).attr('data-url');
+        const data = {
+            "id": id,
+             "csrfmiddlewaretoken": getCookie('csrftoken'),
+        };
+
+         $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: url,
+            data: data,
+            success:function (data) {
+                // console.log(data);
+                if(data.success){
+                    snackbar_msg(data.msg);
+                    setTimeout(()=>{
+                        window.location.reload();
+                    }, 1000);
+                }
+                else{
+                    console.log(data.errors);
+                }
+            }
+
+        });
+    });
+
+    // csrf_token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     // snackbar for display msg
     function snackbar_msg(msg) {

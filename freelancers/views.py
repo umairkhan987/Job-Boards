@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.forms import model_to_dict
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -26,7 +28,17 @@ def findTasks(request):
 
 def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
-    return render(request, 'Freelancer/ViewTask.html', {"task": task})
+    page = request.GET.get("page", 1)
+    paginator = Paginator(task.proposals.all().order_by('created_at'), 4)
+
+    try:
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+
+    return render(request, 'Freelancer/ViewTask.html', {"task": task, "proposals": proposals})
 
 
 @login_required
@@ -52,7 +64,8 @@ def submit_proposals(request):
 @login_required
 @freelancer_required
 def my_proposals(request):
-    proposal_list = Proposal.objects.filter(user=request.user).order_by('-created_at').order_by('status')
+    # TODO: order_by proposals base on list of strings.
+    proposal_list = Proposal.objects.filter(user=request.user).exclude(task_id=None).order_by('-created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(proposal_list, 3)
 

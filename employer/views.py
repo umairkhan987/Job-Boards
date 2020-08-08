@@ -13,7 +13,7 @@ from .models import PostTask
 
 
 def find_freelancer(request):
-    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at'))
+    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).order_by('created_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(freelancer_list, 5)
 
@@ -86,12 +86,15 @@ def delete_task(request, id):
     try:
         if request.method == "POST" and request.is_ajax():
             task = get_object_or_404(PostTask, pk=id)
-            if task.job_status == "In Progress":
-                return JsonResponse({"success": False, "errors": "Not perform this action because it's in progress."})
+            if task.job_status == "In Progress" or task.job_status == "Completed":
+                return JsonResponse({"success": False,
+                                     "errors":
+                                    "Your are not permitted to perform this action. Only Pending task will be delete."
+                                     })
 
             title = task.title
-            task.task_file.delete()
-            task.delete()
+            # task.task_file.delete()
+            # task.delete()
             return JsonResponse({"success": True, "msg": "" + title + " delete successfully"})
 
     except Exception as e:
@@ -103,7 +106,17 @@ def delete_task(request, id):
 @valid_user_for_task
 def manage_proposal(request, id):
     task = PostTask.objects.get(pk=id)
-    return render(request, 'Employer/ManageProposal.html', {"task": task})
+    page = request.GET.get("page", 1)
+    paginator = Paginator(task.proposals.all().order_by('created_at'), 5)
+
+    try:
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+
+    return render(request, 'Employer/ManageProposal.html', {"task": task, "proposals": proposals})
 
 
 @login_required

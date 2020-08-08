@@ -44,7 +44,7 @@ $(document).ready(function () {
         $('#delete-confirm-popup').html("Yes");
     });
 
-
+    // delete proposals
     $('#delete-confirm-popup').click(function () {
         const data = $('#csrf_token-form').serialize();
 
@@ -72,7 +72,6 @@ $(document).ready(function () {
             }
         })
     });
-
 
     // complete job button click
     $('#complete_job_Btn').click(function (event) {

@@ -14,6 +14,11 @@
 				<nav id="breadcrumbs" class="dark">
 					<ul>
 						<li><a href="{% url 'index' %}">Home</a></li>
+                        {% if request.user.is_Employer %}
+                            <li><a href="{% url 'emp_dashboard' %}">Dashboard</a></li>
+                            {% else %}
+                            <li><a href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
+                        {% endif %}
 						<li>Reviews</li>
 					</ul>
 				</nav>
@@ -81,7 +86,7 @@
 					<div class="clearfix"></div>
 					<div class="pagination-container margin-top-40" >
                         {% if proposals.has_other_pages %}
-						<nav class="pagination" style="justify-content: center">
+						<nav class="pagination justify-content-center">
 							<ul>
                                 {% if proposals.has_previous %}
                                     <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}" class="ripple-effect"><i

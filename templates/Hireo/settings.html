@@ -12,6 +12,18 @@
             <!-- Dashboard Headline -->
             <div class="dashboard-headline">
                 <h3>Settings</h3>
+                <!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'index' %}">Home</a></li>
+						<li><a href="{% if request.user.is_Employer  %}
+						    {% url 'emp_dashboard' %}
+						{% else %}
+						    {% url 'freelancer_dashboard' %}
+						  {% endif %}">Dashboard</a></li>
+						<li>Settings</li>
+					</ul>
+				</nav>
             </div>
 
             <!-- Row -->

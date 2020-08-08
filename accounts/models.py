@@ -5,8 +5,10 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
 #  We use it because we change default username with email
+from django_currentuser.middleware import get_current_user
+
+
 class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, password, **extra_fields):
@@ -98,6 +100,10 @@ class Profile(models.Model):
 
     def get_work_history(self):
         return self.user.proposals.filter(status__exact='completed')
+
+    def get_bookmark_profile(self):
+        user = get_current_user()
+        return user.bookmarks.filter(freelancer_id=self.id).exists()
 
 
 # create Employer Profile if user Signup as Employer using Signals

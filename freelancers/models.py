@@ -5,8 +5,8 @@ from employer.models import PostTask
 
 
 class Proposal(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='proposals')
-    task = models.ForeignKey(PostTask, on_delete=models.DO_NOTHING, related_name='proposals')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='proposals')
+    task = models.ForeignKey(PostTask, on_delete=models.SET_NULL, null=True, related_name='proposals')
     rate = models.IntegerField(default=0)
     days = models.IntegerField(default=1)
     status = models.CharField(blank=True, null=True, max_length=250)
