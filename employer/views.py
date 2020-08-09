@@ -68,8 +68,12 @@ def my_tasks(request):
 @employer_required
 @valid_user_for_task
 def edit_task(request, id):
-    # TODO: if task is in progress we can't edit it.
     task = get_object_or_404(PostTask, pk=id)
+    if task.job_status == "In Progress":
+        raise Http404(
+            "You can't perform this action because task is in progress."
+            " If you change requirement send direct message to user.")
+
     form = TaskForm(instance=task)
     if request.method == "POST":
         form = TaskForm(request.POST, request.FILES, instance=task)
@@ -89,7 +93,7 @@ def delete_task(request, id):
             if task.job_status == "In Progress" or task.job_status == "Completed":
                 return JsonResponse({"success": False,
                                      "errors":
-                                    "Your are not permitted to perform this action. Only Pending task will be delete."
+                                         "Your are not permitted to perform this action. Only Pending task will be delete."
                                      })
 
             title = task.title

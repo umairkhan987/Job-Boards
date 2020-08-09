@@ -85,8 +85,10 @@
 									<!-- Buttons -->
 									<div class="buttons-to-right always-visible">
 										<a href="{% url 'manage_proposal' task.id %}" class="button ripple-effect"><i class="icon-material-outline-supervisor-account"></i> Manage Bidders <span class="button-info">{{ task.proposals.count }}</span></a>
-										<a href="{% url 'edit_task' task.id %}" class="button gray ripple-effect ico" title="Edit" data-tippy-placement="top"><i class="icon-feather-edit"></i></a>
-										<a href="#small-dialog" data-url="{% url 'delete_task' task.id %}"  data-content="{{ task.title }}" class="popup-with-zoom-anim button gray ripple-effect ico show-popup" title="Remove" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></a>
+										{% if task.job_status == "Pending" %}
+                                            <a href="{% url 'edit_task' task.id %}" class="button gray ripple-effect ico" title="Edit" data-tippy-placement="top"><i class="icon-feather-edit"></i></a>
+	    									<a href="#small-dialog" data-url="{% url 'delete_task' task.id %}"  data-content="{{ task.title }}" class="popup-with-zoom-anim button gray ripple-effect ico show-popup" title="Remove" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></a>
+										{% endif %}
 									</div>
 								</li>
                                 {% endfor %}

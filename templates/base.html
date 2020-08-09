@@ -44,6 +44,7 @@
 <script src="{% static 'js/magnific-popup.min.js' %}"></script>
 <script src="{% static 'js/slick.min.js' %}"></script>
 <script src="{% static 'js/custom.js' %}"></script>
+
 {# custom javascript files #}
 <script src="{% static 'customScript.js' %}"></script>
 
@@ -58,5 +59,10 @@
 {% if user.is_Freelancer %}
     <script src="{% static 'freelancerScript.js' %}"></script>
 {% endif %}
+
+{% if user.is_authenticated %}
+    <script src="{% static 'hireoScript.js' %}"></script>
+{% endif %}
+
 </body>
 </html>

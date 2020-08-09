@@ -44,7 +44,9 @@
 
 						<ul data-submenu-title="Account">
 							<li><a href="{% url 'settings' %}"><i class="icon-material-outline-settings"></i> Settings</a></li>
-							<li><a href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="icon-material-outline-power-settings-new"></i> Logout</a></li>
+                            <li><a href="#small-dialog" class="popup-with-zoom-anim ripple-effect"><i class="icon-line-awesome-user-times"></i>Deactivate Account</a></li>
+{#							<a href="#small-dialog" class="popup-with-zoom-anim button gray ripple-effect ico show-popup" title="Remove" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></a>#}
+                            <li><a href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="icon-material-outline-power-settings-new"></i> Logout</a></li>
 						</ul>
 
 					</div>
@@ -55,9 +57,41 @@
 		</div>
 	</div>
 	<!-- Dashboard Sidebar / End -->
-
     {% block dashboard_content %}{% endblock dashboard_content %}
 </div>
 <!-- Dashboard Container / End -->
+
+    <!-- Deactivate Account Popup -->
+    <div id="small-dialog"  class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab">Deactivate Account</a></li>
+		</ul>
+		<div class="popup-tabs-container">
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+                    <p>Are you sure you want to deactivate your account.</p>
+				</div>
+
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-4" style="text-align: center">
+                        <a class="button gray ripple-effect-dark cancel-popup">Cancel</a>
+                    </div>
+
+                    <div class="col-lg-5" style="text-align: center">
+                        <!-- Button -->
+                        <a href="javascript:" id="deactivate-confirm-popup" data-url="{% url 'deactivate_account' %}" class="button ripple-effect " style="background-color: #de5959"><i class="icon-feather-trash-2"></i> Deactivate</a>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- Delete task Popup / End -->
 
 {% endblock %}

@@ -152,7 +152,7 @@
                                                 {{ freelancer.country }}</strong>
                                             </li>
                                             <li>Rate <strong>${{freelancer.rate}} / hr</strong></li>
-                                            <li>Job Success <strong>95%</strong></li>
+                                            <li>Job Success <strong>{{ freelancer.calculate_success_rate|floatformat:"0" }}%</strong></li>
                                         </ul>
                                     </div>
                                     <a href="{% url 'freelancer_profile' freelancer.id %}"

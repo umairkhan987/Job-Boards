@@ -1,6 +1,8 @@
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from accounts.models import Profile, User
 from employer.models import PostTask
@@ -11,10 +13,12 @@ def index(request):
     return render(request, 'Hireo/index.html')
 
 
+@login_required
 def messages(request):
     return render(request, 'Hireo/messages.html')
 
 
+@login_required
 def bookmarks(request):
     if request.method == "POST" and request.is_ajax():
         user = User.objects.get(email=request.user.email)
@@ -73,3 +77,18 @@ def bookmarks(request):
             bookmark_list = paginator.page(paginator.num_pages)
 
     return render(request, 'Hireo/bookmarks.html', {"bookmarks": bookmark_list})
+
+
+@login_required
+def deactivate_account(request):
+    try:
+        if request.method == "POST" and request.is_ajax():
+            user = User.objects.get(email=request.user.email)
+            logout(request)
+            user.delete()
+            return JsonResponse({"success": True, 'msg': "User Deactivated", 'url': redirect('index').url})
+        elif request.method == "POST" and not request.is_ajax():
+            raise Http404("Invalid Request")
+
+    except Exception as e:
+        raise Http404(str(e))
