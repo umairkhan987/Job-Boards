@@ -10,7 +10,7 @@ class CustomUserForm(UserCreationForm):
         fields = ('email', 'is_Employer', 'is_Freelancer')
 
     def save(self, commit=True):
-        user = super().save(commit=False)
+        user = super(CustomUserForm, self).save(commit=False)
         account_type = self.data.get('account-type')
         if account_type == "Freelancer":
             user.is_Freelancer = True
@@ -31,3 +31,9 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('rate', 'skills', 'tags', 'country', 'introduction', 'userCV')
+
+    # def save(self, commit=True):
+    #     profile = super(ProfileForm, self).save(commit=False)
+    #     print(self.instance.userCV)
+    #     print(self.files)
+    #     return profile

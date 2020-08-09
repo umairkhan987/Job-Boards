@@ -36,9 +36,8 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-face"></i> Bookmarked Freelancers</h3>
 						</div>
-
-						<div class="content">
-                            {% if bookmarks|length > 0 %}
+                        {% if bookmarks|length > 0 %}
+    						<div class="content">
     							<ul class="dashboard-box-list">
                                 {% for bookmark in bookmarks %}
     								<li>
@@ -76,12 +75,12 @@
                                 {% endfor %}
 
 							</ul>
-                            {% else %}
-                             <div class="margin-top-30">
+						    </div>
+                        {% else %}
+                             <div class="margin-top-10 margin-bottom-10" style="text-align: center">
                                 <span>There is no bookmark.</span>
                             </div>
-                            {% endif %}
-						</div>
+                        {% endif %}
 					</div>
 				</div>
 
@@ -93,31 +92,27 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-business-center"></i> Bookmarked Jobs</h3>
 						</div>
-						<div class="content">
-							<ul class="dashboard-box-list">
-								<li>
+                        {% if bookmarks|length > 0 %}
+						    <div class="content">
+							    <ul class="dashboard-box-list">
+                                {% for bookmark in bookmarks %}
+    								<li>
 									<!-- Job Listing -->
 									<div class="job-listing">
-
 										<!-- Job Listing Details -->
 										<div class="job-listing-details">
-
-											<!-- Logo -->
-											<a href="#" class="job-listing-company-logo">
-												<img src="images/company-logo-02.png" alt="">
-											</a>
-
 											<!-- Details -->
 											<div class="job-listing-description">
-												<h3 class="job-listing-title"><a href="#">Barista and Cashier</a></h3>
+												<h3 class="job-listing-title"><a href="{% url 'view_task' bookmark.id %}">{{ bookmark.title }}</a></h3>
 
 												<!-- Job Listing Footer -->
 												<div class="job-listing-footer">
 													<ul>
-														<li><i class="icon-material-outline-business"></i> Coffee</li>
-														<li><i class="icon-material-outline-location-on"></i> San Francisco</li>
-														<li><i class="icon-material-outline-business-center"></i> Full Time</li>
-														<li><i class="icon-material-outline-access-time"></i> 2 days ago</li>
+														<li><i class="icon-material-outline-business-center"></i>Level: {{ bookmark.exp_level.capitalize }}</li>
+														<li><i class="icon-material-outline-folder "></i>Type: {{bookmark.project_type.capitalize}}</li>
+														{% if bookmark.project_type == "fixed" %}
+                                                            <li><i class="icon-line-awesome-hourglass-half"></i>Days: {{ bookmark.no_of_days }} days</li>
+														{% endif %}
 													</ul>
 												</div>
 											</div>
@@ -125,84 +120,17 @@
 									</div>
 									<!-- Buttons -->
 									<div class="buttons-to-right">
-										<a href="#" class="button red ripple-effect ico" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
+										<a href="javascript:" data-id="{{ bookmark.id }}" data-url="{% url 'bookmarks' %}" class="button red ripple-effect ico delete-freelancer-bookmark" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
 									</div>
 								</li>
-
-								<li>
-									<!-- Job Listing -->
-									<div class="job-listing">
-
-										<!-- Job Listing Details -->
-										<div class="job-listing-details">
-
-											<!-- Logo -->
-											<a href="#" class="job-listing-company-logo">
-												<img src="images/company-logo-04.png" alt="">
-											</a>
-
-
-											<!-- Details -->
-											<div class="job-listing-description">
-												<h3 class="job-listing-title"><a href="#">Administrative Assistant</a></h3>
-
-												<!-- Job Listing Footer -->
-												<div class="job-listing-footer">
-													<ul>
-														<li><i class="icon-material-outline-business"></i> Mates</li>
-														<li><i class="icon-material-outline-location-on"></i> San Francisco</li>
-														<li><i class="icon-material-outline-business-center"></i> Full Time</li>
-														<li><i class="icon-material-outline-access-time"></i> 2 days ago</li>
-													</ul>
-												</div>
-											</div>
-
-										</div>
-									</div>
-
-									<!-- Buttons -->
-									<div class="buttons-to-right">
-										<a href="#" class="button red ripple-effect ico" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
-									</div>
-								</li>
-
-								<li>
-									<!-- Job Listing -->
-									<div class="job-listing">
-
-										<!-- Job Listing Details -->
-										<div class="job-listing-details">
-
-											<!-- Logo -->
-											<a href="#" class="job-listing-company-logo">
-												<img src="images/company-logo-05.png" alt="">
-											</a>
-
-											<!-- Details -->
-											<div class="job-listing-description">
-												<h3 class="job-listing-title"><a href="#">Construction Labourers</a></h3>
-
-												<!-- Job Listing Footer -->
-												<div class="job-listing-footer">
-													<ul>
-														<li><i class="icon-material-outline-business"></i> Podous</li>
-														<li><i class="icon-material-outline-location-on"></i> San Francisco</li>
-														<li><i class="icon-material-outline-business-center"></i> Full Time</li>
-														<li><i class="icon-material-outline-access-time"></i> 2 days ago</li>
-													</ul>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<!-- Buttons -->
-									<div class="buttons-to-right">
-										<a href="#" class="button red ripple-effect ico" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
-									</div>
-								</li>
-
+                                {% endfor %}
 							</ul>
-						</div>
+                        </div>
+                        {% else %}
+                           <div class="margin-top-10 margin-bottom-10" style="text-align: center">
+                              <span>There is no bookmark.</span>
+                           </div>
+                        {% endif %}
 					</div>
                 </div>
                 {% endif %}

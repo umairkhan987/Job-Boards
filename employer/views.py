@@ -93,8 +93,8 @@ def delete_task(request, id):
                                      })
 
             title = task.title
-            # task.task_file.delete()
-            # task.delete()
+            task.task_file.delete()
+            task.delete()
             return JsonResponse({"success": True, "msg": "" + title + " delete successfully"})
 
     except Exception as e:

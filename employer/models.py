@@ -68,3 +68,7 @@ class PostTask(models.Model):
     def get_avg_bids(self):
         avg = self.proposals.all().aggregate(Avg('rate'))['rate__avg']
         return avg if avg is not None else 0
+
+    def get_bookmark_task(self):
+        user = get_current_user()
+        return user.bookmarks.filter(task_id=self.id).exists()

@@ -9,6 +9,7 @@ from django.shortcuts import render
 
 from .decorators import freelancer_required
 from .forms import CustomUserForm, UserForm, ProfileForm
+from .models import Profile, User
 
 
 def login(request):
@@ -44,7 +45,6 @@ def register(request):
                     customError[k] = [str(error)[1:-1][1:-1] for error in v]
                 return JsonResponse({'success': False, 'errors': customError})
                 # customErrors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
-        # return render(request, 'registerForm.html', {'form': form})
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 
@@ -75,8 +75,13 @@ def changePassword(request):
 def updateAccount(request):
     try:
         if request.method == 'POST':
+            user = User.objects.get(email=request.user.email)
             form = UserForm(request.POST, request.FILES, instance=request.user)
             if form.is_valid():
+
+                if form.files and user.profileImg:
+                    user.profileImg.delete()
+
                 form.save()
                 return JsonResponse({'success': True, 'msg': 'Successfully updated'})
             else:
@@ -92,8 +97,13 @@ def updateAccount(request):
 def updateProfile(request):
     try:
         if request.method == "POST" and request.is_ajax():
+            profile = Profile.objects.get(user=request.user)
             profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
             if profile_form.is_valid():
+                # check if old cv is exists
+                if profile_form.files and profile.userCV:
+                    profile.userCV.delete()
+
                 profile_form.save()
                 return JsonResponse({'success': True, 'msg': 'Successfully updated'})
             else:
@@ -116,6 +126,8 @@ def getProfile(request):
             if data.get('userCV'):
                 file = data.pop('userCV')
                 filename = json.dumps(str(file))
+            else:
+                data.pop('userCV')
 
             return JsonResponse({'success': True, 'profile': data, "file": filename})
         except Exception as e:

@@ -6,7 +6,7 @@ $(document).ready(function () {
             type:'GET',
             url: '/account/getProfile/',
             success: function (data) {
-                // console.log(data);
+                console.log(data);
                 if(data.success){
                      $('select[name=country]').val(data.profile.country).change();
                      const skills = data.profile.skills.split(",");
