@@ -1,12 +1,14 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
 
 from accounts.models import Profile, User
 from employer.models import PostTask
-from hireo.models import Bookmark
+from hireo.forms import MessageForm
+from hireo.models import Bookmark, Messages
 
 
 def index(request):
@@ -15,7 +17,32 @@ def index(request):
 
 @login_required
 def messages(request):
-    return render(request, 'Hireo/messages.html')
+    if request.method == "POST" and request.is_ajax():
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            receiver_id = request.POST.get('receiver_id')
+            receiver = User.objects.get(pk=receiver_id)
+            message = form.save(commit=False)
+            message.receiver = receiver
+            message.sender = request.user
+            message.save()
+            return JsonResponse({"success": True, "msg": "Message Sent"})
+        else:
+            errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+            return JsonResponse({'success': False, 'errors': errors})
+    else:
+        message_list = Messages.objects.filter(sender=request.user).order_by('-created_at')
+        return render(request, 'Hireo/messages.html', {"messages": message_list})
+
+
+@login_required
+def message_details(request, id):
+    message_list = Messages.objects.filter(sender=request.user).order_by('-created_at')
+    receiver = User.objects.get(pk=id)
+    message_detail = []
+    if receiver:
+        message_detail = Messages.objects.filter(Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)).order_by('created_at')
+    return render(request, 'Hireo/messages.html', {"messages": message_list, "message_details": message_detail})
 
 
 @login_required
@@ -85,6 +112,8 @@ def deactivate_account(request):
         if request.method == "POST" and request.is_ajax():
             user = User.objects.get(email=request.user.email)
             logout(request)
+            user.profileImg.delete()  # delete user image
+            user.profile.userCV.delete()  # delete user profile CV
             user.delete()
             return JsonResponse({"success": True, 'msg': "User Deactivated", 'url': redirect('index').url})
         elif request.method == "POST" and not request.is_ajax():

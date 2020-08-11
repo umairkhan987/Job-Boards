@@ -76,8 +76,12 @@ def edit_task(request, id):
 
     form = TaskForm(instance=task)
     if request.method == "POST":
+        task_obj = PostTask.objects.get(pk=id)
         form = TaskForm(request.POST, request.FILES, instance=task)
         if form.is_valid():
+            if form.files and task_obj.task_file:
+                task_obj.task_file.delete()
+
             form.save()
             return redirect('my_tasks')
     return render(request, 'Employer/postATask.html', {"form": form})
@@ -171,7 +175,7 @@ def dashboard(request):
 def reviews(request):
     proposal_list = Proposal.objects.filter(
         task__in=request.user.tasks.filter(job_status__exact="Completed"),
-        status__exact='completed').order_by('rating')
+        status__exact='completed').order_by('-updated_at')
     page = request.GET.get('page', 1)
     paginator = Paginator(proposal_list, 3)
 

@@ -94,7 +94,7 @@
                                                         {% elif proposal.staus is None and task.job_status == "Pending" %}
                                                             <a href="#small-dialog-1" data-url="{% url 'accept_proposal' proposal.id %}" data-content="{{ proposal.user.first_name }},{{ proposal.rate }},{{ proposal.days }}"  class="popup-with-zoom-anim button ripple-effect accept-offer"><i class="icon-material-outline-check"></i> Accept Offer</a>
                                                         {% endif %}
-                                                        <a href="#small-dialog-2" data-firstName="{{ proposal.user.first_name }}" class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
+                                                        <a href="#small-dialog-2" data-firstName="{{ proposal.user.first_name }}" data-id="{{ proposal.user.id }}" data-url="{% url 'messages' %}"  class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -214,22 +214,21 @@
 
 				<!-- Welcome Text -->
 				<div class="welcome-text">
-					<h3>Direct Message To David</h3>
+					<h3 id="receiver_name_h3">Direct Message To David</h3>
 				</div>
 
 				<!-- Form -->
 				<form method="post" id="send-pm">
-					<textarea name="textarea" cols="10" placeholder="Message" class="with-border" required></textarea>
+                    {% csrf_token %}
+                    <input type="hidden" name="receiver_id">
+					<textarea name="message_content" cols="10" placeholder="Message" class="with-border" required></textarea>
 				</form>
 
 				<!-- Button -->
 				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="send-pm">Send <i class="icon-material-outline-arrow-right-alt"></i></button>
-
 			</div>
-
 		</div>
 	</div>
 </div>
 <!-- Send Direct Message Popup / End -->
-
 {% endblock %}
