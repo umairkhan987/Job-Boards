@@ -28,6 +28,12 @@ def find_freelancer(request):
 
 
 def freelancer_profile(request, id):
+    session = request.session.session_key
+    ip = request.META['REMOTE_ADDR']
+
+    print("Session ", session)
+    print("IP ", ip)
+
     profile = get_object_or_404(Profile, pk=id)
     return render(request, 'Employer/freelancerProfile.html', {"profile": profile})
 

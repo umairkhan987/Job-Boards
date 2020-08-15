@@ -25,7 +25,7 @@
                             <li><a class="{% if 'employer/tasks' in request.path %} current{% endif %}" href="{% url 'my_tasks' %}">My Jobs</a></li>
                             <li><a class="{% if 'employer/dashboard' in request.path %} current{% endif %}" href="{% url 'emp_dashboard' %}">Dashboard</a></li>
                         {% elif user.is_Freelancer %}
-                            <li><a class="{% if 'freelancer/tasks' in request.path or "freelancer/task/" in request.path %} current{% endif %}" href="{% url 'find_tasks' %}">Find Work</a></li>
+                            <li><a class="{% if 'freelancer/tasks' in request.path or "freelancer/task/" in request.path %} current{% endif %}" href="{% url 'find_tasks' %}">Find Task</a></li>
                             <li><a class="{% if 'freelancer/myProposals/' in request.path %} current{% endif %}" href="{% url 'my_proposals' %}">My Jobs</a></li>
                             <li><a class="{% if 'freelancer/dashboard' in request.path %} current{% endif %}" href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
                         {% endif %}

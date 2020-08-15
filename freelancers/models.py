@@ -19,4 +19,3 @@ class Proposal(models.Model):
 
     def __str__(self):
         return self.task.title + "  " + self.user.email
-

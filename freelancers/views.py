@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.forms import model_to_dict
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.decorators import freelancer_required, valid_user_for_proposal
+from accounts.models import User
 from employer.models import PostTask
+from hireo.models import Offers
 from .forms import ProposalForm
 from .models import Proposal
 
@@ -136,3 +136,38 @@ def task_completed(request, id):
 @freelancer_required
 def dashboard(request):
     return render(request, 'Freelancer/Dashboard.html', {})
+
+
+@login_required
+@freelancer_required
+def offers(request):
+    offer_list = Offers.objects.filter(profile=request.user.profile).order_by('-created_at')
+    page = request.GET.get('page', None)
+    paginator = Paginator(offer_list, 5)
+
+    try:
+        offer_list = paginator.page(page)
+    except PageNotAnInteger:
+        offer_list = paginator.page(1)
+    except EmptyPage:
+        offer_list = paginator.page(paginator.num_pages)
+
+    return render(request, 'Freelancer/Offers.html', {"offers": offer_list})
+
+
+@login_required
+@freelancer_required
+def delete_offer(request, id):
+    try:
+        if request.method == "POST" and request.is_ajax():
+            offer = Offers.objects.get(id=id)
+            if offer:
+                if offer.profile != request.user.profile:
+                    return JsonResponse(
+                        {"success": False, "errors": "You are not permitted to perform this operation."})
+                offer.delete()
+                return JsonResponse({"success": True, "msg": "Offer Deleted"})
+        else:
+            raise Http404("Invalid request")
+    except Exception as e:
+        raise Http404(str(e))

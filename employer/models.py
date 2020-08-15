@@ -63,7 +63,10 @@ class PostTask(models.Model):
         return (self.min_price + self.max_price) / 2
 
     def user_submitted_proposal(self):
-        return self.proposals.filter(user=get_current_user()).exists()
+        user = get_current_user()
+        if not user.is_authenticated:
+            return False
+        return self.proposals.filter(user=user).exists()
 
     def get_avg_bids(self):
         avg = self.proposals.all().aggregate(Avg('rate'))['rate__avg']
@@ -71,4 +74,6 @@ class PostTask(models.Model):
 
     def get_bookmark_task(self):
         user = get_current_user()
+        if not user.is_authenticated:
+            return False
         return user.bookmarks.filter(task_id=self.id).exists()

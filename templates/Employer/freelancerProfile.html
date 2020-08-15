@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %} Freelancer Profile | {% endblock %}
+
 {% block content %}
 <!-- Title bar -->
 <div class="single-page-header freelancer-header" data-background-image="{% static 'images/single-freelancer.jpg' %}">
@@ -182,7 +184,7 @@
 			        {% if profile.userCV %}
 						<a href="{{ profile.userCV.url }}" class="attachment-box ripple-effect"><span>{{ profile.get_file_name }}</span></a>
                     {% else %}
-                        <a href="javascript"  class="attachment-box ripple-effect" style="cursor: not-allowed"><span>No File</span></a>
+                        <a href="javascript:"  class="attachment-box ripple-effect" style="cursor: not-allowed"><span>No File</span></a>
                     {% endif %}
 					</div>
 				</div>
@@ -191,11 +193,16 @@
 				<div class="sidebar-widget">
 					<h3>Bookmark</h3>
 					<!-- Bookmark Button -->
-					<button id="bookmark_Btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if profile.get_bookmark_profile %}bookmarked{% endif %} ">
-						    <span class="bookmark-icon"></span>
-						    <span class="bookmark-text">Bookmark</span>
-                            <span class="bookmarked-text">Bookmarked</span>
-					</button>
+                    {% if request.user.is_authenticated %}
+                        <button id="bookmark_Btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if profile.get_bookmark_profile %}bookmarked{% endif %} ">
+                                <span class="bookmark-icon"></span>
+                                <span class="bookmark-text">Bookmark</span>
+                                <span class="bookmarked-text">Bookmarked</span>
+                        </button>
+                    {% else %}
+                            {# TODO: handle bookmark when user is not loggedIn. Icon not place correctly #}
+                        <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star"></i> Bookmark</a>
+                    {% endif %}
 				</div>
 
 			</div>
@@ -226,38 +233,46 @@
 
 				<!-- Welcome Text -->
 				<div class="welcome-text">
-					<h3>Discuss your project with David</h3>
+					<h3>Discuss your project with {{profile.user.first_name}}</h3>
 				</div>
 
 				<!-- Form -->
-				<form method="post">
+				<form method="post" id="offer_form" action="{% url 'send_offer' %}">
+                    {% csrf_token %}
 
 					<div class="input-with-icon-left">
 						<i class="icon-material-outline-account-circle"></i>
-						<input type="text" class="input-text with-border" name="name" id="name" placeholder="First and Last Name"/>
+						<input type="text" class="input-text with-border" name="full_name" id="full_name" placeholder="First and Last Name" required
+                               {% if request.user.is_authenticated %}
+                                   value="{{ request.user.first_name }} {{ request.user.last_name }}"
+                               {% endif %}
+                        />
+                    <div id="offer-full_name-error" class="alert alert-danger margin-bottom-20" style="display: none;">Full Name Error</div>
 					</div>
 
 					<div class="input-with-icon-left">
 						<i class="icon-material-baseline-mail-outline"></i>
-						<input type="text" class="input-text with-border" name="emailaddress"  placeholder="Email Address"/>
+						<input type="text" class="input-text with-border" name="email" value="{{ request.user.email }}" placeholder="Email Address" required/>
+                        <div id="offer-email-error" class="alert alert-danger margin-bottom-20" style="display: none;">Email Error</div>
 					</div>
 
-					<textarea name="textarea" cols="10" placeholder="Message" class="with-border"></textarea>
+					<textarea name="offer_message" cols="10" placeholder="Message" class="with-border" required></textarea>
+                    <div id="offer-message-error" class="alert alert-danger" style="display: none;">Offer message error</div>
 
 					<div class="uploadButton margin-top-25">
-						<input class="uploadButton-input" type="file" accept="image/*, application/pdf" id="upload" multiple/>
+						<input class="uploadButton-input" type="file" name="offer_file" accept="image/*, application/pdf" id="upload" multiple/>
 						<label class="uploadButton-button ripple-effect" for="upload">Add Attachments</label>
 						<span class="uploadButton-file-name">Allowed file types: zip, pdf, png, jpg <br> Max. files size: 50 MB.</span>
 					</div>
 
-				</form>
 				<!-- Button -->
-				<button class="button margin-top-35 full-width button-sliding-icon ripple-effect" type="submit">Make an Offer <i class="icon-material-outline-arrow-right-alt"></i></button>
+				    <button class="button margin-top-35 full-width button-sliding-icon ripple-effect" type="submit">Make an Offer <i class="icon-material-outline-arrow-right-alt"></i></button>
+				</form>
 
 			</div>
 
 			<!-- Login
-{#			<div class="popup-tab-content" id="loginn">#}
+{#			<div class="popup-tab-content" id="login">#}
 {##}
 {#				<!-- Welcome Text -->#}
 {#				<div class="welcome-text">#}

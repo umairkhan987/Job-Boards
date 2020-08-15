@@ -1,0 +1,236 @@
+{% extends 'common/_dashboard.html' %}
+{% load static %}
+
+{% block title %} Offer | {% endblock %}
+{% block dashboard_content %}
+    <!-- Dashboard Content -->
+    <div class="dashboard-content-container">
+        <div class="dashboard-content-inner">
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>Bookmarks</h3>
+
+              <!-- Breadcrumbs -->
+				<nav id="breadcrumbs" class="dark">
+					<ul>
+						<li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
+						<li>Offers</li>
+					</ul>
+				</nav>
+            </div>
+
+            <!-- Row -->
+			<div class="row">
+                    <!-- freelancer offers -->
+				    <div class="col-xl-12">
+					<div class="dashboard-box margin-top-0">
+						<!-- Headline -->
+						<div class="headline">
+							<h3><i class="icon-material-outline-assignment"></i> Offers List</h3>
+						</div>
+                        {% if offers|length > 0 %}
+						    <div class="content">
+							    <ul class="dashboard-box-list">
+                                    {% for offer in offers %}
+                                        <li>
+									<!-- Overview -->
+									<div class="freelancer-overview manage-candidates">
+										<div class="freelancer-overview-inner">
+
+											<!-- Avatar -->
+											<div class="freelancer-avatar">
+                                                {% if offer.sender %}
+                                                    <div class="verified-badge"></div>
+                                                {% if offer.sender.profileImg %}
+                                                    <img src="{{ offer.sender.profileImg.url }}" alt="">
+                                                {% else %}
+                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                {% endif %}
+                                                {% else %}
+                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                {% endif %}
+											</div>
+
+											<!-- Name -->
+											<div class="freelancer-name">
+												<h4><a>{{ offer.full_name }} </a></h4>
+
+												<!-- Email -->
+												<span class="freelancer-detail-item"><a><i class="icon-feather-mail"></i>{{ offer.email }}</a></span>
+
+												<!-- Offer_content -->
+												<div class="dashboard-task-info bid-info" style="justify-content: left; text-align: left">
+                                                    <span>{{ offer.offer_message }}</span>
+												</div>
+
+												<!-- Buttons -->
+												<div class="buttons-to-right always-visible margin-top-25 margin-bottom-0">
+                                                    {% if offer.sender %}
+    													<a href="#small-dialog-2" data-firstName="{{ offer.sender.first_name }}" data-id="{{ offer.sender.id }}" data-url="{% url 'messages' %}"  class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
+                                                    {% endif %}
+													<a href="#small-dialog"  data-url="{% url 'delete_offer' offer.id %}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Delete offer"><i class="icon-feather-trash-2"></i></a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>
+                                    {% endfor %}
+    							</ul>
+                            </div>
+                        {% else %}
+                           <div class="margin-top-10 margin-bottom-10" style="text-align: center">
+                              <span>There is no offers.</span>
+                           </div>
+                        {% endif %}
+					</div>
+                </div>
+
+			</div>
+			<!-- Row / End -->
+
+            <!-- Pagination -->
+            <div class="clearfix"></div>
+            <div class="pagination-container margin-top-40" >
+                        {% if offers.has_other_pages %}
+						<nav class="pagination justify-content-center">
+							<ul>
+                                {% if offers.has_previous %}
+                                    <li class="pagination-arrow"><a href="?page={{ offers.previous_page_number }}" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% else %}
+                                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% endif %}
+
+								{% for i in offers.paginator.page_range %}
+                                    {% if offers.number == i %}
+                                        <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% if offers.has_next %}
+                                <li class="pagination-arrow"><a href="?page={{ offers.next_page_number }}" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% else %}
+                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% endif %}
+							</ul>
+						</nav>
+                        {% endif %}
+					</div>
+            <div class="clearfix"></div>
+            <!-- Pagination / End -->
+
+            <!-- Footer -->
+            <div class="dashboard-footer-spacer"></div>
+            <div class="small-footer">
+                <div class="small-footer-copyrights">
+                    © 2018 <strong>Hireo</strong>. All Rights Reserved.
+                </div>
+                <ul class="footer-social-links">
+                    <li>
+                        <a href="#" title="Facebook" data-tippy-placement="top">
+                            <i class="icon-brand-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Twitter" data-tippy-placement="top">
+                            <i class="icon-brand-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Google Plus" data-tippy-placement="top">
+                            <i class="icon-brand-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="LinkedIn" data-tippy-placement="top">
+                            <i class="icon-brand-linkedin-in"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <!-- Footer / End -->
+        </div>
+    </div>
+    <!-- Dashboard Content / End -->
+
+    <!-- Delete Offer popup -->
+        <div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab" id="popup-tabs" >Delete Offer</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+                    <p>Are you sure you want to delete this offer.</p>
+				</div>
+
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4" style="text-align: center">
+                        <!-- Button -->
+                        <a class="button gray ripple-effect-dark cancel-popup">Cancel</a>
+                    </div>
+
+                    <div class="col-lg-4" style="text-align: center">
+                        <!-- Button -->
+                        <a href="javascript:" id="delete-offer-popup" class="button ripple-effect " style="background-color: #de5959">Delete</a>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- Delete Offer Popup / End -->
+
+    <!-- Send Direct Message Popup -->
+        <div id="small-dialog-2" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab2">Send Message</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab2">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3 id="receiver_name_h3">Direct Message To David</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="send-pm">
+                    {% csrf_token %}
+                    <input type="hidden" name="receiver_id">
+					<textarea name="message_content" cols="10" placeholder="Message" class="with-border" required></textarea>
+				</form>
+
+				<!-- Button -->
+				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="send-pm">Send <i class="icon-material-outline-arrow-right-alt"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- Send Direct Message Popup / End -->
+
+{% endblock dashboard_content %}

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Job Boards</title>
+    <title>{% block title %}{% endblock %} Hireo</title>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -20,7 +20,7 @@
 
     {% block content %}{% endblock content %}
 
-    {% if not 'settings' in request.path and not 'dashboard' in request.path and not 'messages' in request.path and not 'bookmarks' in request.path and not 'reviews' in request.path %}
+    {% if not 'settings' in request.path and not 'dashboard' in request.path and not 'messages' in request.path and not 'bookmarks' in request.path and not 'reviews' in request.path and not 'freelancer/offers/' in request.path %}
         {% include 'common/footer.html' %}
     {% endif %}
 
@@ -28,8 +28,7 @@
 
 </div>
 
-<!-- Scripts
-================================================== -->
+<!-- Scripts -->
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/jquery-migrate-3.0.0.min.js' %}"></script>
 <script src="{% static 'js/mmenu.min.js' %}"></script>

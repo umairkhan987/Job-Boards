@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %} Task Details | {% endblock %}
+
 {% block content %}
 
     <!-- Titlebar -->
@@ -98,7 +100,7 @@
                                         <div class="bids-avatar">
                                             <div class="freelancer-avatar">
                                                 <div class="verified-badge"></div>
-                                                <a href="javascript:">
+                                                <a>
                                                     {% if proposal.user.profileImg %}
                                                         <img src="{{ proposal.user.profileImg.url }}" alt="">
                                                     {% else %}
@@ -114,7 +116,7 @@
                                             <!-- Name -->
                                             <div class="freelancer-name">
                                                 <h4>
-                                                    <a href="javascript:">{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
+                                                    <a>{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
                                                 </h4>
                                                 <div class="star-rating"
                                                      data-rating="{{ proposal.user.profile.calculate_rating }}"></div>
@@ -200,7 +202,16 @@
             <div class="col-xl-4 col-lg-4">
                 <div class="sidebar-container">
                     {# TODO: Change color #}
-                    <div class="countdown green margin-bottom-35">{{ task.job_status.capitalize }}</div>
+                    <div class="countdown green margin-bottom-30">{{ task.job_status.capitalize }}</div>
+
+                    {# send message #}
+                    {% if request.user.is_authenticated %}
+                        <a href="#small-dialog-2" class="apply-now-button popup-with-zoom-anim margin-bottom-30"
+                            data-firstName="{{ task.user.first_name }}" data-id="{{ task.user.id }}" data-url="{% url 'messages' %}">
+                            <i class="icon-feather-mail"></i>
+                            Send Message<i class="icon-material-outline-arrow-right-alt"></i>
+                        </a>
+                    {% endif %}
 
                     <div class="sidebar-widget">
                         <div class="bidding-widget">
@@ -240,6 +251,8 @@
                                         </div>
                                     </div>
 
+                                    <!-- TODO: find a better way to tackle this when user is not loggedIn -->
+                                    {% if request.user.is_authenticated %}
                                     <!-- Button -->
                                     <button type="submit"
                                             class="button ripple-effect move-on-hover full-width margin-top-30"
@@ -247,18 +260,22 @@
                                             disabled
                                             style="cursor: not-allowed; background-color: #e0e0e0; color: #666"
                                             {% endif %}>
-                                        {% if task.user_submitted_proposal %}
+                                        {% if  task.user_submitted_proposal %}
                                             <span>Bid Placed</span>
                                         {% else %}
                                             <span>Place a Bid </span>
                                         {% endif %}
                                     </button>
+                                        {% else %}
+                                        <a href="#sign-in-dialog" class="button ripple-effect move-on-hover full-width popup-with-zoom-anim margin-top-30"> <span style="color: white">Place a Bid </span></a>
+                                    {% endif %}
                                 </form>
                             </div>
                             {% if not request.user.is_authenticated %}
-                                <div class="bidding-signup">Don't have an account? <a href="#sign-in-dialog"
-                                                                                      class="register-tab sign-in popup-with-zoom-anim">Sign
-                                    Up</a></div>
+                                <div class="bidding-signup">Don't have an account?
+                                    <a href="#sign-in-dialog"class="register-tab sign-in popup-with-zoom-anim">
+                                        Sign Up</a>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -268,11 +285,17 @@
                         <h3>Bookmark or Share</h3>
 
                         <!-- Bookmark Button -->
-                        <button id="bookmark_btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if task.get_bookmark_task %}bookmarked{% endif %}">
-                            <span class="bookmark-icon"></span>
-                            <span class="bookmark-text">Bookmark</span>
-                            <span class="bookmarked-text">Bookmarked</span>
-                        </button>
+                        {% if not request.user.is_authenticated %}
+                            <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star"></i> Bookmark</a>
+
+                            {% else %}
+                                <button id="bookmark_btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if task.get_bookmark_task %}bookmarked{% endif %}">
+                                    <span class="bookmark-icon"></span>
+                                    <span class="bookmark-text">Bookmark</span>
+                                    <span class="bookmarked-text">Bookmarked</span>
+                                </button>
+                        {% endif %}
+
 
                         <!-- Share Buttons -->
                         <div class="share-buttons margin-top-25">
@@ -303,5 +326,40 @@
     <!-- Spacer -->
     <div class="margin-top-15"></div>
     <!-- Spacer / End-->
+
+    <!-- Send Direct Message Popup -->
+    <div id="small-dialog-2" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+	<!--Tabs -->
+	<div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab2">Send Message</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab2">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+					<h3 id="receiver_name_h3">Direct Message To David</h3>
+				</div>
+
+				<!-- Form -->
+				<form method="post" id="send-pm">
+                    {% csrf_token %}
+                    <input type="hidden" name="receiver_id">
+					<textarea name="message_content" cols="10" placeholder="Message" class="with-border" required></textarea>
+				</form>
+
+				<!-- Button -->
+				<button class="button full-width button-sliding-icon ripple-effect" type="submit" form="send-pm">Send <i class="icon-material-outline-arrow-right-alt"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- Send Direct Message Popup / End -->
 
 {% endblock content %}

@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -57,10 +58,21 @@ class User(AbstractUser):
         return self.email
 
     def task_completed(self):
-        return self.tasks.filter(job_status__exact="Completed").count()
+        if self.is_Freelancer:
+            return self.proposals.filter(status__exact="completed").count()
+        elif self.is_Employer:
+            return self.tasks.filter(job_status__exact="Completed").count()
 
     def task_InProgress(self):
-        return self.tasks.filter(job_status__exact="In Progress").count()
+        if self.is_Freelancer:
+            return self.proposals.filter(status__exact="accepted").count()
+        elif self.is_Employer:
+            return self.tasks.filter(job_status__exact="In Progress").count()
+
+    def task_accepted(self):
+        if self.is_Freelancer:
+            return self.proposals.filter(status__isnull=False).count()
+        return 0
 
 
 class Profile(models.Model):
@@ -103,6 +115,8 @@ class Profile(models.Model):
 
     def get_bookmark_profile(self):
         user = get_current_user()
+        if not user.is_authenticated:
+            return False
         return user.bookmarks.filter(freelancer_profile=self).exists()
 
 

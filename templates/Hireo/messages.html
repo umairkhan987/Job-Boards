@@ -1,6 +1,8 @@
 {% extends 'common/_dashboard.html' %}
 {% load static %}
 
+{% block title %} Messages | {% endblock %}
+
 {% block dashboard_content %}
      <!-- Dashboard Content data-simplebar -->
     <div class="dashboard-content-container">
@@ -39,48 +41,53 @@
 							  <ul>
 								{% for message in messages %}
 
-                                  <li class="{% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
-									<a href="{% url 'message_details' message.receiver.id %}">
-										<div class="message-avatar"><i class="status-icon status-online"></i>
-                                        {% if message.receiver.profileImg %}
-                                            <img src="{{ message.receiver.profileImg.url }}" alt="" />
-                                        {% else %}
-                                            <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" />
-                                        {% endif %}
-                                        </div>
+                                    {% if message.sender == request.user %}
+                                        <li class="{% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+									        <a href="{% url 'message_details' message.receiver.id %}">
+										    <div class="message-avatar"><i class="status-icon status-online"></i>
+                                            {% if message.receiver.profileImg %}
+                                                <img src="{{ message.receiver.profileImg.url }}" alt="" />
+                                            {% else %}
+                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" />
+                                            {% endif %}
+                                            </div>
+										    <div class="message-by">
+											    <div class="message-by-headline">
+												    <h5>{{message.receiver.first_name}} {{ message.receiver.last_name }}</h5>
+												    <span>{{ message.created_at|timesince }} ago</span>
+											    </div>
+											    <p>{{message.message_content}}</p>
+										    </div>
+									        </a>
+								        </li>
 
-										<div class="message-by">
-											<div class="message-by-headline">
-												<h5>{{message.receiver.first_name}} {{ message.receiver.last_name }}</h5>
-												<span>{{ message.created_at|timesince }} ago</span>
-											</div>
-											<p>{{message.message_content}}</p>
-										</div>
-									</a>
-								</li>
+                                    {% else %}
+
+                                        <li class="{% if message.sender.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+                                            <a href="{% url 'message_details' message.sender.id %}">
+										    <div class="message-avatar"><i class="status-icon status-online"></i>
+                                            {% if message.sender.profileImg %}
+                                                <img src="{{ message.sender.profileImg.url }}" alt="" />
+                                            {% else %}
+                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" />
+                                            {% endif %}
+                                            </div>
+										    <div class="message-by">
+											    <div class="message-by-headline">
+												    <h5>{{message.sender.first_name}} {{ message.sender.last_name }}</h5>
+												    <span>{{ message.created_at|timesince }} ago</span>
+											    </div>
+											    <p>{{message.message_content}}</p>
+										    </div>
+									        </a>
+								        </li>
+                                    {% endif %}
 
 								{% endfor %}
-
-                              <!--
-								<li class="active-message">
-									<a href="#">
-										<div class="message-avatar"><i class="status-icon status-offline"></i><img src="images/user-avatar-small-02.jpg" alt="" /></div>
-
-										<div class="message-by">
-											<div class="message-by-headline">
-												<h5>Sindy Forest</h5>
-												<span>Yesterday</span>
-											</div>
-											<p>Hi Tom! Hate to break it to you but I'm actually on vacation</p>
-										</div>
-									</a>
-								</li>
-                                  -->
-
 							</ul>
                             {% else %}
-                                <div class="margin-bottom-10 margin-top-10">
-                                    <span>There are no messages.</span>
+                                <div class="margin-bottom-10 margin-top-10" style="text-align: center">
+                                    <span>There are no messages. {{ messages|length }}</span>
                                 </div>
                             {% endif %}
 						</div>
@@ -90,7 +97,7 @@
 						<div class="message-content">
 
 							<div class="messages-headline">
-								<h4>Sindy Forest</h4>
+								<h4>{{ full_name }}</h4>
 								<a href="#" class="message-action"><i class="icon-feather-trash-2"></i> Delete Conversation</a>
 							</div>
 
@@ -105,7 +112,7 @@
                                     </div>
 
                                      {% for detail in message_details %}
-                                        {% if detail.sender == request.user %}
+                                        {% if detail.sender != request.user %}
                                             <div class="message-bubble">
 										<div class="message-bubble-inner">
 											<div class="message-avatar">
@@ -136,16 +143,16 @@
                                         {% endif %}
                                      {% endfor %}
                                 {% else %}
-                                    <div class="margin-bottom-10 margin-top-10">
-                                        <span>There are no messages.</span>
-                                    </div>
+{#                                    <div class="margin-bottom-10 margin-top-10" style="text-align: center;">#}
+{#                                        <span>There are no messages.</span>#}
+{#                                    </div>#}
                                 {% endif %}
 
                             </div>
                             <!-- Message Content Inner / End -->
 
                            <!-- Reply Area -->
-                            <div class="message-reply">
+                            <div class="message-reply yellow">
                                 <textarea name="messageTxt" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>
                                 <button class="button ripple-effect">Send</button>
                             </div>

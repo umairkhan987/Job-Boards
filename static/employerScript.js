@@ -239,6 +239,7 @@ $(document).ready(function () {
         });
     });
 
+
     // csrf_token
     function getCookie(name) {
         let cookieValue = null;

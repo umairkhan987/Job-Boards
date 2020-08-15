@@ -24,3 +24,19 @@ input::-webkit-inner-spin-button {
     background: #E9F7FE;
     color:#319BC0;
 }
+
+.bookmark-anchor {
+    background-color: #404040;
+    display: inline-block;
+    padding: 0;
+    position: relative;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    padding: 0 15px;
+    padding-left: 59px;
+    border-radius: 4px;
+    transition: .4s;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,.1);
+}

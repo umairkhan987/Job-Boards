@@ -156,6 +156,43 @@ $(document).ready(function () {
         });
     });
 
+
+    // delete offer
+    let offer_url = null;
+    $('a[href=#small-dialog]').click(function () {
+        offer_url = $(this).attr("data-url");
+    });
+
+    $('#delete-offer-popup').click(function () {
+        if(offer_url === null){
+            console.log("offer url is null");
+            return;
+        }
+        const data = {
+             "csrfmiddlewaretoken": getCookie('csrftoken'),
+        };
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: offer_url,
+            data: data,
+            success:function (data) {
+                $.magnificPopup.close();
+                console.log(data);
+                if(data.success){
+                    snackbar_msg(data.msg);
+                    setTimeout(()=>{
+                        window.location.reload();
+                    }, 1000);
+                }
+                else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+    });
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
