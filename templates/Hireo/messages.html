@@ -1,5 +1,7 @@
 {% extends 'common/_dashboard.html' %}
 {% load static %}
+{% load humanize %}
+{% load custom_filters %}
 
 {% block title %} Messages | {% endblock %}
 
@@ -26,9 +28,9 @@
 
 			</div>
 
-				<div class="messages-container margin-top-0">
+				<div class="messages-container">
 					<div class="messages-container-inner">
-						<div class="messages-inbox">
+						<div class="messages-inbox data-simplebar">
 						    <!-- Messages Search Area -->
 							<div class="messages-headline">
 								<div class="input-with-icon">
@@ -37,13 +39,13 @@
 								</div>
 							</div>
 
-                            {% if messages|length > 0 %}
+                            {% if messages %}
 							  <ul>
 								{% for message in messages %}
 
                                     {% if message.sender == request.user %}
                                         <li class="{% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
-									        <a href="{% url 'message_details' message.receiver.id %}">
+									        <a href="{% url 'message_details' message.receiver.id %}" class="js-detail-message-chat">
 										    <div class="message-avatar"><i class="status-icon status-online"></i>
                                             {% if message.receiver.profileImg %}
                                                 <img src="{{ message.receiver.profileImg.url }}" alt="" />
@@ -87,7 +89,7 @@
 							</ul>
                             {% else %}
                                 <div class="margin-bottom-10 margin-top-10" style="text-align: center">
-                                    <span>There are no messages. {{ messages|length }}</span>
+                                    <span>No messages found. </span>
                                 </div>
                             {% endif %}
 						</div>
@@ -97,18 +99,19 @@
 						<div class="message-content">
 
 							<div class="messages-headline">
+                                {% if message_details %}
 								<h4>{{ full_name }}</h4>
 								<a href="#" class="message-action"><i class="icon-feather-trash-2"></i> Delete Conversation</a>
+                                {% endif %}
 							</div>
 
 							<!-- Message Content Inner -->
-							<div class="message-content-inner">
+							<div id="message_content_div" class="message-content-inner">
 
                                 {% if message_details %}
-                                    <!-- TODO: display date like in facebook -->
                                     <!-- Time Sign -->
                                     <div class="message-time-sign">
-                                        <span>{{ message_details.0.created_at|date }}</span>
+                                        <span>{{ message_details.0.created_at|naturalday }}</span>
                                     </div>
 
                                      {% for detail in message_details %}
@@ -141,21 +144,36 @@
 										<div class="clearfix"></div>
 									</div>
                                         {% endif %}
-                                     {% endfor %}
-                                {% else %}
-{#                                    <div class="margin-bottom-10 margin-top-10" style="text-align: center;">#}
-{#                                        <span>There are no messages.</span>#}
-{#                                    </div>#}
-                                {% endif %}
 
+                                            <!-- for display date -->
+                                         {% with next_element=message_details|next_message:forloop.counter0  %}
+                                            <!-- check if next element is not null -->
+                                            {% if next_element.created_at %}
+                                             {% ifnotequal detail.created_at|date:"Ymd"  next_element.created_at|date:"Ymd" %}
+                                                 <div class="message-time-sign">
+                                                    <span>{{ next_element.created_at|naturalday }}</span>
+                                                </div>
+                                            {% endifnotequal %}
+                                             {% endif %}
+                                         {% endwith %}
+                                            <!-- End Display Date -->
+
+                                     {% endfor %}
+                                {% endif %}
                             </div>
                             <!-- Message Content Inner / End -->
 
                            <!-- Reply Area -->
-                            <div class="message-reply yellow">
-                                <textarea name="messageTxt" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>
-                                <button class="button ripple-effect">Send</button>
-                            </div>
+                            {% if message_details %}
+                                <form id="send-message-form" method="post" action="{% url 'messages' %}">
+                                    <div class="message-reply yellow">
+                                        {% csrf_token %}
+                                        <textarea name="message_content" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>
+                                        <button type="submit" class="button ripple-effect">Send</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+
                         </div>
                         <!-- Message Content -->
                     </div>

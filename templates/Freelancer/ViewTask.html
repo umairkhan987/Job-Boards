@@ -88,106 +88,13 @@
 
                 <div class="boxed-list margin-bottom-60">
                     <div class="boxed-list-headline">
-                        <h3><i class="icon-material-outline-group"></i> Freelancers Bidding</h3>
+                        <h3><i class="icon-material-outline-group"></i> Freelancers Bidding </h3>
                     </div>
 
-                    {% if proposals|length > 0 %}
-                        <ul class="boxed-list-ul">
-                            {% for proposal in proposals %}
-                                <li>
-                                    <div class="bid">
-                                        <!-- Avatar -->
-                                        <div class="bids-avatar">
-                                            <div class="freelancer-avatar">
-                                                <div class="verified-badge"></div>
-                                                <a>
-                                                    {% if proposal.user.profileImg %}
-                                                        <img src="{{ proposal.user.profileImg.url }}" alt="">
-                                                    {% else %}
-                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}"
-                                                             alt="">
-                                                    {% endif %}
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Content -->
-                                        <div class="bids-content">
-                                            <!-- Name -->
-                                            <div class="freelancer-name">
-                                                <h4>
-                                                    <a>{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
-                                                </h4>
-                                                <div class="star-rating"
-                                                     data-rating="{{ proposal.user.profile.calculate_rating }}"></div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Bid -->
-                                        <div class="bids-bid">
-                                            <div class="bid-rate">
-                                                <div class="rate">$ {{ proposal.rate }}</div>
-                                                <span>in {{ proposal.days }} days</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-
-                        <!-- Pagination -->
-                       {% if proposals.has_other_pages %}
-    <div class="row">
-        <div class="col-md-12">
-            <!-- Pagination -->
-            <div class="pagination-container margin-top-40 margin-bottom-60">
-                <nav class="pagination justify-content-center">
-                    <ul>
-                        {% if proposals.has_previous %}
-                            <li class="pagination-arrow"><a
-                                    href="?page={{ proposals.previous_page_number }}"
-                                    class="ripple-effect"><i
-                                    class="icon-material-outline-keyboard-arrow-left"></i></a>
-                            </li>
-                        {% else %}
-                            <li class="pagination-arrow disabled"><a href="javascript:"
-                                                                     class="ripple-effect"><i
-                                    class="icon-material-outline-keyboard-arrow-left"></i></a>
-                            </li>
-                        {% endif %}
-
-                        {% for i in proposals.paginator.page_range %}
-                            {% if proposals.number == i %}
-                                <li><a href="javascript:"
-                                       class="current-page ripple-effect">{{ i }}</a></li>
-                            {% else %}
-                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a>
-                                </li>
-                            {% endif %}
-
-                        {% endfor %}
-
-                        {% if proposals.has_next %}
-                            <li class="pagination-arrow"><a
-                                    href="?page={{ proposals.next_page_number }}"
-                                    class="ripple-effect"><i
-                                    class="icon-material-outline-keyboard-arrow-right"></i></a>
-                            </li>
-                        {% else %}
-                            <li class="pagination-arrow disabled"><a href="javascript:"
-                                                                     class="ripple-effect"><i
-                                    class="icon-material-outline-keyboard-arrow-right"></i></a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
-    <!-- Pagination / End -->
-{% else %}
-    <div class="margin-top-90"></div>
-{% endif %}
+                    {% if proposals %}
+                        <div id="js-proposals-list-div">
+                            {% include 'Freelancer/includes/partial_proposals_list.html' %}
+                        </div>
 
                     {% else %}
                         <div class="margin-top-20">

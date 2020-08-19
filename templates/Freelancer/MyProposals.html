@@ -43,7 +43,7 @@
 						</div>
 
 						<div class="content">
-                            {% if proposals|length > 0 %}
+                            {% if proposals%}
 							    <ul class="dashboard-box-list">
 								{% for proposal in proposals %}
                                     <li>
@@ -89,7 +89,7 @@
                                             <a href="javascript:" id="complete_job_Btn" data-url="{% url 'task_completed' proposal.id %}" class="button ripple-effect"><i class="icon-material-outline-check"></i> Complete Job</a>
                                             <a href="#small-dialog" data-url="{% url 'cancel_task' proposal.id %}" class="popup-with-zoom-anim button red ripple-effect cancel-task-popup"><i class="icon-feather-alert-circle"></i> Cancel Job</a>
                                         {% elif proposal.status is None %}
-                                            <a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Cancel Bid"><i class="icon-feather-trash-2"></i></a>
+                                            <a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Delete Bid"><i class="icon-feather-trash-2"></i></a>
                                         {% endif %}
 
 									</div>
@@ -175,9 +175,6 @@
                     <p id="delete-proposal-p">Are you sure you want to delete</p>
 				</div>
 
-                <form method="post" id="csrf_token-form">
-                    {% csrf_token %}
-                </form>
                 <div class="row">
                     <div class="col-lg-4"></div>
                     <div class="col-lg-4" style="text-align: center">

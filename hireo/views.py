@@ -5,6 +5,7 @@ from django.db.models import Q, F, Max, QuerySet
 from django.forms import model_to_dict
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 
 from accounts.models import Profile, User
 from employer.models import PostTask
@@ -27,7 +28,8 @@ def messages(request):
             message.receiver = receiver
             message.sender = request.user
             message.save()
-            return JsonResponse({"success": True, "msg": "Message Sent"})
+            current_message = render_to_string("Hireo/includes/partial_message.html", {"message": message})
+            return JsonResponse({"success": True, "msg": "Message Sent", "current_message": current_message})
         else:
             errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
             return JsonResponse({'success': False, 'errors': errors})
@@ -158,8 +160,8 @@ def get_current_user_msg(request):
     return Messages.objects.raw(
         """
         select id, receiver_id, sender_id, message_content, created_at
-        from (  select *, first_value(created_at)
-        over (partition by min(receiver_id, sender_id), max(receiver_id, sender_id) order by created_at desc ) last_date
+        from (  select *, max(created_at)
+        over (partition by min(receiver_id, sender_id), max(receiver_id, sender_id)) last_date
         from hireo_messages
         where %s in (receiver_id, sender_id) )
         where created_at = last_date order by id desc

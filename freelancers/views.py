@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 
 from accounts.decorators import freelancer_required, valid_user_for_proposal
 from accounts.models import User
@@ -28,8 +29,9 @@ def findTasks(request):
 
 def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
+    proposals = task.proposals.all().select_related('user').order_by('created_at')
     page = request.GET.get("page", 1)
-    paginator = Paginator(task.proposals.all().order_by('created_at'), 4)
+    paginator = Paginator(proposals, 4)
 
     try:
         proposals = paginator.page(page)
@@ -37,6 +39,10 @@ def view_task(request, id):
         proposals = paginator.page(1)
     except EmptyPage:
         proposals = paginator.page(paginator.num_pages)
+
+    proposals_list = render_to_string('Freelancer/includes/partial_proposals_list.html', {"proposals": proposals})
+    if request.is_ajax():
+        return JsonResponse({"success": True, "html_proposal_list": proposals_list})
 
     return render(request, 'Freelancer/ViewTask.html', {"task": task, "proposals": proposals})
 
@@ -46,9 +52,12 @@ def view_task(request, id):
 def submit_proposals(request):
     try:
         if request.method == "POST" and request.is_ajax():
+            task = PostTask.objects.get(pk=request.POST['task_id'])
+            if task.proposals.filter(user=request.user).exists():
+                return JsonResponse({"success": False, "errors": "You bid has already been submitted."})
+
             form = ProposalForm(request.POST)
             if form.is_valid():
-                task = PostTask.objects.get(pk=request.POST['task_id'])
                 proposal = form.save(commit=False)
                 proposal.user = request.user
                 proposal.task = task
@@ -87,10 +96,11 @@ def delete_proposal(request, id):
             proposal = get_object_or_404(Proposal, pk=id)
 
             if proposal.status is not None:
-                return JsonResponse({"success": False, "errors": "You are not permitted to delete this Proposal"})
+                return JsonResponse(
+                    {"success": False, "errors": "You are not permitted to delete this Proposal"})
 
             proposal.delete()
-            return JsonResponse({"success": True, "msg": "Proposal successfully deleted."})
+            return JsonResponse({"success": True, "delete": True,  "msg": "Proposal successfully deleted."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 

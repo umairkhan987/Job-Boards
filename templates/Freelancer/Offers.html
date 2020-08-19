@@ -30,14 +30,14 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-assignment"></i> Offers List</h3>
 						</div>
-                        {% if offers|length > 0 %}
+                        {% if offers%}
 						    <div class="content">
 							    <ul class="dashboard-box-list">
                                     {% for offer in offers %}
                                         <li>
-									<!-- Overview -->
-									<div class="freelancer-overview manage-candidates">
-										<div class="freelancer-overview-inner">
+									    <!-- Overview -->
+									    <div class="freelancer-overview manage-candidates">
+										    <div class="freelancer-overview-inner">
 
 											<!-- Avatar -->
 											<div class="freelancer-avatar">

@@ -7,7 +7,7 @@ $(document).ready(function () {
     // deactivate user account.
     $('#deactivate-confirm-popup').click(function () {
         const url = $(this).attr('data-url');
-        const data= {
+        const data = {
             "csrfmiddlewaretoken": getCookie('csrftoken'),
         };
 
@@ -16,11 +16,11 @@ $(document).ready(function () {
             method: 'POST',
             url: url,
             data: data,
-            success:function (data) {
+            success: function (data) {
                 $.magnificPopup.close();
-                if(data.success){
+                if (data.success) {
                     snackbar_msg(data.msg);
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         window.location = data.url;
                     }, 1000);
                 }
@@ -51,21 +51,19 @@ $(document).ready(function () {
         const user_id = $(this).attr('data-id');
         message_url = $(this).attr('data-url');
         $('textarea[name=message_content]').val("");
-        $('#receiver_name_h3').html("Direct Message to "+ firstName);
+        $('#receiver_name_h3').html("Direct Message to " + firstName);
         $('input[name=receiver_id]').val(user_id);
     });
 
-    // send message
+    // Click on message popup to send message inside profile page or manage proposal page.
     $('#send-pm').submit(function (event) {
         event.preventDefault();
-
-        if(message_url === null){
+        if (message_url === null) {
             console.log("message url is null");
             return;
         }
-
         const data = $(this).serialize();
-        $.ajax({
+         $.ajax({
             type: "ajax",
             method: "POST",
             url: message_url,
@@ -73,17 +71,56 @@ $(document).ready(function () {
             success: function (data) {
                 $.magnificPopup.close();
                 // console.log(data);
-                if(data.success){
+                if (data.success) {
                     snackbar_msg(data.msg);
-                }
-                else{
+                } else {
                     snackbar_error_msg(data.errors['message_content']);
                 }
             }
         });
     });
 
-     // snackbar for display msg
+
+    // Replay message
+    $('#send-message-form').submit(function (event) {
+        event.preventDefault();
+        const message_textarea_ref = $('#send-message-form textarea');
+        // check if user enter some message content or not
+        if(message_textarea_ref.val().length === 0){
+            console.log("Textarea is empty");
+            return;
+        }
+
+        const url = $(this).attr('action');
+        const receiver_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+        let data = $(this).serialize() + "&receiver_id="+receiver_id;
+        console.log(data);
+        $.ajax({
+            type: "ajax",
+            method: "POST",
+            url: url,
+            data: data,
+            success: function (data) {
+                if(data.success){
+                    $('#message_content_div').append(data.current_message)
+                    message_textarea_ref.val("");
+                }
+                else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+    });
+
+    // TODO: add message detail using ajax
+    // $('a.js-detail-message-chat').click(function (event) {
+    //     event.preventDefault();
+    //
+    //     const url = $(this).attr('href');
+    //     console.log("Message click ", url);
+    // });
+
+    // snackbar for display msg
     function snackbar_msg(msg) {
         Snackbar.show({
             text: msg,
@@ -95,6 +132,7 @@ $(document).ready(function () {
             backgroundColor: '#2a41e8'
         });
     }
+
     // snackbar for display error msg
     function snackbar_error_msg(msg) {
         Snackbar.show({

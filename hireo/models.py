@@ -23,7 +23,8 @@ class Messages(models.Model):
         return self.message_content
 
     def get_time_sign(self):
-        return self.created_at.date()
+        self.created_at.date()
+        return False
 
 
 # TODO: Change the filename

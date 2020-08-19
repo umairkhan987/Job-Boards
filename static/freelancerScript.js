@@ -29,7 +29,9 @@ $(document).ready(function () {
     });
 
     let URL = null;
+    let delete_btn_ref=null;
     $('a.delete-popup').click(function (event) {
+        delete_btn_ref = $(this);
         const title = $(this).attr('data-content');
         URL = $(this).attr('data-url');
         $('#popup-tabs').html("Delete Proposal");
@@ -45,8 +47,11 @@ $(document).ready(function () {
     });
 
     // delete proposals
+    // TODO: when the all bid is delete then display the message or create partial views to display all bids
     $('#delete-confirm-popup').click(function () {
-        const data = $('#csrf_token-form').serialize();
+        const data = {
+            "csrfmiddlewaretoken": getCookie('csrftoken'),
+        };
 
         if (URL === null) {
             console.log("url is null");
@@ -60,12 +65,17 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 $.magnificPopup.close();
-                console.log(data);
+                // console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    if(data.delete){
+                        delete_btn_ref.closest('li').hide();
+                    }
+                    else {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
                 } else {
                     snackbar_error_msg(data.errors);
                 }
@@ -85,7 +95,7 @@ $(document).ready(function () {
             url: url,
             data: {csrfmiddlewaretoken: token},
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
                     setTimeout(()=>{
@@ -128,6 +138,7 @@ $(document).ready(function () {
 
     // delete bookmark click on Bookmark page button
     $('a.delete-freelancer-bookmark').click(function () {
+        let btn_ref = $(this);
         const id = $(this).attr('data-id');
         const url = $(this).attr('data-url');
         const data = {
@@ -144,9 +155,7 @@ $(document).ready(function () {
                 // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    setTimeout(()=>{
-                        window.location.reload();
-                    }, 1000);
+                    btn_ref.closest("li").hide();
                 }
                 else{
                     console.log(data.errors);
@@ -159,11 +168,14 @@ $(document).ready(function () {
 
     // delete offer
     let offer_url = null;
+    let offer_btn_ref=null;
     $('a[href=#small-dialog]').click(function () {
+         offer_btn_ref = $(this);
         offer_url = $(this).attr("data-url");
     });
 
     $('#delete-offer-popup').click(function () {
+
         if(offer_url === null){
             console.log("offer url is null");
             return;
@@ -179,18 +191,42 @@ $(document).ready(function () {
             data: data,
             success:function (data) {
                 $.magnificPopup.close();
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    setTimeout(()=>{
-                        window.location.reload();
-                    }, 1000);
+                    offer_btn_ref.closest('li').hide();
                 }
                 else{
                     snackbar_error_msg(data.errors);
                 }
             }
         });
+    });
+
+
+    // when user click on page tow view proposal against each task
+    // js- include and its working....
+    // TODO: find the way to call through ajax way...
+    $('#proposals-list-div').on('click', 'a', function (event) {
+        event.preventDefault();
+        const parameter = $(this).attr('href');
+
+        if (parameter === "javascript:" || parameter === null) return;
+        let url = window.location.pathname + parameter;
+
+        $.ajax({
+            type: 'ajax',
+            method:'get',
+            url: url,
+            success:function (data) {
+                if(data.success){
+                    $('#js-proposals-list-div').html(data.html_proposal_list);
+                }else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+
     });
 
     function getCookie(name) {

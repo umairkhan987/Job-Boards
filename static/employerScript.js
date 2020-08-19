@@ -211,6 +211,7 @@ $(document).ready(function () {
     });
 
     $('a.delete-bookmark-Btn').click(function () {
+        let delete_btn_ref = $(this);
         const id = $(this).attr('data-id');
         const url = $(this).attr('data-url');
         const data = {
@@ -227,9 +228,7 @@ $(document).ready(function () {
                 // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    setTimeout(()=>{
-                        window.location.reload();
-                    }, 1000);
+                    delete_btn_ref.closest('li').hide();
                 }
                 else{
                     console.log(data.errors);
