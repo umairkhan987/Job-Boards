@@ -1,6 +1,7 @@
 import os
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -8,6 +9,7 @@ from django.dispatch import receiver
 
 #  We use it because we change default username with email
 from django_currentuser.middleware import get_current_user
+from hitcount.settings import MODEL_HITCOUNT
 
 
 class CustomUserManager(BaseUserManager):
@@ -87,6 +89,8 @@ class Profile(models.Model):
     total_job_done = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    hit_count_generic = GenericRelation(
+        MODEL_HITCOUNT, object_id_field='object_pk', related_query_name='hit_count_generic_relation')
 
     def __str__(self):
         return self.user.email

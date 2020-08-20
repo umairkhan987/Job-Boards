@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load hitcount_tags %}
 
 {% block title %} Freelancer Profile | {% endblock %}
 
@@ -22,11 +23,12 @@
 							<ul>
 								<li><div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div></li>
 								<li>{{ profile.country }}</li>
-								<li><div class="verified-badge-with-title">Verified</div></li>
+                                <li>Viewed: {% get_hit_count for profile %}</li>
+{#								<li><div class="verified-badge-with-title">Verified</div></li>#}
 							</ul>
 						</div>
 					</div>
-s				</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -50,9 +52,9 @@ s				</div>
 				<div class="boxed-list-headline">
 					<h3><i class="icon-material-outline-thumb-up"></i> Work History and Feedback</h3>
 				</div>
-                {% if profile.get_work_history|length > 0 %}
+                {% if work_history %}
                     <ul class="boxed-list-ul">
-                     {% for work in profile.get_work_history %}
+                     {% for work in work_history %}
                          {% if work.rating != 0 %}
     					    <li>
 						<div class="boxed-list-item">
@@ -82,9 +84,9 @@ s				</div>
                     </div>
                 {% endif %}
 
-				<!-- Pagination -->
+				<!-- Pagination  TODO: Create pagination-->
 				<div class="clearfix"></div>
-                {% if profile.get_work_history|length > 3 %}
+                {% if work_history.count > 3 %}
 				<div class="pagination-container margin-top-40 margin-bottom-10">
 					<nav class="pagination">
 						<ul>

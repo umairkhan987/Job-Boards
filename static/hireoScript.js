@@ -28,22 +28,6 @@ $(document).ready(function () {
         })
     });
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
     // Message Popup open
     let message_url = null;
     $('a[href=#small-dialog-2]').click(function () {
@@ -80,6 +64,35 @@ $(document).ready(function () {
         });
     });
 
+    // delete Messages
+    $('#delete-conversation-popup').click(function () {
+        const url = $(this).attr("data-url");
+        const data = {
+            "receiver_id": parseInt(window.location.pathname.replace(/[^\d.]/g,"")),
+            "csrfmiddlewaretoken": getCookie('csrftoken'),
+        };
+
+        $.ajax({
+            type: 'ajax',
+            method: 'POST',
+            url: url,
+            data: data,
+            success: function (data) {
+                $.magnificPopup.close();
+                console.log(data);
+
+                if (data.success) {
+                    snackbar_msg(data.msg);
+                    setTimeout(() => {
+                        window.location.pathname = data.url;
+                    }, 1000);
+                }else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+
+    });
 
     // Replay message
     $('#send-message-form').submit(function (event) {
@@ -119,6 +132,22 @@ $(document).ready(function () {
     //     const url = $(this).attr('href');
     //     console.log("Message click ", url);
     // });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
     // snackbar for display msg
     function snackbar_msg(msg) {

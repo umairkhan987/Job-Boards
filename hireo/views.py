@@ -19,24 +19,26 @@ def index(request):
 
 @login_required
 def messages(request):
-    if request.method == "POST" and request.is_ajax():
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            receiver_id = request.POST.get('receiver_id')
-            receiver = User.objects.get(pk=receiver_id)
-            message = form.save(commit=False)
-            message.receiver = receiver
-            message.sender = request.user
-            message.save()
-            current_message = render_to_string("Hireo/includes/partial_message.html", {"message": message})
-            return JsonResponse({"success": True, "msg": "Message Sent", "current_message": current_message})
+    try:
+        if request.method == "POST" and request.is_ajax():
+            form = MessageForm(request.POST)
+            if form.is_valid():
+                receiver_id = request.POST.get('receiver_id')
+                receiver = User.objects.get(pk=receiver_id)
+                message = form.save(commit=False)
+                message.receiver = receiver
+                message.sender = request.user
+                message.save()
+                current_message = render_to_string("Hireo/includes/partial_message.html", {"message": message})
+                return JsonResponse({"success": True, "msg": "Message Sent", "current_message": current_message})
+            else:
+                errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+                return JsonResponse({'success': False, 'errors': errors})
         else:
-            errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
-            return JsonResponse({'success': False, 'errors': errors})
-    else:
-        message_list = get_current_user_msg(request)
-        return render(request, 'Hireo/messages.html', {"messages": message_list})
-
+            message_list = get_current_user_msg(request)
+            return render(request, 'Hireo/messages.html', {"messages": message_list})
+    except Exception as e:
+        raise Http404(str(e))
 
 @login_required
 def message_details(request, id):
@@ -55,6 +57,28 @@ def message_details(request, id):
         "message_details": message_detail,
     }
     return render(request, 'Hireo/messages.html', context)
+
+
+@login_required
+def messages_delete(request):
+    try:
+        if request.method == "POST" and request.is_ajax():
+            id = request.POST.get("receiver_id")
+            receiver = User.objects.get(pk=id)
+            conversation = Messages.objects.filter(
+                Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user))
+            if conversation.exists():
+                conversation.delete()
+                # TODO: update query and find alternative to delete messages.
+                # conversation.filter(sender=request.user).update(sender=None)
+                # conversation.filter(receiver=request.user).update(receiver=None)
+                return JsonResponse({"success": True, "msg": "Conversation Deleted.", "url": redirect("messages").url})
+            else:
+                return JsonResponse({"success": False, "errors": "Conversation not found."})
+        else:
+            raise Http404("Invalid request")
+    except Exception as e:
+        raise Http404(str(e))
 
 
 @login_required

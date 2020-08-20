@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'multiselectfield',
+    'hitcount',
 
     'accounts.apps.AccountsConfig',
     'hireo.apps.HireoConfig',

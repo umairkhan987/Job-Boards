@@ -11,6 +11,7 @@ pillow = "*"
 django-widget-tweaks = "*"
 django-multiselectfield = "*"
 django-currentuser = "*"
+django-hitcount = "*"
 
 [requires]
 python_version = "3.7"

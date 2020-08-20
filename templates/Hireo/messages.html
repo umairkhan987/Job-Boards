@@ -101,7 +101,7 @@
 							<div class="messages-headline">
                                 {% if message_details %}
 								<h4>{{ full_name }}</h4>
-								<a href="#" class="message-action"><i class="icon-feather-trash-2"></i> Delete Conversation</a>
+								    <a href="#small-dialog" class="message-action popup-with-zoom-anim"><i class="icon-feather-trash-2"></i> Delete Conversation</a>
                                 {% endif %}
 							</div>
 
@@ -214,5 +214,42 @@
 		</div>
     </div>
     <!-- Dashboard Content / End -->
+
+
+    <!-- Delete Offer popup -->
+    <div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+        <div class="sign-in-form">
+
+		<ul class="popup-tabs-nav">
+			<li><a href="#tab" id="popup-tabs" >Delete Conversation</a></li>
+		</ul>
+
+		<div class="popup-tabs-container">
+
+			<!-- Tab -->
+			<div class="popup-tab-content" id="tab">
+
+				<!-- Welcome Text -->
+				<div class="welcome-text">
+                    <p>Are you sure you want to delete this conversations.</p>
+				</div>
+
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4" style="text-align: center">
+                        <!-- Button -->
+                        <a class="button gray ripple-effect-dark cancel-popup">Cancel</a>
+                    </div>
+
+                    <div class="col-lg-4" style="text-align: center">
+                        <!-- Button -->
+                        <a href="javascript:" data-url="{% url 'messages_delete' %}" id="delete-conversation-popup" class="button ripple-effect " style="background-color: #de5959">Delete</a>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+    </div>
+    <!-- Delete Offer Popup / End -->
 
 {% endblock %}

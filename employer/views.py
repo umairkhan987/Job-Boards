@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import F
+from django.views.generic import DetailView
+from hitcount.views import HitCountDetailView
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import Profile, User
@@ -27,15 +29,28 @@ def find_freelancer(request):
     return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
 
 
-def freelancer_profile(request, id):
-    session = request.session.session_key
-    ip = request.META['REMOTE_ADDR']
+class FreelancerDetailView(HitCountDetailView):
+    model = Profile
+    context_object_name = "profile"
+    template_name = "Employer/freelancerProfile.html"
 
-    print("Session ", session)
-    print("IP ", ip)
+    count_hit = True
 
-    profile = get_object_or_404(Profile, pk=id)
-    return render(request, 'Employer/freelancerProfile.html', {"profile": profile})
+    def get_context_data(self, **kwargs):
+        context = super(FreelancerDetailView, self).get_context_data(**kwargs)
+        context['work_history'] = self.object.user.proposals.filter(status__exact='completed')
+        return context
+
+
+# def freelancer_profile(request, id):
+#     session = request.session.session_key
+#     ip = request.META['REMOTE_ADDR']
+#
+#     print("Session ", session)
+#     print("IP ", ip)
+#
+#     profile = get_object_or_404(Profile, pk=id)
+#     return render(request, 'Employer/freelancerProfile.html', {"profile": profile})
 
 
 @login_required
