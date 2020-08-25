@@ -51,20 +51,7 @@
             <!-- Row -->
             <div class="row">
                 <div class="col-xl-12">
-                    <!-- Dashboard Box -->
-                    <div class="dashboard-box main-box-in-row">
-                        <div class="headline">
-                            <h3><i class="icon-feather-bar-chart-2"></i> Tasks Status </h3>
-                        </div>
-                        <div class="content">
-                            <!-- Chart -->
-                            <div class="chart">
-                                <canvas id="barChart" width="100" height="45"></canvas>
-                                {#								<canvas id="chart" width="100" height="45"></canvas>#}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Dashboard Box / End -->
+                    {% include 'Freelancer/includes/partial_views_chart.html' %}
                 </div>
             </div>
             <!-- Row / End -->

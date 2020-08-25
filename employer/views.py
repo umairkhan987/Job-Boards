@@ -3,13 +3,12 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
 from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import F
-from django.views.generic import DetailView
-from hitcount.views import HitCountDetailView
+from django.db.models import F, Q
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import Profile, User
 from freelancers.models import Proposal
+from hireo.models import HitCount
 from .forms import TaskForm
 from .models import PostTask
 
@@ -29,6 +28,8 @@ def find_freelancer(request):
     return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
 
 
+# deprecated
+"""
 class FreelancerDetailView(HitCountDetailView):
     model = Profile
     context_object_name = "profile"
@@ -40,17 +41,32 @@ class FreelancerDetailView(HitCountDetailView):
         context = super(FreelancerDetailView, self).get_context_data(**kwargs)
         context['work_history'] = self.object.user.proposals.filter(status__exact='completed')
         return context
+"""
 
 
-# def freelancer_profile(request, id):
-#     session = request.session.session_key
-#     ip = request.META['REMOTE_ADDR']
-#
-#     print("Session ", session)
-#     print("IP ", ip)
-#
-#     profile = get_object_or_404(Profile, pk=id)
-#     return render(request, 'Employer/freelancerProfile.html', {"profile": profile})
+def freelancer_profile(request, id):
+    profile = get_object_or_404(Profile, pk=id)
+    session = request.session.session_key
+    ip = request.META['REMOTE_ADDR']
+
+    if (request.user.is_authenticated and not HitCount.objects.filter(
+            Q(profile=profile) & Q(user=request.user)).exists()) or (
+            not request.user.is_authenticated and not (
+            HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
+
+        view = HitCount.objects.create(profile=profile)
+        if request.user.is_authenticated:
+            view.user = request.user
+            view.session = session
+        else:
+            view.ip = ip
+        view.save()
+
+    context = {
+        "profile": profile,
+        "work_history": profile.user.proposals.select_related('task').filter(status__exact='completed')
+    }
+    return render(request, 'Employer/freelancerProfile.html', context)
 
 
 @login_required

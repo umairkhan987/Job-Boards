@@ -1,0 +1,97 @@
+{% load static %}
+
+<!-- Dashboard Box -->
+<div class="dashboard-box main-box-in-row">
+    <div class="headline">
+        <h3><i class="icon-feather-bar-chart-2"></i> Your Profile Views </h3>
+        <div class="sort-by">
+            <select class="selectpicker hide-tick">
+                <option>Last 6 Months</option>
+                <option>This Year</option>
+                <option>This Month</option>
+            </select>
+        </div>
+    </div>
+    <div class="content">
+        <!-- Chart -->
+        <div class="chart">
+            <canvas id="chart" width="100" height="45"></canvas>
+        </div>
+    </div>
+</div>
+<!-- Dashboard Box / End -->
+
+<!-- Chart.js // documentation: http://www.chartjs.org/docs/latest/ -->
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script>
+    Chart.defaults.global.defaultFontFamily = "Nunito";
+    Chart.defaults.global.defaultFontColor = '#888';
+    Chart.defaults.global.defaultFontSize = '14';
+
+    var ctx = document.getElementById('chart').getContext('2d');
+
+    var chart = new Chart(ctx, {
+        type: 'line',
+        // The data for our dataset
+        data: {
+            labels: {{ labels|safe }},
+            // Information about the dataset
+            datasets: [{
+                label: "Views",
+                backgroundColor: 'rgba(42,65,232,0.08)',
+                borderColor: '#2a41e8',
+                borderWidth: "3",
+                data: {{ data|safe }},
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHitRadius: 10,
+                pointBackgroundColor: "#fff",
+                pointHoverBackgroundColor: "#fff",
+                pointBorderWidth: "2",
+            }]
+        },
+
+        // Configuration options
+        options: {
+
+            layout: {
+                padding: 10,
+            },
+
+            legend: {display: false},
+            title: {display: false},
+
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: false
+                    },
+                    gridLines: {
+                        borderDash: [6, 10],
+                        color: "#d8d8d8",
+                        lineWidth: 1,
+                    },
+                    {#ticks:{#}
+                    {#  stepSize: 1,#}
+                    {#  beginAtZero: true,},#}
+                }],
+                xAxes: [{
+                    scaleLabel: {display: false},
+                    gridLines: {display: false},
+                }],
+            },
+
+            tooltips: {
+                backgroundColor: '#333',
+                titleFontSize: 13,
+                titleFontColor: '#fff',
+                bodyFontColor: '#fff',
+                bodyFontSize: 13,
+                displayColors: false,
+                xPadding: 10,
+                yPadding: 10,
+                intersect: false
+            }
+        },
+    });
+</script>

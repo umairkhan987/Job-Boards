@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load hitcount_tags %}
 
 {% block title %} Freelancer Profile | {% endblock %}
 
@@ -23,7 +22,7 @@
 							<ul>
 								<li><div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div></li>
 								<li>{{ profile.country }}</li>
-                                <li>Viewed: {% get_hit_count for profile %}</li>
+                                <li>Viewed: {{ profile.views.count }}</li>
 {#								<li><div class="verified-badge-with-title">Verified</div></li>#}
 							</ul>
 						</div>

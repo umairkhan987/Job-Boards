@@ -39,3 +39,14 @@ class Offers(models.Model):
     offer_message = models.CharField(max_length=500)
     offer_file = models.FileField(upload_to=upload_offer_file, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class HitCount(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="views")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    ip = models.CharField(max_length=40, blank=True, null=True)
+    session = models.CharField(max_length=40, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"user {self.user} ip={self.ip}"

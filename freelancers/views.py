@@ -1,13 +1,18 @@
+from datetime import datetime
+from calendar import month_abbr, month_name
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import F, Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
+from django.utils.dates import MONTHS
 
 from accounts.decorators import freelancer_required, valid_user_for_proposal
 from accounts.models import User
 from employer.models import PostTask
-from hireo.models import Offers
+from hireo.models import Offers, HitCount
 from .forms import ProposalForm
 from .models import Proposal
 
@@ -100,7 +105,7 @@ def delete_proposal(request, id):
                     {"success": False, "errors": "You are not permitted to delete this Proposal"})
 
             proposal.delete()
-            return JsonResponse({"success": True, "delete": True,  "msg": "Proposal successfully deleted."})
+            return JsonResponse({"success": True, "delete": True, "msg": "Proposal successfully deleted."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 
@@ -145,7 +150,16 @@ def task_completed(request, id):
 @login_required
 @freelancer_required
 def dashboard(request):
-    return render(request, 'Freelancer/Dashboard.html', {})
+    views = HitCount.objects.filter(profile=request.user.profile)
+    month = request.user.profile.created_at.month
+    data = [views.filter(created_at__month=((month + x) % 12) or 12).count() or '' for x in range(6)]
+    labels = [month_name[((month + i) % 12) or 12] for i in range(6)]
+    context = {
+        "labels": labels,
+        "data": data
+    }
+    render_to_string('Freelancer/includes/partial_views_chart.html', context)
+    return render(request, 'Freelancer/Dashboard.html', context)
 
 
 @login_required
