@@ -83,21 +83,41 @@
                     </div>
                 {% endif %}
 
-				<!-- Pagination  TODO: Create pagination-->
+				<!-- Pagination -->
 				<div class="clearfix"></div>
-                {% if work_history.count > 3 %}
 				<div class="pagination-container margin-top-40 margin-bottom-10">
-					<nav class="pagination">
-						<ul>
-							<li><a href="#" class="ripple-effect current-page">1</a></li>
-							<li><a href="#" class="ripple-effect">2</a></li>
-							<li class="pagination-arrow"><a href="#" class="ripple-effect"><i class="icon-material-outline-keyboard-arrow-right"></i></a></li>
-						</ul>
-					</nav>
+					 {% if work_history.has_other_pages %}
+						<nav class="pagination justify-content-center">
+							<ul>
+                                {% if work_history.has_previous %}
+                                    <li class="pagination-arrow"><a href="?page={{ work_history.previous_page_number }}" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% else %}
+                                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                                {% endif %}
+
+								{% for i in work_history.paginator.page_range %}
+                                    {% if work_history.number == i %}
+                                        <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% if work_history.has_next %}
+                                <li class="pagination-arrow"><a href="?page={{ work_history.next_page_number }}" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% else %}
+                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% endif %}
+							</ul>
+						</nav>
+                        {% endif %}
 				</div>
-            {% endif %}
-            <div class="clearfix"></div>
-				<!-- Pagination / End -->
+                <div class="clearfix"></div>
+	    			<!-- Pagination / End -->
 
 			</div>
 			<!-- Boxed List / End -->

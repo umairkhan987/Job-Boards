@@ -62,9 +62,21 @@ def freelancer_profile(request, id):
             view.ip = ip
         view.save()
 
+    work_history_list = profile.user.proposals.select_related('task').filter(status__exact='completed').order_by(
+        'created_at')
+    page = request.GET.get("page", 1)
+    paginator = Paginator(work_history_list, 4)
+
+    try:
+        work_history = paginator.page(page)
+    except PageNotAnInteger:
+        work_history = paginator.page(1)
+    except EmptyPage:
+        work_history = paginator.page(paginator.num_pages)
+
     context = {
         "profile": profile,
-        "work_history": profile.user.proposals.select_related('task').filter(status__exact='completed')
+        "work_history": work_history
     }
     return render(request, 'Employer/freelancerProfile.html', context)
 
