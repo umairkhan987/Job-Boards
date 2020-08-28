@@ -119,7 +119,7 @@ class Profile(models.Model):
         return user.bookmarks.filter(freelancer_profile=self).exists()
 
 
-# create Employer Profile if user Signup as Employer using Signals
+# Create freelancer profile if user signup as freelancer using Signals
 @receiver(post_save, sender=User)
 def create_freelancer_profile(sender, instance, created, **kwargs):
     if created and instance.is_Freelancer:

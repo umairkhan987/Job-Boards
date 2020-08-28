@@ -69,7 +69,7 @@ def messages_delete(request):
                 Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user))
             if conversation.exists():
                 conversation.delete()
-                # TODO: update query and find alternative to delete messages.
+                # TODO: update query and find alternative way to delete messages.
                 # conversation.filter(sender=request.user).update(sender=None)
                 # conversation.filter(receiver=request.user).update(receiver=None)
                 return JsonResponse({"success": True, "msg": "Conversation Deleted.", "url": redirect("messages").url})

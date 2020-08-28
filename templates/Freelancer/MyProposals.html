@@ -32,13 +32,15 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-gavel"></i> Bids List</h3>
                              <div class="sort-by">
-								<select class="selectpicker hide-tick">
-									<option>Relevance</option>
-									<option>Accepted</option>
-									<option>Cancelled</option>
-									<option>Completed</option>
-									<option>Pending</option>
-								</select>
+                                 <form method="get">
+                                    <select name="sort-by" class="selectpicker hide-tick" onchange="this.form.submit()">
+                                        <option {% if "relevance" in request.get_full_path %} selected {% endif %} value="relevance">Relevance</option>
+                                        <option {% if "accepted" in request.get_full_path %} selected {% endif %} value="accepted">Accepted</option>
+                                        <option {% if "cancelled" in request.get_full_path %} selected {% endif %} value="cancelled">Cancelled</option>
+                                        <option {% if "completed" in request.get_full_path %} selected {% endif %} value="completed">Completed</option>
+                                        <option {% if "pending" in request.get_full_path %} selected {% endif %} value="pending">Pending</option>
+                                    </select>
+                                 </form>
 							</div>
 						</div>
 
@@ -111,13 +113,13 @@
         	<!-- Row End-->
 
 
-        	<!-- Pagination -->
+            	<!-- Pagination -->
                {% if proposals.has_other_pages %}
                     <div class="row">
                         <div class="col-md-12">
                             <!-- Pagination -->
                             <div class="pagination-container margin-top-40 margin-bottom-60">
-                                <nav class="pagination">
+                                <nav class="pagination justify-content-center">
                                     <ul>
                                         {% if proposals.has_previous %}
                                             <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}" class="ripple-effect"><i

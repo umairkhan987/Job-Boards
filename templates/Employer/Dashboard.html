@@ -10,7 +10,9 @@
 
             <!-- Dashboard Headline -->
             <div class="dashboard-headline">
-                <h3>{{ request.user.first_name }}, {{ request.user.last_name }}!</h3>
+                {% if request.user.first_name %}
+                    <h3>{{ request.user.first_name }}, {{ request.user.last_name }}!</h3>
+                {% endif %}
                 <span>We are glad to see you again!</span>
 
                 <!-- Breadcrumbs -->

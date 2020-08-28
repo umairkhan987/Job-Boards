@@ -78,10 +78,18 @@ def submit_proposals(request):
 @login_required
 @freelancer_required
 def my_proposals(request):
-    # TODO: order_by proposals base on list of strings.
-    proposal_list = Proposal.objects.filter(user=request.user).exclude(task_id=None).order_by('-created_at')
+    sort = request.GET.get("sort-by", None)
+    # TODO: order_by based on accepted, pending, completed, cancelled
+    proposal_list = Proposal.objects.filter(user=request.user).exclude(task_id=None)
+    if sort != 'pending' and sort != "relevance" and sort:
+        proposal_list = proposal_list.filter(status__iexact=sort)
+    elif sort == "pending":
+        proposal_list = proposal_list.filter(status__isnull=True)
+    else:
+        proposal_list = proposal_list.order_by('-created_at')
+
     page = request.GET.get('page', 1)
-    paginator = Paginator(proposal_list, 3)
+    paginator = Paginator(proposal_list, 4)
 
     try:
         proposals = paginator.page(page)
@@ -167,7 +175,7 @@ def dashboard(request):
 def offers(request):
     offer_list = Offers.objects.filter(profile=request.user.profile).order_by('-created_at')
     page = request.GET.get('page', None)
-    paginator = Paginator(offer_list, 5)
+    paginator = Paginator(offer_list, 4)
 
     try:
         offer_list = paginator.page(page)

@@ -22,10 +22,6 @@ class Messages(models.Model):
     def __str__(self):
         return self.message_content
 
-    def get_time_sign(self):
-        self.created_at.date()
-        return False
-
 
 def upload_offer_file(instance, filename):
     return 'Files/Offer/{filename}'.format(filename=filename)

@@ -30,14 +30,16 @@
 
 						<!-- Headline -->
 						<div class="headline">
-							<h3><i class="icon-material-outline-assignment"></i> My Tasks</h3>
+							<h3><i class="icon-material-outline-assignment"></i> My Tasks </h3>
                             <div class="sort-by">
-								<select class="selectpicker hide-tick">
-									<option>Relevance</option>
-									<option>Pending</option>
-									<option>In Progress</option>
-									<option>Completed</option>
-								</select>
+                                <form method="get">
+                                    <select name="sort-by" class="selectpicker hide-tick" onchange="this.form.submit()">
+									    <option  value="relevance">Relevance</option>
+									    <option {% if "pending" in request.get_full_path %} selected {% endif %} value="pending">Pending</option>
+									    <option {% if "progress" in request.get_full_path %} selected {% endif %} value="progress">In Progress</option>
+									    <option {% if "completed" in request.get_full_path %} selected {% endif %} value="completed">Completed</option>
+								    </select>
+                                </form>
 							</div>
 						</div>
 
@@ -98,7 +100,7 @@
 							</ul>
                                 {% else %}
                                 <div class="margin-top-10 margin-bottom-10">
-                                    <p style="text-align-last: center">Currently you have not post any task.</p>
+                                    <p style="text-align-last: center">There are no post</p>
                                 </div>
                              {% endif %}
 						</div>
@@ -114,7 +116,7 @@
                         <div class="col-md-12">
                             <!-- Pagination -->
                             <div class="pagination-container margin-top-40 margin-bottom-60">
-                                <nav class="pagination">
+                                <nav class="pagination justify-content-center">
                                     <ul>
                                         {% if tasks.has_previous %}
                                             <li class="pagination-arrow"><a href="?page={{ tasks.previous_page_number }}" class="ripple-effect"><i

@@ -35,7 +35,7 @@ $(document).ready(function () {
         const title = $(this).attr('data-content');
         URL = $(this).attr('data-url');
         $('#popup-tabs').html("Delete Proposal");
-        $('#delete-proposal-p').html(`Are you sure you want to delete this job. <strong>${title}</strong>`);
+        $('#delete-proposal-p').html(`Are you sure you want to delete this proposal. <strong>${title}</strong>`);
         $('#delete-confirm-popup').html("Delete");
     });
 
@@ -47,7 +47,7 @@ $(document).ready(function () {
     });
 
     // delete proposals
-    // TODO: when the all bid is delete then display the message or create partial views to display all bids
+    // TODO: when the all bid is deleted then displayed the message or create partial views to display all bids via ajax
     $('#delete-confirm-popup').click(function () {
         const data = {
             "csrfmiddlewaretoken": getCookie('csrftoken'),

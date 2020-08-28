@@ -36,11 +36,13 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-supervisor-account"></i> {{ task.proposals.count }} Bidders</h3>
 							<div class="sort-by">
-								<select class="selectpicker hide-tick">
-									<option>Highest First</option>
-									<option>Lowest First</option>
-									<option>Fastest First</option>
-								</select>
+                                <form method="get">
+                                    <select name="sort-by" class="selectpicker hide-tick" onchange="this.form.submit()">
+                                        <option  value="relevance">Relevance</option>
+                                        <option {% if "HF" in request.get_full_path %} selected {% endif %} value="HF">Highest First</option>
+                                        <option {% if "LF" in request.get_full_path %} selected {% endif %} value="LF">Lowest First</option>
+                                    </select>
+                                </form>
 							</div>
 						</div>
 

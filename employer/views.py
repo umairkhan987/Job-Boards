@@ -98,10 +98,13 @@ def post_a_task(request):
 @login_required
 @employer_required
 def my_tasks(request):
-    # TODO: order by based on list of string [In progress, Pending, Completed]
+    sort = request.GET.get("sort-by", None)
     task_list = PostTask.objects.filter(user=request.user).order_by('-created_at')
+    if sort and sort != "relevance":
+        task_list = task_list.filter(job_status__iexact=sort)
+
     page = request.GET.get('page', 1)
-    paginator = Paginator(task_list, 3)
+    paginator = Paginator(task_list, 4)
 
     try:
         tasks = paginator.page(page)
@@ -162,9 +165,20 @@ def delete_task(request, id):
 @employer_required
 @valid_user_for_task
 def manage_proposal(request, id):
+    sort = request.GET.get("sort-by")
+
     task = PostTask.objects.get(pk=id)
     page = request.GET.get("page", 1)
-    paginator = Paginator(task.proposals.all().order_by('created_at'), 5)
+    proposal_list = task.proposals.all()
+
+    if sort == "HF":
+        proposal_list = proposal_list.order_by("-rate")
+    elif sort == "LF":
+        proposal_list = proposal_list.order_by("rate")
+    else:
+        proposal_list = proposal_list.order_by("created_at")
+
+    paginator = Paginator(proposal_list, 5)
 
     try:
         proposals = paginator.page(page)
