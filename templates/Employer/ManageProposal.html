@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load templatehelpers %}
 
 {% block title %} Manage Proposals | {% endblock %}
 
@@ -127,7 +128,7 @@
                                 <nav class="pagination justify-content-center">
                                     <ul>
                                         {% if proposals.has_previous %}
-                                            <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}" class="ripple-effect"><i
+                                            <li class="pagination-arrow"><a href="{% relative_url proposals.previous_page_number 'page' request.GET.urlencode %}" class="ripple-effect"><i
                                                 class="icon-material-outline-keyboard-arrow-left"></i></a></li>
                                         {% else %}
                                             <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
@@ -138,13 +139,13 @@
                                             {% if proposals.number == i %}
                                                 <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
                                             {% else %}
-                                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                                <li><a href="{% relative_url i 'page' request.GET.urlencode %}" class="ripple-effect">{{ i }}</a></li>
                                             {% endif %}
 
                                         {% endfor %}
 
                                         {% if proposals.has_next %}
-                                        <li class="pagination-arrow"><a href="?page={{ proposals.next_page_number }}" class="ripple-effect"><i
+                                        <li class="pagination-arrow"><a href="{% relative_url proposals.next_page_number 'page' request.GET.urlencode %}" class="ripple-effect"><i
                                                 class="icon-material-outline-keyboard-arrow-right"></i></a></li>
                                         {% else %}
                                             <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i

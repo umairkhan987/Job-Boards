@@ -79,7 +79,7 @@ def submit_proposals(request):
 @freelancer_required
 def my_proposals(request):
     sort = request.GET.get("sort-by", None)
-    # TODO: order_by based on accepted, pending, completed, cancelled
+
     proposal_list = Proposal.objects.filter(user=request.user).exclude(task_id=None)
     if sort != 'pending' and sort != "relevance" and sort:
         proposal_list = proposal_list.filter(status__iexact=sort)

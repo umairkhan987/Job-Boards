@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
@@ -15,6 +18,28 @@ from .models import PostTask
 
 def find_freelancer(request):
     freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).order_by('created_at')
+    if request.GET:
+        search = request.GET.get('search', None)
+        rate = request.GET.get('rate', None)
+        skill_list = request.GET.getlist('skills', None)
+        if search:
+            freelancer_list = freelancer_list.filter(
+                Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search))
+
+        if rate:
+            rate = rate.split(',')
+            freelancer_list = freelancer_list.filter(Q(rate__gte=rate[0]) & Q(rate__lte=rate[1]))
+
+        if skill_list:
+            freelancer_list = freelancer_list.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
+
+    if request.GET.get("sortBy"):
+        sort = request.GET.get("sortBy", None)
+        if sort == "newest":
+            freelancer_list = freelancer_list.order_by("-created_at")
+        elif sort == "oldest":
+            freelancer_list = freelancer_list.order_by("created_at")
+
     page = request.GET.get('page', 1)
     paginator = Paginator(freelancer_list, 5)
 
@@ -178,7 +203,7 @@ def manage_proposal(request, id):
     else:
         proposal_list = proposal_list.order_by("created_at")
 
-    paginator = Paginator(proposal_list, 5)
+    paginator = Paginator(proposal_list, 3)
 
     try:
         proposals = paginator.page(page)

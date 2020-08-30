@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load templatehelpers %}
 
 {% block title %} Freelancers | {% endblock %}
 
@@ -35,15 +36,15 @@
 
                             <!-- Range Slider -->
                             <input class="range-slider" name="rate" type="text" value=""
-                                   data-slider-currency="$" data-slider-min="10" data-slider-max="250"
-                                   data-slider-step="5" data-slider-value="[10,250]"/>
+                                   data-slider-currency="$" data-slider-min="10" data-slider-max="1000"
+                                   data-slider-step="5" data-slider-value="[10,1000]"/>
                         </div>
 
                         <!-- Category -->
                         <div class="sidebar-widget">
                             <h3>Skills</h3>
                             <select class="selectpicker default" multiple data-selected-text-format="count"
-                                    data-max-options="5" name="category"
+                                    data-max-options="5" name="skills"
                                     data-size="7" data-live-search="true" title="Select skills..">
                                 <optgroup label="Web Dev">
                                     <option>Angular</option>
@@ -95,12 +96,11 @@
 
                     <div class="sort-by">
                         <span>Sort by:</span>
-                        <select name="sortBy" onchange=" document.getElementById('sortByForm').submit();"
-                                class="selectpicker hide-tick">
-                            <option>Relevance</option>
-                            <option>Newest</option>
-                            <option>Oldest</option>
-                        </select>
+                            <select name="sortBy" onchange="location = this.value;"
+                                    class="selectpicker hide-tick">
+                                <option {% if "sortBy=oldest" in request.get_full_path %} selected {% endif %} value="{% relative_url 'oldest' 'sortBy' request.GET.urlencode %}">Oldest</option>
+                                <option {% if "sortBy=newest" in request.get_full_path %} selected {% endif %} value="{% relative_url 'newest' 'sortBy' request.GET.urlencode %}">Newest</option>
+                            </select>
                     </div>
                 </div>
 
@@ -179,7 +179,7 @@
                                 <nav class="pagination">
                                     <ul>
                                         {% if freelancers.has_previous %}
-                                            <li class="pagination-arrow"><a href="?page={{ freelancers.previous_page_number }}" class="ripple-effect"><i
+                                            <li class="pagination-arrow"><a href="?{% relative_url freelancers.previous_page_number 'page' request.GET.urlencode %}" class="ripple-effect"><i
                                                 class="icon-material-outline-keyboard-arrow-left"></i></a></li>
                                         {% else %}
                                             <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
@@ -190,13 +190,13 @@
                                             {% if freelancers.number == i %}
                                                 <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
                                             {% else %}
-                                                <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                                <li><a href="{% relative_url i 'page' request.GET.urlencode %}" class="ripple-effect">{{ i }}</a></li>
                                             {% endif %}
 
                                         {% endfor %}
 
                                         {% if freelancers.has_next %}
-                                        <li class="pagination-arrow"><a href="?page={{ freelancers.next_page_number }}" class="ripple-effect"><i
+                                        <li class="pagination-arrow"><a href="{% relative_url freelancers.next_page_number 'page' request.GET.urlencode %}" class="ripple-effect"><i
                                                 class="icon-material-outline-keyboard-arrow-right"></i></a></li>
                                         {% else %}
                                             <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
