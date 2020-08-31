@@ -1,5 +1,7 @@
+import operator
 from datetime import datetime
 from calendar import month_abbr, month_name
+from functools import reduce
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -19,6 +21,29 @@ from .models import Proposal
 
 def findTasks(request):
     task_lists = PostTask.objects.all().exclude(job_status__exact="Completed").order_by('-created_at')
+    if request.GET:
+
+        search = request.GET.get('search', None)
+        rate = request.GET.get('rate', None)
+        skill_list = request.GET.getlist('skills', None)
+
+        if search:
+            task_lists = task_lists.filter(title__icontains=search)
+
+        if rate:
+            rate = rate.split(',')
+            task_lists = task_lists.filter(Q(min_price__gte=rate[0]) & Q(max_price__lte=rate[1]))
+
+        if skill_list:
+            task_lists = task_lists.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
+
+    if request.GET.get("sortBy"):
+        sort = request.GET.get("sortBy", None)
+        if sort == "newest":
+            task_lists = task_lists.order_by("-created_at")
+        elif sort == "oldest":
+            task_lists = task_lists.order_by("created_at")
+
     page = request.GET.get('page', 1)
 
     paginator = Paginator(task_lists, 5)

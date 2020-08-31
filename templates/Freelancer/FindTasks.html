@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load templatehelpers %}
 
 {% block title %} Find Task | {% endblock %}
 
@@ -42,7 +43,7 @@
                         <div class="sidebar-widget">
                             <h3>Skills</h3>
                             <select class="selectpicker default" multiple data-selected-text-format="count"
-                                    data-max-options="5" name="category"
+                                    data-max-options="5" name="skills"
                                     data-size="7" data-live-search="true" title="Select skills..">
                                 <optgroup label="Web Dev">
                                     <option>Angular</option>
@@ -94,10 +95,10 @@
 
 				<div class="sort-by">
 					<span>Sort by:</span>
-					<select class="selectpicker hide-tick">
-						<option>Relevance</option>
-						<option>Newest</option>
-						<option>Oldest</option>
+					<select name="sortBy" onchange="location = this.value;"
+                            class="selectpicker hide-tick">
+                        <option {% if "sortBy=newest" in request.get_full_path %} selected {% endif %} value="{% relative_url 'newest' 'sortBy' request.GET.urlencode %}">Newest</option>
+						<option {% if "sortBy=oldest" in request.get_full_path %} selected {% endif %} value="{% relative_url 'oldest' 'sortBy' request.GET.urlencode %}">Oldest</option>
 					</select>
 				</div>
 			</div>
