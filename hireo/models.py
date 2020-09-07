@@ -11,16 +11,6 @@ class Bookmark(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Messages(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='senders')
-    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='receivers')
-    message_content = models.CharField(max_length=500)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.message_content
-
-
 def upload_offer_file(instance, filename):
     return 'Files/Offer/{filename}'.format(filename=filename)
 

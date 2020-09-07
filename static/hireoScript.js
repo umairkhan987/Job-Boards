@@ -135,8 +135,6 @@ $(document).ready(function () {
 
     // views Message notification
     $(".js-message-notification").on("click", function () {
-        console.log("click on message notification");
-
         const thisRef = $(this);
         const url = $(this).data("url");
 
@@ -145,8 +143,10 @@ $(document).ready(function () {
             method: "GET",
             url: url,
             success: function (data) {
+                console.log(data);
                 if(data.success){
-                    thisRef.find('span').text();
+                    thisRef.find('span').hide();
+                    $(".js-header-message-notification ul").html(data.html);
                 }
             }
         });
@@ -155,14 +155,14 @@ $(document).ready(function () {
     // message notifications mark-all-as-read
     $('#js-mark-all-as-read').click(function () {
         const url = $(this).data("url");
-
         $.ajax({
             type: "ajax",
             method: "POST",
             url: url,
             success: function (data) {
+                console.log(data);
                 if(data.success){
-                    console.log(data);
+                    $(".js-header-message-notification ul").html(data.html);
                 }
             }
         });
