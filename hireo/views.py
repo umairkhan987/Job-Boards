@@ -1,20 +1,155 @@
+import operator
+from functools import reduce
+
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q, F, Max, QuerySet
-from django.forms import model_to_dict
+from django.db.models import Q, F
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 
 from accounts.models import Profile, User
 from employer.models import PostTask
-from hireo.forms import MessageForm, OfferForm
-from hireo.models import Bookmark, Messages
+from notification.models import MessageNotification
+from .forms import MessageForm, OfferForm
+from .models import Bookmark, Messages, HitCount
 
 
 def index(request):
-    return render(request, 'Hireo/index.html')
+    return render(request, 'Hireo/index.html', {})
+
+
+def findTasks(request):
+    task_lists = PostTask.objects.all().exclude(job_status__exact="Completed").order_by('-created_at')
+
+    if request.GET:
+        search = request.GET.get('search', None)
+        rate = request.GET.get('rate', None)
+        skill_list = request.GET.getlist('skills', None)
+
+        if search:
+            task_lists = task_lists.filter(title__icontains=search)
+
+        if rate:
+            rate = rate.split(',')
+            task_lists = task_lists.filter(Q(min_price__gte=rate[0]) & Q(max_price__lte=rate[1]))
+
+        if skill_list:
+            task_lists = task_lists.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
+
+    if request.GET.get("sortBy"):
+        sort = request.GET.get("sortBy", None)
+        if sort == "newest":
+            task_lists = task_lists.order_by("-created_at")
+        elif sort == "oldest":
+            task_lists = task_lists.order_by("created_at")
+
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(task_lists, 5)
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
+
+    return render(request, 'Freelancer/FindTasks.html', {"tasks": tasks})
+
+
+def view_task(request, id):
+    task = get_object_or_404(PostTask, pk=id)
+    proposals = task.proposals.all().select_related('user').order_by('created_at')
+    page = request.GET.get("page", 1)
+    paginator = Paginator(proposals, 4)
+
+    try:
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+
+    proposals_list = render_to_string('Freelancer/includes/partial_proposals_list.html', {"proposals": proposals})
+    if request.is_ajax():
+        return JsonResponse({"success": True, "html_proposal_list": proposals_list})
+
+    return render(request, 'Freelancer/ViewTask.html', {"task": task, "proposals": proposals})
+
+
+def find_freelancer(request):
+    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).order_by('created_at')
+    if request.GET:
+        search = request.GET.get('search', None)
+        rate = request.GET.get('rate', None)
+        skill_list = request.GET.getlist('skills', None)
+        if search:
+            freelancer_list = freelancer_list.filter(
+                Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search))
+
+        if rate:
+            rate = rate.split(',')
+            freelancer_list = freelancer_list.filter(Q(rate__gte=rate[0]) & Q(rate__lte=rate[1]))
+
+        if skill_list:
+            freelancer_list = freelancer_list.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
+
+    if request.GET.get("sortBy"):
+        sort = request.GET.get("sortBy", None)
+        if sort == "newest":
+            freelancer_list = freelancer_list.order_by("-created_at")
+        elif sort == "oldest":
+            freelancer_list = freelancer_list.order_by("created_at")
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(freelancer_list, 5)
+
+    try:
+        freelancers = paginator.page(page)
+    except PageNotAnInteger:
+        freelancers = paginator.page(1)
+    except EmptyPage:
+        freelancers = paginator.page(paginator.num_pages)
+
+    return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
+
+
+def freelancer_profile(request, id):
+    profile = get_object_or_404(Profile, pk=id)
+    session = request.session.session_key
+    ip = request.META['REMOTE_ADDR']
+
+    if (request.user.is_authenticated and not HitCount.objects.filter(
+            Q(profile=profile) & Q(user=request.user)).exists()) or (
+            not request.user.is_authenticated and not (
+            HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
+
+        view = HitCount.objects.create(profile=profile)
+        if request.user.is_authenticated:
+            view.user = request.user
+            view.session = session
+        else:
+            view.ip = ip
+        view.save()
+
+    work_history_list = profile.user.proposals.select_related('task').filter(status__exact='completed').order_by(
+        'created_at')
+    page = request.GET.get("page", 1)
+    paginator = Paginator(work_history_list, 4)
+
+    try:
+        work_history = paginator.page(page)
+    except PageNotAnInteger:
+        work_history = paginator.page(1)
+    except EmptyPage:
+        work_history = paginator.page(paginator.num_pages)
+
+    context = {
+        "profile": profile,
+        "work_history": work_history
+    }
+    return render(request, 'Employer/freelancerProfile.html', context)
 
 
 @login_required
@@ -40,8 +175,13 @@ def messages(request):
     except Exception as e:
         raise Http404(str(e))
 
+
 @login_required
 def message_details(request, id):
+    notifications = MessageNotification.objects.filter(actor_id=id, recipient_id=request.user.id)
+    if notifications.exists():
+        notifications.update(is_read=True)
+
     message_list = get_current_user_msg(request)
     receiver = User.objects.get(pk=id)
     full_name = receiver.first_name + " " + receiver.last_name

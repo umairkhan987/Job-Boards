@@ -1,57 +1,14 @@
-import operator
-from functools import reduce
-
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils import timezone
 from django.http import Http404, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import F, Q
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import Profile, User
 from freelancers.models import Proposal
-from hireo.models import HitCount
 from .forms import TaskForm
 from .models import PostTask
-
-
-def find_freelancer(request):
-    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).order_by('created_at')
-    if request.GET:
-        search = request.GET.get('search', None)
-        rate = request.GET.get('rate', None)
-        skill_list = request.GET.getlist('skills', None)
-        if search:
-            freelancer_list = freelancer_list.filter(
-                Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search))
-
-        if rate:
-            rate = rate.split(',')
-            freelancer_list = freelancer_list.filter(Q(rate__gte=rate[0]) & Q(rate__lte=rate[1]))
-
-        if skill_list:
-            freelancer_list = freelancer_list.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
-
-    if request.GET.get("sortBy"):
-        sort = request.GET.get("sortBy", None)
-        if sort == "newest":
-            freelancer_list = freelancer_list.order_by("-created_at")
-        elif sort == "oldest":
-            freelancer_list = freelancer_list.order_by("created_at")
-
-    page = request.GET.get('page', 1)
-    paginator = Paginator(freelancer_list, 5)
-
-    try:
-        freelancers = paginator.page(page)
-    except PageNotAnInteger:
-        freelancers = paginator.page(1)
-    except EmptyPage:
-        freelancers = paginator.page(paginator.num_pages)
-
-    return render(request, "Employer/FindFreelancer.html", {"freelancers": freelancers})
-
 
 # deprecated
 """
@@ -67,43 +24,6 @@ class FreelancerDetailView(HitCountDetailView):
         context['work_history'] = self.object.user.proposals.filter(status__exact='completed')
         return context
 """
-
-
-def freelancer_profile(request, id):
-    profile = get_object_or_404(Profile, pk=id)
-    session = request.session.session_key
-    ip = request.META['REMOTE_ADDR']
-
-    if (request.user.is_authenticated and not HitCount.objects.filter(
-            Q(profile=profile) & Q(user=request.user)).exists()) or (
-            not request.user.is_authenticated and not (
-            HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
-
-        view = HitCount.objects.create(profile=profile)
-        if request.user.is_authenticated:
-            view.user = request.user
-            view.session = session
-        else:
-            view.ip = ip
-        view.save()
-
-    work_history_list = profile.user.proposals.select_related('task').filter(status__exact='completed').order_by(
-        'created_at')
-    page = request.GET.get("page", 1)
-    paginator = Paginator(work_history_list, 4)
-
-    try:
-        work_history = paginator.page(page)
-    except PageNotAnInteger:
-        work_history = paginator.page(1)
-    except EmptyPage:
-        work_history = paginator.page(paginator.num_pages)
-
-    context = {
-        "profile": profile,
-        "work_history": work_history
-    }
-    return render(request, 'Employer/freelancerProfile.html', context)
 
 
 @login_required

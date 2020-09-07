@@ -83,6 +83,7 @@ $(document).ready(function () {
         })
     });
 
+    // TODO: change location.reload to ajax functionality
     // complete job button click
     $('#complete_job_Btn').click(function (event) {
         const url = $(this).attr('data-url');
@@ -125,7 +126,6 @@ $(document).ready(function () {
             url: url,
             data: data,
             success:function (data) {
-                // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
                 }

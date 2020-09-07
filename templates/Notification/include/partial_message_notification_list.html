@@ -1,0 +1,28 @@
+{% load static %}
+{% if message_notifications %}
+    {% for notification in message_notifications %}
+        <!-- Notification -->
+        <li class="{% if not notification.is_read %}notifications-not-read{% endif %}">
+            <a href="{% url 'message_details' notification.actor.id %}">
+            <span class="notification-avatar status-online">
+                {% if notification.actor.profileImg %}
+                    <img src="{{ notification.actor.profileImg.url }}" alt="">
+                {% else %}
+                    <img src="{% static 'images/user-avatar-small-03.jpg' %}" alt="">
+                {% endif %}
+            </span>
+                <div class="notification-text">
+                    <strong>{{ notification.actor.first_name }} {{ notification.actor.last_name }}</strong>
+                    <br/>
+                    <p class="notification-msg-text">{{ notification.text|truncatewords:"10" }}</p>
+                    <br/>
+                    <span class="color">{{ notification.timestamp|timesince }} ago</span>
+                </div>
+            </a>
+        </li>
+    {% endfor %}
+{% else %}
+    <div class="margin-bottom-20 margin-top-20" style="text-align: center">
+        <span>No new message.</span>
+    </div>
+{% endif %}

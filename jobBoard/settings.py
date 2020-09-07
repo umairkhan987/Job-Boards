@@ -23,8 +23,9 @@ SECRET_KEY = 'y^z#d@530tmklwqs6qxz7hc!^=k-4wvd4=j@cx!2wlie+v(!kz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -44,6 +45,8 @@ INSTALLED_APPS = [
     'hireo.apps.HireoConfig',
     'freelancers',
     'employer',
+    'notification',
+    'messenger',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notification.context_processors.notifications'
             ],
         },
     },

@@ -10,60 +10,6 @@ $(document).ready(function () {
         }
     });
 
-    // Post Task button clicked
-    // $('#post_task_Btn').click(function () {
-    //     $('#post_task_form').submit();
-    //
-    //     return;
-    //
-    //     const postFormRef = $('#post_task_form');
-    //     const url = postFormRef.attr("action");
-    //     const formData = new FormData(postFormRef[0]);
-    //
-    //     // convert list of skills into string
-    //     const skills = formData.getAll('skills');
-    //     formData.delete('skills');
-    //     formData.append('skills', skills.toString());
-    //
-    //     // for(let value of formData.entries())
-    //     //         console.log(value[0]+'  '+value[1]);
-    //
-    //     $.ajax({
-    //         type: "ajax",
-    //         url: url,
-    //         method: "POST",
-    //         processData: false,
-    //         contentType: false,
-    //         cache: false,
-    //         data: formData,
-    //         success: function (data) {
-    //             if (data.success) {
-    //                 snackbar_msg(data.msg);
-    //                 setTimeout(() => {
-    //                     console.log("Time out call");
-    //                     window.location = "/employer/tasks/";
-    //                 }, 2000);
-    //             } else {
-    //                 console.log(data);
-    //                 if (data.errors['title'])
-    //                     $("#title-error").show().html(data.errors['title']);
-    //                 else
-    //                     $("#title-error").hide().html("");
-    //
-    //                 if (data.errors['skills'])
-    //                     $("#skills-error").show().html(data.errors['skills']);
-    //                 else
-    //                     $("#skills-error").hide().html("");
-    //
-    //                 if (data.errors['exp_level'])
-    //                     $("#experience-error").show().html(data.errors['exp_level']);
-    //                 else
-    //                     $("#experience-error").hide().html("");
-    //             }
-    //         }
-    //     })
-    //
-    // });
 
     $('a.cancel-popup').click(function (event) {
         $.magnificPopup.close();
@@ -150,11 +96,11 @@ $(document).ready(function () {
         $('#project_title_anchor').html(data[2]);
     });
 
-    // Leave Review submit
+    //  Leave Review submit
+    // TODO: Remove window.location.reload and set functionality using ajax method
     $('#leave-review-form').submit(function (event) {
         event.preventDefault();
         const data= $(this).serialize();
-        // console.log("Leave form submit ", data);
 
         if(review_url == null){
             console.log("Leave Review url is null");

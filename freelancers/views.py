@@ -1,5 +1,4 @@
 import operator
-from datetime import datetime
 from calendar import month_abbr, month_name
 from functools import reduce
 
@@ -9,72 +8,12 @@ from django.db.models import F, Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.utils.dates import MONTHS
 
 from accounts.decorators import freelancer_required, valid_user_for_proposal
-from accounts.models import User
 from employer.models import PostTask
 from hireo.models import Offers, HitCount
 from .forms import ProposalForm
 from .models import Proposal
-
-
-def findTasks(request):
-    task_lists = PostTask.objects.all().exclude(job_status__exact="Completed").order_by('-created_at')
-    if request.GET:
-
-        search = request.GET.get('search', None)
-        rate = request.GET.get('rate', None)
-        skill_list = request.GET.getlist('skills', None)
-
-        if search:
-            task_lists = task_lists.filter(title__icontains=search)
-
-        if rate:
-            rate = rate.split(',')
-            task_lists = task_lists.filter(Q(min_price__gte=rate[0]) & Q(max_price__lte=rate[1]))
-
-        if skill_list:
-            task_lists = task_lists.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skill_list)))
-
-    if request.GET.get("sortBy"):
-        sort = request.GET.get("sortBy", None)
-        if sort == "newest":
-            task_lists = task_lists.order_by("-created_at")
-        elif sort == "oldest":
-            task_lists = task_lists.order_by("created_at")
-
-    page = request.GET.get('page', 1)
-
-    paginator = Paginator(task_lists, 5)
-    try:
-        tasks = paginator.page(page)
-    except PageNotAnInteger:
-        tasks = paginator.page(1)
-    except EmptyPage:
-        tasks = paginator.page(paginator.num_pages)
-
-    return render(request, 'Freelancer/FindTasks.html', {"tasks": tasks})
-
-
-def view_task(request, id):
-    task = get_object_or_404(PostTask, pk=id)
-    proposals = task.proposals.all().select_related('user').order_by('created_at')
-    page = request.GET.get("page", 1)
-    paginator = Paginator(proposals, 4)
-
-    try:
-        proposals = paginator.page(page)
-    except PageNotAnInteger:
-        proposals = paginator.page(1)
-    except EmptyPage:
-        proposals = paginator.page(paginator.num_pages)
-
-    proposals_list = render_to_string('Freelancer/includes/partial_proposals_list.html', {"proposals": proposals})
-    if request.is_ajax():
-        return JsonResponse({"success": True, "html_proposal_list": proposals_list})
-
-    return render(request, 'Freelancer/ViewTask.html', {"task": task, "proposals": proposals})
 
 
 @login_required

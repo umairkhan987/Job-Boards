@@ -133,6 +133,42 @@ $(document).ready(function () {
     //     console.log("Message click ", url);
     // });
 
+    // views Message notification
+    $(".js-message-notification").on("click", function () {
+        console.log("click on message notification");
+
+        const thisRef = $(this);
+        const url = $(this).data("url");
+
+        $.ajax({
+            type: "ajax",
+            method: "GET",
+            url: url,
+            success: function (data) {
+                if(data.success){
+                    thisRef.find('span').text();
+                }
+            }
+        });
+    });
+
+    // message notifications mark-all-as-read
+    $('#js-mark-all-as-read').click(function () {
+        const url = $(this).data("url");
+
+        $.ajax({
+            type: "ajax",
+            method: "POST",
+            url: url,
+            success: function (data) {
+                if(data.success){
+                    console.log(data);
+                }
+            }
+        });
+
+    });
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
