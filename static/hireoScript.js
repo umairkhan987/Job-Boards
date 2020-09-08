@@ -188,6 +188,28 @@ $(document).ready(function () {
         });
     });
 
+    // Dashboard Notifications
+    $(".js-dashboard-notification-pages").on("click", ".js-dashboard-pages a", function (event) {
+        event.preventDefault();
+        const parameter = $(this).attr('href');
+
+        if (parameter === "javascript:" || parameter === null) return;
+        let url = window.location.pathname + parameter;
+
+        $.ajax({
+            type: 'ajax',
+            method:'get',
+            url: url,
+            success:function (data) {
+                // console.log(data);
+                if(data.success){
+                    $('.js-dashboard-notification-pages').html(data.html);
+                }else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
+    });
 
     function getCookie(name) {
         let cookieValue = null;

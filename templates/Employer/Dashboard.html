@@ -73,86 +73,9 @@
 
             <!-- Row -->
             <div class="row">
-                <!-- Dashboard Notifications Box col-xl-8 -->
-                <div class="col-xl-12">
-                    <div class="dashboard-box">
-                        <div class="headline">
-                            <h3><i class="icon-material-baseline-notifications-none"></i> Notifications</h3>
-                            <button class="mark-as-read ripple-effect-dark" data-tippy-placement="left"
-                                    title="Mark all as read">
-                                <i class="icon-feather-check-square"></i>
-                            </button>
-                        </div>
-                        <div class="content">
-                            <ul class="dashboard-box-list">
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-group"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Michael Shannah</strong> applied for a job <a href="#">Full Stack Software Engineer</a>
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class=" icon-material-outline-gavel"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Gilber Allanis</strong> placed a bid on your <a
-                                            href="#">iOS App Development</a> project
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-autorenew"></i></span>
-                                    <span class="notification-text">
-                                    Your job listing <a href="#">Full Stack Software Engineer</a> is expiring
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-group"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Sindy Forrest</strong> applied for a job <a href="#">Full Stack Software Engineer</a>
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-rate-review"></i></span>
-                                    <span class="notification-text">
-                                    <strong>David Peterson</strong> left you a <span class="star-rating no-stars"
-                                                                                     data-rating="5.0"></span> rating after finishing <a
-                                            href="#">Logo Design</a> task
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="col-xl-12 js-dashboard-notification-pages">
+                    {% include 'Notification/include/partial_dashboard_notifications_list.html' %}
                 </div>
-
             </div>
             <!-- Row / End -->
 

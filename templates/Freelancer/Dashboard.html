@@ -60,86 +60,10 @@
 
             <!-- Row -->
             <div class="row">
-                <!-- Dashboard Notifications Box col-xl-8 -->
-                <div class="col-xl-12">
-                    <div class="dashboard-box">
-                        <div class="headline">
-                            <h3><i class="icon-material-baseline-notifications-none"></i> Notifications</h3>
-                            <button class="mark-as-read ripple-effect-dark" data-tippy-placement="left"
-                                    title="Mark all as read">
-                                <i class="icon-feather-check-square"></i>
-                            </button>
-                        </div>
-                        <div class="content">
-                            <ul class="dashboard-box-list">
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-group"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Michael Shannah</strong> applied for a job <a href="#">Full Stack Software Engineer</a>
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class=" icon-material-outline-gavel"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Gilber Allanis</strong> placed a bid on your <a
-                                            href="#">iOS App Development</a> project
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-autorenew"></i></span>
-                                    <span class="notification-text">
-                                    Your job listing <a href="#">Full Stack Software Engineer</a> is expiring
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-group"></i></span>
-                                    <span class="notification-text">
-                                    <strong>Sindy Forrest</strong> applied for a job <a href="#">Full Stack Software Engineer</a>
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="notification-icon"><i
-                                            class="icon-material-outline-rate-review"></i></span>
-                                    <span class="notification-text">
-                                    <strong>David Peterson</strong> left you a <span class="star-rating no-stars"
-                                                                                     data-rating="5.0"></span> rating after finishing <a
-                                            href="#">Logo Design</a> task
-                                </span>
-                                    <!-- Buttons -->
-                                    <div class="buttons-to-right">
-                                        <a href="#" class="button ripple-effect ico" title="Mark as read"
-                                           data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                <!-- Dashboard Notifications Box col-xl-12 -->
+                <div class="col-xl-12 js-dashboard-notification-pages">
+                    {% include 'Notification/include/partial_dashboard_notifications_list.html' %}
                 </div>
-
             </div>
             <!-- Row / End -->
 
@@ -177,48 +101,4 @@
         </div>
     </div>
     <!-- Dashboard Content / End -->
-
-    <script src="{% static 'js/chart.min.js' %}"></script>
-    <script type="text/javascript">
-        const ctxB = document.getElementById("barChart").getContext('2d');
-        const myBarChart = new Chart(ctxB, {
-            type: 'bar',
-            data: {
-                labels: ["Tasks Posted", "Completed", "In Progress","Pending", "Proposal Submit", "Expired"],
-                datasets: [{
-                    data: {{data|safe}},
-                    backgroundColor: [
-                        'rgba(64, 182, 96, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(184, 27, 127, 0.2)',
-                        'rgba(255, 99, 132, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgba(64, 182, 96, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(184, 27, 127, 1)',
-                        'rgba(255,99,132,1)',
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                legend:{
-                  display: false,
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-
-    </script>
 {% endblock dashboard_content %}

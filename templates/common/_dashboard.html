@@ -44,9 +44,10 @@
 
                             <li class="{% if 'bookmarks/' in request.path %}active{% endif %}"><a href="{% url 'bookmarks' %}"><i class="icon-material-outline-star-border"></i> Bookmarks</a></li>
 
-                            {% if request.user.is_Employer %}
-                                <li class="{% if 'reviews/' in request.path %}active{% endif %}"><a href="{% url 'reviews' %}"><i class="icon-material-outline-rate-review"></i> Reviews</a></li>
-							{% endif %}
+                            <li class="{% if 'reviews/' in request.path %}active{% endif %}">
+                                <a href="{% if request.user.is_Freelancer %}{% url 'freelancer_reviews' %}{% else %}{% url 'emp_reviews' %}{% endif %}"><i class="icon-material-outline-rate-review"></i> Reviews</a>
+                            </li>
+
 						</ul>
 
 						<ul data-submenu-title="Account">

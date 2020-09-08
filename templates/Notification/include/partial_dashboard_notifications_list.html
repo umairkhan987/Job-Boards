@@ -1,0 +1,78 @@
+{% load static %}
+
+<div class="dashboard-box ">
+    <div class="headline">
+        <h3><i class="icon-material-baseline-notifications-none"></i> Notifications</h3>
+        <button class="mark-as-read ripple-effect-dark" data-tippy-placement="left"
+                title="Mark all as read">
+            <i class="icon-feather-check-square"></i>
+        </button>
+    </div>
+    <div class="content ">
+        <ul class="dashboard-box-list">
+            {% if notifications %}
+    {% for notification in notifications %}
+        <li>
+            <span class="notification-icon"><i class="{{ notification.get_icon }}"></i></span>
+            <span class="notification-text">
+                                        <strong>{{ notification.get_actor_full_name }}</strong> {{ notification.get_action_display }}
+                {% if notification.compare_action %}
+                    <a href="{{ notification.get_absolute_url }}">{{ notification.target }}</a>{% endif %}
+            </span>
+            <!-- Buttons
+            <div class="buttons-to-right">
+                <a href="#" class="button ripple-effect ico" title="Mark as read"
+                   data-tippy-placement="left"><i class="icon-feather-check-square"></i></a>
+            </div>-->
+        </li>
+    {% endfor %}
+
+{% else %}
+    <div class="margin-bottom-20 margin-top-10" style="text-align: center">
+        <span>No new notification</span>
+    </div>
+{% endif %}
+        </ul>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="clearfix"></div>
+<div class="pagination-container margin-top-40 js-dashboard-pages">
+    {% if notifications.has_other_pages %}
+        <nav class="pagination justify-content-center">
+            <ul>
+                {% if notifications.has_previous %}
+                    <li class="pagination-arrow"><a href="?page={{ notifications.previous_page_number }}"
+                                                    class="ripple-effect"><i
+                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                {% else %}
+                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                {% endif %}
+
+                {% for i in notifications.paginator.page_range %}
+                    {% if notifications.number == i %}
+                        <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if notifications.has_next %}
+                    <li class="pagination-arrow"><a href="?page={{ notifications.next_page_number }}"
+                                                    class="ripple-effect"><i
+                            class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                {% else %}
+                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                            class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+<div class="clearfix"></div>
+<!-- Pagination / End -->
+
+
+

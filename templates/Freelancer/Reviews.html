@@ -1,0 +1,151 @@
+{% extends 'common/_dashboard.html' %}
+{% load static %}
+
+{% block dashboard_content %}
+    <!-- Dashboard Content data-simplebar -->
+    <div class="dashboard-content-container">
+        <div class="dashboard-content-inner">
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>Reviews</h3>
+
+                <!-- Breadcrumbs -->
+                <nav id="breadcrumbs" class="dark">
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        {% if request.user.is_Employer %}
+                            <li><a href="{% url 'emp_dashboard' %}">Dashboard</a></li>
+                        {% else %}
+                            <li><a href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
+                        {% endif %}
+                        <li>Reviews</li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Row -->
+            <div class="row">
+                <!-- Dashboard Box -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box margin-top-0">
+
+                        <!-- Headline -->
+                        <div class="headline">
+                            <h3><i class="icon-material-outline-thumb-up"></i> Reviews</h3>
+                        </div>
+
+                        <div class="content">
+                            {% if proposals %}
+                                <ul class="dashboard-box-list">
+                                    {% for proposal in proposals %}
+                                        {% if proposal.rating != 0.0 %}
+                                            <li>
+                                                <div class="boxed-list-item">
+                                                    <!-- Content -->
+                                                    <div class="item-content">
+                                                        <h4>{{ proposal.task.title }}</h4>
+                                                        <div class="item-details margin-top-10">
+                                                            <div class="star-rating"
+                                                                 data-rating="{{ proposal.rating }}"></div>
+                                                            <div class="detail-item"><i
+                                                                    class="icon-material-outline-date-range"></i> {{ proposal.updated_at|date }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="item-description">
+                                                            <p>{{ proposal.comment }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="margin-top-10 margin-bottom-10">
+                                    <p style="text-align-last: center">No task is competed. So without completed task
+                                        you can't give rating.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Row / End -->
+
+            <!-- Pagination -->
+            <div class="clearfix"></div>
+            <div class="pagination-container margin-top-40">
+                {% if proposals.has_other_pages %}
+                    <nav class="pagination justify-content-center">
+                        <ul>
+                            {% if proposals.has_previous %}
+                                <li class="pagination-arrow"><a href="?page={{ proposals.previous_page_number }}"
+                                                                class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                            {% else %}
+                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-left"></i></a></li>
+                            {% endif %}
+
+                            {% for i in proposals.paginator.page_range %}
+                                {% if proposals.number == i %}
+                                    <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if proposals.has_next %}
+                                <li class="pagination-arrow"><a href="?page={{ proposals.next_page_number }}"
+                                                                class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% else %}
+                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
+                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+            <div class="clearfix"></div>
+            <!-- Pagination / End -->
+
+            <!-- Footer -->
+            <div class="dashboard-footer-spacer"></div>
+            <div class="small-footer">
+                <div class="small-footer-copyrights">
+                    © 2018 <strong>Hireo</strong>. All Rights Reserved.
+                </div>
+                <ul class="footer-social-links">
+                    <li>
+                        <a href="#" title="Facebook" data-tippy-placement="top">
+                            <i class="icon-brand-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Twitter" data-tippy-placement="top">
+                            <i class="icon-brand-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Google Plus" data-tippy-placement="top">
+                            <i class="icon-brand-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="LinkedIn" data-tippy-placement="top">
+                            <i class="icon-brand-linkedin-in"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <!-- Footer / End -->
+        </div>
+    </div>
+    <!-- Dashboard Content / End -->
+
+
+{% endblock %}

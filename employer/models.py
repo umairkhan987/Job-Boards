@@ -91,3 +91,6 @@ class Offers(models.Model):
     offer_message = models.CharField(max_length=500)
     offer_file = models.FileField(upload_to=upload_offer_file, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.offer_message

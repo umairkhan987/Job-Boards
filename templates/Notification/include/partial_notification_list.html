@@ -9,7 +9,7 @@
                 <span class="notification-icon"><i class="{{ notification.get_icon }}"></i></span>
                 <span class="notification-text">
                     <strong>{{ notification.get_actor_full_name }}</strong> {{ notification.get_action_display }}
-                    {% if notification.target %}<span class="color">{{ notification.target }}</span> project{% endif %}
+                    {% if notification.compare_action %}<span class="color">{{ notification.target }}</span> project{% endif %}
                 </span>
             </a>
         </li>

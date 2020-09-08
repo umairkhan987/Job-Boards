@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
 
@@ -66,6 +66,9 @@ class Notification(models.Model):
     class Meta:
         ordering = ("-timestamp",)
 
+    def __str__(self):
+        return f"{self.id} {self.action}"
+
     def get_icon(self):
         """ Model method to return specific notification icon. """
         if self.action == Notification.PLACE_A_BID:
@@ -78,6 +81,8 @@ class Notification(models.Model):
             return "icon-material-outline-highlight-off"
         if self.action == Notification.POST_REVIEW:
             return "icon-material-outline-rate-review"
+        if self.action == Notification.MAKE_OFFER:
+            return "icon-line-awesome-envelope"
 
     def get_actor_full_name(self):
         """ Get actor full name """
@@ -91,7 +96,15 @@ class Notification(models.Model):
             return reverse('my_proposals')
         if self.action == Notification.MAKE_OFFER:
             return reverse("offers")
+        if self.action == Notification.POST_REVIEW:
+            return reverse("freelancer_reviews")
         return None
+
+    def compare_action(self):
+        """ compare action to hide the target object on template """
+        if self.action == Notification.MAKE_OFFER:
+            return False
+        return True
 
 
 # create notification when proposal is submitted
@@ -103,13 +116,23 @@ def create_notification_place_on_bid(sender, instance, created, **kwargs):
         notification.save()
 
 
-# create notification when offer is submitted
+# create offer notification
 @receiver(post_save, sender=Offers)
-def create_offer_notification_(sender, instance, created, **kwargs):
+def create_offer_notification(sender, instance, created, **kwargs):
     if created:
-        notification = Notification(actor=instance.sender, recipient=instance.profile.user,
-                                    action=Notification.MAKE_OFFER)
-        notification.save()
+        try:
+            old_notification = Notification.objects.first()
+            if old_notification and (
+                    old_notification.actor == instance.sender and
+                    old_notification.recipient == instance.profile.user and
+                    old_notification.action == Notification.MAKE_OFFER):
+                old_notification.delete()
+
+            notification = Notification(actor=instance.sender, recipient=instance.profile.user, target=instance,
+                                        action=Notification.MAKE_OFFER)
+            notification.save()
+        except Exception as e:
+            print(str(e))
 
 
 def notification_handler(actor, recipient, action, **kwargs):
@@ -130,3 +153,20 @@ def notification_handler(actor, recipient, action, **kwargs):
         action=action,
         target=kwargs.pop("target", None)
     )
+
+
+# delete offer notifications
+# TODO: delete other two models notifications
+@receiver(post_delete, sender=Offers)
+@receiver(post_delete, sender=Proposal)
+def delete_offer_notification(sender, instance, **kwargs):
+    try:
+        if sender.__name__ == Proposal.__name__:
+            notification = Notification.objects.filter(target_object_id=instance.task.id, actor=instance.user).first()
+            if notification:
+                notification.delete()
+        else:
+            Notification.objects.get(target_object_id=instance.id).delete()
+
+    except Exception as e:
+        print(str(e))

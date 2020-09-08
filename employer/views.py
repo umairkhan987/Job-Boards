@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import User, Profile
@@ -175,7 +176,25 @@ def dashboard(request):
     pending = user.tasks.filter(job_status__exact="Pending").count()
     total_Proposals = Proposal.objects.filter(task__in=request.user.tasks.all()).count()
     data = [user.tasks.count(), user.task_completed(), user.task_InProgress(), pending, total_Proposals, 0]
-    return render(request, 'Employer/Dashboard.html', {"data": data})
+
+    # notifications
+    notifications_list = request.user.notifications.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(notifications_list, 5)
+
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
+
+    if request.is_ajax():
+        html = render_to_string("Notification/include/partial_dashboard_notifications_list.html",
+                                {"notifications": notifications})
+        return JsonResponse({"success": True, "html": html})
+
+    return render(request, 'Employer/Dashboard.html', {"data": data, "notifications": notifications})
 
 
 @login_required

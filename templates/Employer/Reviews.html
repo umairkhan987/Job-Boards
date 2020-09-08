@@ -36,7 +36,7 @@
 						</div>
 
 						<div class="content">
-                            {% if proposals|length > 0 %}
+                            {% if proposals%}
                                 <ul class="dashboard-box-list">
 								    {% for proposal in proposals %}
                                         {% if proposal.rating == 0.0 %}

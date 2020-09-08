@@ -2,6 +2,7 @@ from calendar import month_abbr, month_name
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -127,11 +128,31 @@ def dashboard(request):
     month = request.user.profile.created_at.month
     data = [views.filter(created_at__month=((month + x) % 12) or 12).count() or '' for x in range(6)]
     labels = [month_name[((month + i) % 12) or 12] for i in range(6)]
+
+    # notifications
+    notifications_list = request.user.notifications.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(notifications_list, 5)
+
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
+
+    if request.is_ajax():
+        html = render_to_string("Notification/include/partial_dashboard_notifications_list.html",
+                                {"notifications": notifications})
+        return JsonResponse({"success": True, "html": html})
+
     context = {
         "labels": labels,
-        "data": data
+        "data": data,
+        "notifications": notifications
     }
     render_to_string('Freelancer/includes/partial_views_chart.html', context)
+
     return render(request, 'Freelancer/Dashboard.html', context)
 
 
@@ -168,3 +189,23 @@ def delete_offer(request, id):
             raise Http404("Invalid request")
     except Exception as e:
         raise Http404(str(e))
+
+
+@login_required
+@freelancer_required
+def reviews(request):
+    proposal_list = Proposal.objects.filter(Q(user=request.user) & Q(task__isnull=False)).order_by("-updated_at")
+    if proposal_list.exists():
+        proposal_list = proposal_list.filter(Q(status__iexact="completed") & ~Q(rating=0.0))
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(proposal_list, 3)
+
+    try:
+        proposals = paginator.page(page)
+    except PageNotAnInteger:
+        proposals = paginator.page(1)
+    except EmptyPage:
+        proposals = paginator.page(paginator.num_pages)
+
+    return render(request, 'Freelancer/Reviews.html', {"proposals": proposals})
