@@ -1,0 +1,22 @@
+{% load static %}
+
+{% if notifications_list %}
+    {% for notification in notifications_list %}
+
+        <!-- Notification -->
+        <li>
+            <a href="{{ notification.get_absolute_url }}">
+                <span class="notification-icon"><i class="{{ notification.get_icon }}"></i></span>
+                <span class="notification-text">
+                    <strong>{{ notification.get_actor_full_name }}</strong> {{ notification.get_action_display }}
+                    {% if notification.target %}<span class="color">{{ notification.target }}</span> project{% endif %}
+                </span>
+            </a>
+        </li>
+
+    {% endfor %}
+{% else %}
+    <div class="margin-bottom-20 margin-top-20" style="text-align: center">
+        <span>No new notification.</span>
+    </div>
+{% endif %}

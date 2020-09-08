@@ -12,7 +12,6 @@ urlpatterns = [
     path('freelancers/profile/<int:id>/', views.freelancer_profile, name='freelancer_profile'),
 
     path('bookmarks/', views.bookmarks, name="bookmarks"),
-    path('offer/', views.send_offers, name="send_offer"),
     path('deactivate/', views.deactivate_account, name="deactivate_account"),
 
 ]

@@ -11,20 +11,6 @@ class Bookmark(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-def upload_offer_file(instance, filename):
-    return 'Files/Offer/{filename}'.format(filename=filename)
-
-
-class Offers(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="offers")
-    full_name = models.CharField(max_length=250)
-    email = models.EmailField(max_length=250)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='sent_offers')
-    offer_message = models.CharField(max_length=500)
-    offer_file = models.FileField(upload_to=upload_offer_file, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
 class HitCount(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="views")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import MessageNotification
+from .models import MessageNotification, Notification
 
 
 @login_required
@@ -25,3 +25,19 @@ def mark_all_as_read(request):
                                 {"message_notifications": notifications}, request)
         return JsonResponse({"success": True, "html": html})
     return HttpResponseBadRequest()
+
+
+@login_required
+def notification_unread(request):
+    notifications = Notification.objects.filter(recipient=request.user)
+    notifications.update(is_seen=True)
+    html = render_to_string("Notification/include/partial_notification_list.html",
+                            {"notifications_list": notifications}, request)
+    return JsonResponse({"success": True, "html": html})
+
+
+# TODO: under process
+@login_required
+@csrf_exempt
+def notify_mark_all_as_read(request):
+    return None

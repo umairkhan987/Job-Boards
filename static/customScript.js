@@ -46,7 +46,6 @@ $(document).ready(function () {
     $(loginForm).submit(function (event) {
         event.preventDefault();
         const formData = loginForm.serialize();
-        console.log("Login form data" + formData);
         const url = loginForm.attr('action');
         $.ajax({
             type:"ajax",
@@ -54,6 +53,7 @@ $(document).ready(function () {
             method:"POST",
             data:formData,
             success:function (data) {
+                    // console.log(data);
                     if(data.success){
                          $.magnificPopup.close();
                          window.location = '/';

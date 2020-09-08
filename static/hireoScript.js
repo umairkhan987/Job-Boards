@@ -143,7 +143,7 @@ $(document).ready(function () {
             method: "GET",
             url: url,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                     thisRef.find('span').hide();
                     $(".js-header-message-notification ul").html(data.html);
@@ -168,6 +168,26 @@ $(document).ready(function () {
         });
 
     });
+
+    // views User notification
+    $(".js-user-notification").on("click", function () {
+        const thisRef = $(this);
+        const url = $(this).data("url");
+
+        $.ajax({
+            type: "ajax",
+            method: "GET",
+            url: url,
+            success: function (data) {
+                // console.log(data);
+                if(data.success){
+                    thisRef.find('span').hide();
+                    $(".js-header-user-notifications ul").html(data.html);
+                }
+            }
+        });
+    });
+
 
     function getCookie(name) {
         let cookieValue = null;

@@ -1,19 +1,18 @@
-import operator
 from calendar import month_abbr, month_name
-from functools import reduce
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import F, Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 
 from accounts.decorators import freelancer_required, valid_user_for_proposal
 from employer.models import PostTask
-from hireo.models import Offers, HitCount
+from hireo.models import HitCount
 from .forms import ProposalForm
 from .models import Proposal
+from employer.models import Offers
+from notification.models import Notification, notification_handler
 
 
 @login_required
@@ -95,6 +94,7 @@ def cancel_task(request, id):
             proposal.task.save()
             proposal.user.profile.save()
             proposal.save()
+            notification_handler(request.user, proposal.task.user, Notification.TASK_CANCELLED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job cancelled."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
@@ -114,6 +114,7 @@ def task_completed(request, id):
             proposal.task.save()
             proposal.user.profile.save()
             proposal.save()
+            notification_handler(request.user, proposal.task.user, Notification.TASK_COMPLETED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job Completed."})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})

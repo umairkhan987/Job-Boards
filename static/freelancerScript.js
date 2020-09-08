@@ -11,7 +11,7 @@ $(document).ready(function () {
             url: url,
             data: data,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
                     setTimeout(() => {

@@ -107,7 +107,7 @@ class Profile(models.Model):
     def calculate_rating(self):
         if self.total_job_done < 1:
             return 0
-        return (self.total_job_done / self.total_hired) * 5
+        return round((self.total_job_done / self.total_hired) * 5, 1)
 
     def get_work_history(self):
         return self.user.proposals.filter(status__exact='completed')

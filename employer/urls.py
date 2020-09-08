@@ -12,5 +12,6 @@ urlpatterns = [
     path('accept/<int:id>/proposal/', views.accept_proposal, name="accept_proposal"),
     path('dashboard/', views.dashboard, name="emp_dashboard"),
     path('reviews/', views.reviews, name="reviews"),
-    path('reviews/<int:id>/', views.post_reviews, name="post_reviews")
+    path('reviews/<int:id>/', views.post_reviews, name="post_reviews"),
+    path('offer/', views.send_offers, name="send_offer"),
 ]

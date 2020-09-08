@@ -1,14 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.utils import timezone
-from django.http import Http404, JsonResponse, HttpResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.decorators import employer_required, valid_user_for_task
-from accounts.models import Profile, User
+from accounts.models import User, Profile
 from freelancers.models import Proposal
-from .forms import TaskForm
+from .forms import TaskForm, OfferForm
 from .models import PostTask
+from notification.models import Notification, notification_handler
 
 # deprecated
 """
@@ -154,12 +154,12 @@ def accept_proposal(request, id):
         if request.method == "POST" and request.is_ajax():
             proposal.user.profile.total_hired += 1
             proposal.task.job_status = 'In Progress'
-            proposal.proposal_accept_date = timezone.now()
             proposal.status = "accepted"
 
             proposal.user.profile.save()
             proposal.task.save()
             proposal.save()
+            notification_handler(request.user, proposal.user, Notification.ACCEPT_OFFER, target=proposal)
             return JsonResponse({"success": True, "msg": "Proposal accepted.", "url": redirect('my_tasks').url})
 
         if request.method == "POST" and not request.is_ajax():
@@ -215,6 +215,30 @@ def post_reviews(request, id):
         proposal.rating = rating
         proposal.comment = comment
         proposal.save()
+        notification_handler(request.user, proposal.user, Notification.POST_REVIEW, target=proposal.task)
         return JsonResponse({"success": True, 'msg': "Review submitted"})
     else:
         raise Http404("Invalid request")
+
+
+@login_required
+@employer_required
+def send_offers(request):
+    try:
+        if request.method == "POST" and request.is_ajax():
+            form = OfferForm(request.POST, request.FILES)
+            id = request.POST.get("profile_id")
+            email = request.POST.get("email")
+            if form.is_valid():
+                profile = get_object_or_404(Profile, pk=id)
+                sender = User.objects.filter(email=email).first()
+                offer = form.save(commit=False)
+                offer.sender = sender if sender is not None else None
+                offer.profile = profile
+                offer.save()
+                return JsonResponse({"success": True, "msg": "Offer send"})
+            else:
+                errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+                return JsonResponse({"success": False, "errors": errors})
+    except Exception as e:
+        raise Http404(str(e))

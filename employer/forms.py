@@ -1,7 +1,5 @@
-import os
-
 from django import forms
-from .models import PostTask
+from .models import PostTask, Offers
 
 experience_level = (
     ('entry', 'Entry'),
@@ -31,3 +29,8 @@ class TaskForm(forms.ModelForm):
             return filename
         return None
 
+
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offers
+        fields = ('full_name', 'email', 'offer_message', 'offer_file')

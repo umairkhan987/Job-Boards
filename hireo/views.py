@@ -11,7 +11,6 @@ from django.template.loader import render_to_string
 
 from accounts.models import Profile, User
 from employer.models import PostTask
-from .forms import OfferForm
 from .models import Bookmark, HitCount
 
 
@@ -228,22 +227,3 @@ def deactivate_account(request):
         raise Http404(str(e))
 
 
-def send_offers(request):
-    try:
-        if request.method == "POST" and request.is_ajax():
-            form = OfferForm(request.POST, request.FILES)
-            id = request.POST.get("profile_id")
-            email = request.POST.get("email")
-            if form.is_valid():
-                profile = get_object_or_404(Profile, pk=id)
-                sender = User.objects.filter(email=email).first()
-                offer = form.save(commit=False)
-                offer.sender = sender if sender is not None else None
-                offer.profile = profile
-                offer.save()
-                return JsonResponse({"success": True, "msg": "Offer send"})
-            else:
-                errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
-                return JsonResponse({"success": False, "errors": errors})
-    except Exception as e:
-        raise Http404(str(e))

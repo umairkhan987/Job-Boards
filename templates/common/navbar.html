@@ -42,15 +42,17 @@
             <div class="right-side">
 
                 {% if user.is_authenticated %}
-                <!--  User Notifications -->
+                <!--  Notifications -->
 				<div class="header-widget hide-on-mobile">
 
-					<!-- Notifications -->
+					<!-- User Notifications -->
 					<div class="header-notifications">
 
 						<!-- Trigger -->
 						<div class="header-notifications-trigger">
-							<a href="#"><i class="icon-feather-bell"></i><span>4</span></a>
+							<a href="javascript:" data-url="{% url 'notification-unread' %}" class="js-user-notification"><i class="icon-feather-bell"></i>
+                               {% if notifications_count %}<span>{{ notifications_count }}</span>{% endif %}
+                            </a>
 						</div>
 
 						<!-- Dropdown -->
@@ -58,53 +60,15 @@
 
 							<div class="header-notifications-headline">
 								<h4>Notifications</h4>
-								<button class="mark-as-read ripple-effect-dark" title="Mark all as read" data-tippy-placement="left">
+								<button id="js-notify-mark-all-as-read" data-url="{% url 'notify-mark-all-as-read' %}" class="mark-as-read ripple-effect-dark" title="Mark all as read" data-tippy-placement="left">
 									<i class="icon-feather-check-square"></i>
 								</button>
 							</div>
 
-							<div class="header-notifications-content">
+							<div class="header-notifications-content js-header-user-notifications">
 								<div class="header-notifications-scroll" data-simplebar>
 									<ul>
-										<!-- Notification -->
-										<li class="notifications-not-read">
-											<a href="dashboard-manage-candidates.html">
-												<span class="notification-icon"><i class="icon-material-outline-group"></i></span>
-												<span class="notification-text">
-													<strong>Michael Shannah</strong> applied for a job <span class="color">Full Stack Software Engineer</span>
-												</span>
-											</a>
-										</li>
-
-										<!-- Notification -->
-										<li>
-											<a href="dashboard-manage-bidders.html">
-												<span class="notification-icon"><i class=" icon-material-outline-gavel"></i></span>
-												<span class="notification-text">
-													<strong>Gilbert Allanis</strong> placed a bid on your <span class="color">iOS App Development</span> project
-												</span>
-											</a>
-										</li>
-
-										<!-- Notification -->
-										<li>
-											<a href="dashboard-manage-jobs.html">
-												<span class="notification-icon"><i class="icon-material-outline-autorenew"></i></span>
-												<span class="notification-text">
-													Your job listing <span class="color">Full Stack PHP Developer</span> is expiring.
-												</span>
-											</a>
-										</li>
-
-										<!-- Notification -->
-										<li>
-											<a href="dashboard-manage-candidates.html">
-												<span class="notification-icon"><i class="icon-material-outline-group"></i></span>
-												<span class="notification-text">
-													<strong>Sindy Forrest</strong> applied for a job <span class="color">Full Stack Software Engineer</span>
-												</span>
-											</a>
-										</li>
+										{% include 'Notification/include/partial_notification_list.html' %}
 									</ul>
 								</div>
 							</div>
@@ -114,7 +78,7 @@
 					</div>
 
 					<!-- Messages Notifications-->
-					<div class="header-notifications message-notifications">
+					<div class="header-notifications">
                         <div class="header-notifications-trigger">
                             <a class="js-message-notification" href="javascript:void(0);" data-url="{% url 'unread' %}" ><i class="icon-feather-mail"></i>
                                 {% if message_notification_count %} <span>{{ message_notification_count }} </span>{% endif %}</a>
