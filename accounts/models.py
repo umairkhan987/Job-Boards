@@ -102,12 +102,24 @@ class Profile(models.Model):
     def calculate_success_rate(self):
         if self.total_job_done < 1:
             return 0
-        return (self.total_job_done / self.total_hired) * 100
+        return int((self.total_job_done / self.total_hired) * 100)
 
     def calculate_rating(self):
         if self.total_job_done < 1:
             return 0
         return round((self.total_job_done / self.total_hired) * 5, 1)
+
+    def calculate_onBudget(self):
+        completed_job = self.user.proposals.filter(status__iexact="completed")
+        total_job_completed = completed_job.count()
+        total_on_budget = completed_job.filter(onBudget__gt=0).count()
+        return (total_on_budget / total_job_completed) * 100
+
+    def calculate_onTime(self):
+        completed_job = self.user.proposals.filter(status__iexact="completed")
+        total_job_completed = completed_job.count()
+        total_on_time = completed_job.filter(onTime__gt=0).count()
+        return (total_on_time / total_job_completed) * 100
 
     def get_work_history(self):
         return self.user.proposals.filter(status__exact='completed')

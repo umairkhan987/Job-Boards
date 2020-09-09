@@ -155,7 +155,10 @@ $(document).ready(function () {
                 // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    btn_ref.closest("li").hide();
+                    if(data.html != null)
+                        $(".js-freelancer-bookmark-list ul").html(data.html);
+                    else
+                        btn_ref.closest("li").hide();
                 }
                 else{
                     console.log(data.errors);
@@ -194,7 +197,10 @@ $(document).ready(function () {
                 // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    offer_btn_ref.closest('li').hide();
+                    if(data.html != null)
+                        $(".js-freelancer-offer-list ul").html(data.html);
+                    else
+                        offer_btn_ref.closest('li').hide();
                 }
                 else{
                     snackbar_error_msg(data.errors);
@@ -203,31 +209,6 @@ $(document).ready(function () {
         });
     });
 
-
-    // when user click on page tow view proposal against each task
-    // js- include and its working....
-    // TODO: find the way to call through ajax way...
-    $('#proposals-list-div').on('click', 'a', function (event) {
-        event.preventDefault();
-        const parameter = $(this).attr('href');
-
-        if (parameter === "javascript:" || parameter === null) return;
-        let url = window.location.pathname + parameter;
-
-        $.ajax({
-            type: 'ajax',
-            method:'get',
-            url: url,
-            success:function (data) {
-                if(data.success){
-                    $('#js-proposals-list-div').html(data.html_proposal_list);
-                }else{
-                    snackbar_error_msg(data.errors);
-                }
-            }
-        });
-
-    });
 
     function getCookie(name) {
         let cookieValue = null;

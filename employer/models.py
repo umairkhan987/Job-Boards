@@ -60,7 +60,7 @@ class PostTask(models.Model):
         return None
 
     def get_avg_value(self):
-        return (self.min_price + self.max_price) / 2
+        return int((self.min_price + self.max_price) / 2)
 
     def user_submitted_proposal(self):
         user = get_current_user()
@@ -70,7 +70,7 @@ class PostTask(models.Model):
 
     def get_avg_bids(self):
         avg = self.proposals.all().aggregate(Avg('rate'))['rate__avg']
-        return avg if avg is not None else 0
+        return int(avg) if avg is not None else 0
 
     def get_bookmark_task(self):
         user = get_current_user()

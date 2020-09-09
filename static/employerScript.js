@@ -174,7 +174,10 @@ $(document).ready(function () {
                 // console.log(data);
                 if(data.success){
                     snackbar_msg(data.msg);
-                    delete_btn_ref.closest('li').hide();
+                    if(data.html != null)
+                        $(".js-employer-bookmark-list ul").html(data.html);
+                    else
+                        delete_btn_ref.closest('li').hide();
                 }
                 else{
                     console.log(data.errors);
@@ -182,6 +185,55 @@ $(document).ready(function () {
             }
 
         });
+    });
+
+    // Submit Offer
+    $('#offer_form').submit(function (event) {
+        event.preventDefault();
+        const url = $(this).attr('action');
+        const id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+        const formData = new FormData($('#offer_form')[0]);
+        formData.append("profile_id", id.toString());
+
+        // for(let value of formData.entries())
+        //         console.log(value[0]+'  '+value[1]);
+
+        $.ajax({
+            type:"ajax",
+            method: "POST",
+            url: url,
+            data:formData,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success:function (data) {
+                console.log(data);
+                if(data.success){
+                    $.magnificPopup.close();
+                    snackbar_msg(data.msg);
+                }
+                else{
+                    if(data.errors['full_name']){
+                        $('#offer-full_name-error').show().html(data.errors['full_name']);
+                    }
+                    else{
+                        $('#offer-full_name-error').hide().html("");
+                    }
+                    if(data.errors['email']){
+                        $('#offer-email-error').show().html(data.errors['email']);
+                    }else{
+                        $('#offer-email-error').hide().html("");
+                    }
+                    if(data.errors['offer_message']){
+                        $('#offer-message-error').show().html(data.errors['offer_message']);
+                    }else{
+                        $('#offer-message-error').hide().html("");
+                    }
+                }
+            }
+
+        });
+
     });
 
 

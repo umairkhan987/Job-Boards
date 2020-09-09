@@ -161,15 +161,15 @@
 
 						<!-- Indicator -->
 						<div class="indicator">
-							<strong>90%</strong>
-							<div class="indicator-bar" data-indicator-percentage="90"><span></span></div>
+							<strong>{{ profile.calculate_onTime|floatformat:"0" }}%</strong>
+							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_onTime|floatformat:"0" }}"><span></span></div>
 							<span>On Time</span>
 						</div>
 
 						<!-- Indicator -->
 						<div class="indicator">
-							<strong>80%</strong>
-							<div class="indicator-bar" data-indicator-percentage="80"><span></span></div>
+							<strong>{{ profile.calculate_onBudget|floatformat:"0" }}%</strong>
+							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_onBudget|floatformat:"0" }}"><span></span></div>
 							<span>On Budget</span>
 						</div>
 					</div>
@@ -224,8 +224,7 @@
                                 <span class="bookmarked-text">Bookmarked</span>
                         </button>
                     {% else %}
-                            {# TODO: handle bookmark when user is not loggedIn. Icon not place correctly #}
-                        <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star"></i> Bookmark</a>
+                        <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star margin-right-5"></i> Bookmark</a>
                     {% endif %}
 				</div>
 

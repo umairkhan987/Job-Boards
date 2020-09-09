@@ -15,7 +15,15 @@ from .models import Bookmark, HitCount
 
 
 def index(request):
-    return render(request, 'Hireo/index.html')
+    tasks = PostTask.objects.all()
+    freelancers = Profile.objects.all()
+    context = {
+        "total_tasks_posted": tasks.count(),
+        "total_freelancers": freelancers.count(),
+        "tasks": tasks.exclude(job_status__exact="Completed").order_by('-created_at')[:5],
+        "freelancers": freelancers.filter(created_at__lt=F('updated_at')).order_by('created_at')[:6]
+    }
+    return render(request, 'Hireo/index.html', context)
 
 
 def findTasks(request):
@@ -69,9 +77,9 @@ def view_task(request, id):
     except EmptyPage:
         proposals = paginator.page(paginator.num_pages)
 
-    proposals_list = render_to_string('Freelancer/includes/partial_proposals_list.html', {"proposals": proposals})
+    html = render_to_string('Hireo/include/partial_proposals_list.html', {"proposals": proposals})
     if request.is_ajax():
-        return JsonResponse({"success": True, "html_proposal_list": proposals_list})
+        return JsonResponse({"success": True, "html": html})
 
     return render(request, 'Freelancer/ViewTask.html', {"task": task, "proposals": proposals})
 
@@ -171,13 +179,22 @@ def bookmarks(request):
         if user.is_Employer:
             if request.user.bookmarks.filter(freelancer_profile=profile).exists():
                 Bookmark.objects.filter(user=request.user, freelancer_profile=profile).delete()
-                return JsonResponse({"success": True, "msg": "Removed"})
+                html = None
+                if not request.user.bookmarks.exists():
+                    msg = "There is no bookmark."
+                    html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
+                return JsonResponse({"success": True, "msg": "Removed", "html": html})
 
         # check if user is freelancer and and if already bookmarked then delete it.
         if user.is_Freelancer:
-            if request.user.bookmarks.filter(task=task).exists():
-                Bookmark.objects.filter(user=request.user, task=task).delete()
-                return JsonResponse({"success": True, "msg": "Removed"})
+            bookmark = request.user.bookmarks.filter(task=task)
+            if bookmark.exists():
+                bookmark.delete()
+                html = None
+                if not request.user.bookmarks.exists():
+                    msg = "There is no bookmark."
+                    html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
+                return JsonResponse({"success": True, "msg": "Removed", "html": html})
 
         bookmark = Bookmark.objects.create(user=user)
         if user.is_Employer:

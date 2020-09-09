@@ -8,7 +8,7 @@ from django.urls import reverse
 from accounts.models import User
 from freelancers.models import Proposal
 from messenger.models import Messages
-from employer.models import Offers
+from employer.models import Offers, PostTask
 
 
 class MessageNotification(models.Model):
@@ -159,6 +159,7 @@ def notification_handler(actor, recipient, action, **kwargs):
 # TODO: delete other two models notifications
 @receiver(post_delete, sender=Offers)
 @receiver(post_delete, sender=Proposal)
+@receiver(post_delete, sender=PostTask)
 def delete_offer_notification(sender, instance, **kwargs):
     try:
         if sender.__name__ == Proposal.__name__:
@@ -166,7 +167,7 @@ def delete_offer_notification(sender, instance, **kwargs):
             if notification:
                 notification.delete()
         else:
-            Notification.objects.get(target_object_id=instance.id).delete()
+            Notification.objects.filter(target_object_id=instance.id).delete()
 
     except Exception as e:
         print(str(e))

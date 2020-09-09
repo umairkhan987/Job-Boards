@@ -162,7 +162,6 @@ def offers(request):
     offer_list = Offers.objects.filter(profile=request.user.profile).order_by('-created_at')
     page = request.GET.get('page', None)
     paginator = Paginator(offer_list, 4)
-
     try:
         offer_list = paginator.page(page)
     except PageNotAnInteger:
@@ -184,7 +183,11 @@ def delete_offer(request, id):
                     return JsonResponse(
                         {"success": False, "errors": "You are not permitted to perform this operation."})
                 offer.delete()
-                return JsonResponse({"success": True, "msg": "Offer Deleted"})
+                html = None
+                if not request.user.profile.offers.exists():
+                    msg = "There is no offers."
+                    html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
+                return JsonResponse({"success": True, "msg": "Offer Deleted", "html": html})
         else:
             raise Http404("Invalid request")
     except Exception as e:

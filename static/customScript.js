@@ -138,54 +138,31 @@ $(document).ready(function () {
         });
     });
 
-    // Offer form Submit.
-    $('#offer_form').submit(function (event) {
+    // when user click on page tow view proposal against each task
+    // js- include and its working....
+    // TODO: find the way to call through ajax way...
+    $('.proposals-list-div').on('click', '.js-pagination a', function (event) {
         event.preventDefault();
-        const url = $(this).attr('action');
-        const id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
-        const formData = new FormData($('#offer_form')[0]);
-        formData.append("profile_id", id.toString());
+        const parameter = $(this).attr('href');
 
-        // for(let value of formData.entries())
-        //         console.log(value[0]+'  '+value[1]);
+        if (parameter === "javascript:" || parameter === null) return;
+        let url = window.location.pathname + parameter;
 
         $.ajax({
-            type:"ajax",
-            method: "POST",
+            type: 'ajax',
+            method:'get',
             url: url,
-            data:formData,
-            processData: false,
-            contentType: false,
-            cache: false,
             success:function (data) {
-                console.log(data);
                 if(data.success){
-                    $.magnificPopup.close();
-                    snackbar_msg(data.msg);
-                }
-                else{
-                    if(data.errors['full_name']){
-                        $('#offer-full_name-error').show().html(data.errors['full_name']);
-                    }
-                    else{
-                        $('#offer-full_name-error').hide().html("");
-                    }
-                    if(data.errors['email']){
-                        $('#offer-email-error').show().html(data.errors['email']);
-                    }else{
-                        $('#offer-email-error').hide().html("");
-                    }
-                    if(data.errors['offer_message']){
-                        $('#offer-message-error').show().html(data.errors['offer_message']);
-                    }else{
-                        $('#offer-message-error').hide().html("");
-                    }
+                    $('.js-proposals-list-div').html(data.html);
+                }else{
+                    snackbar_error_msg(data.errors);
                 }
             }
-
         });
 
     });
+
     // snackbar for display msg
     function snackbar_msg(msg)
         {
@@ -199,4 +176,18 @@ $(document).ready(function () {
                 backgroundColor: '#2a41e8'
             });
         }
+            // snackbar for display error msg
+    function snackbar_error_msg(msg) {
+        Snackbar.show({
+            text: msg,
+            pos: 'bottom-center',
+            showAction: true,
+            actionText: "X",
+            actionTextColor: '#fff',
+            duration: 5000,
+            textColor: '#fff',
+            backgroundColor: '#DC3139'
+        });
+    }
+
 });

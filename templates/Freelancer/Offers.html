@@ -30,60 +30,67 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-assignment"></i> Offers List</h3>
 						</div>
-                        {% if offers%}
-						    <div class="content">
+						    <div class="content js-freelancer-offer-list">
 							    <ul class="dashboard-box-list">
+                                {% if offers %}
                                     {% for offer in offers %}
                                         <li>
-									    <!-- Overview -->
-									    <div class="freelancer-overview manage-candidates">
-										    <div class="freelancer-overview-inner">
+                                            <!-- Overview -->
+                                            <div class="freelancer-overview manage-candidates">
+                                                <div class="freelancer-overview-inner">
 
-											<!-- Avatar -->
-											<div class="freelancer-avatar">
-                                                {% if offer.sender %}
-                                                    <div class="verified-badge"></div>
-                                                {% if offer.sender.profileImg %}
-                                                    <img src="{{ offer.sender.profileImg.url }}" alt="">
-                                                {% else %}
-                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                {% endif %}
-                                                {% else %}
-                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                {% endif %}
-											</div>
+                                                    <!-- Avatar -->
+                                                    <div class="freelancer-avatar">
+                                                        {% if offer.sender %}
+                                                            <div class="verified-badge"></div>
+                                                            {% if offer.sender.profileImg %}
+                                                                <img src="{{ offer.sender.profileImg.url }}" alt="">
+                                                            {% else %}
+                                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                        {% endif %}
+                                                    </div>
 
-											<!-- Name -->
-											<div class="freelancer-name">
-												<h4><a>{{ offer.full_name }} </a></h4>
+                                                    <!-- Name -->
+                                                    <div class="freelancer-name">
+                                                        <h4><a>{{ offer.full_name }} </a></h4>
 
-												<!-- Email -->
-												<span class="freelancer-detail-item"><a><i class="icon-feather-mail"></i>{{ offer.email }}</a></span>
+                                                        <!-- Email -->
+                                                        <span class="freelancer-detail-item"><a><i
+                                                                class="icon-feather-mail"></i>{{ offer.email }}</a></span>
 
-												<!-- Offer_content -->
-												<div class="dashboard-task-info bid-info" style="justify-content: left; text-align: left">
-                                                    <span>{{ offer.offer_message }}</span>
-												</div>
+                                                        <!-- Offer_content -->
+                                                        <div class="dashboard-task-info bid-info" style="justify-content: left; text-align: left">
+                                                            <span>{{ offer.offer_message }}</span>
+                                                        </div>
 
-												<!-- Buttons -->
-												<div class="buttons-to-right always-visible margin-top-25 margin-bottom-0">
-                                                    {% if offer.sender %}
-    													<a href="#small-dialog-2" data-firstName="{{ offer.sender.first_name }}" data-id="{{ offer.sender.id }}" data-url="{% url 'messages' %}"  class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
-                                                    {% endif %}
-													<a href="#small-dialog"  data-url="{% url 'delete_offer' offer.id %}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Delete offer"><i class="icon-feather-trash-2"></i></a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</li>
+                                                        <!-- Buttons -->
+                                                        <div class="buttons-to-right always-visible margin-top-25 margin-bottom-0">
+                                                            {% if offer.sender %}
+                                                                <a href="#small-dialog-2" data-firstName="{{ offer.sender.first_name }}"
+                                                                   data-id="{{ offer.sender.id }}" data-url="{% url 'messages' %}"
+                                                                   class="popup-with-zoom-anim button dark ripple-effect send-message"><i
+                                                                        class="icon-feather-mail"></i> Send Message</a>
+                                                            {% endif %}
+                                                            <a href="#small-dialog" data-url="{% url 'delete_offer' offer.id %}"
+                                                               class=" popup-with-zoom-anim button red ripple-effect ico delete-popup"
+                                                               data-tippy-placement="top" title="Delete offer"><i class="icon-feather-trash-2"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
                                     {% endfor %}
-    							</ul>
+                                {% else %}
+                                    <div class="margin-top-10 margin-bottom-10" style="text-align: center">
+                                        <span>There is no offers.</span>
+                                    </div>
+                                {% endif %}
+                                </ul>
                             </div>
-                        {% else %}
-                           <div class="margin-top-10 margin-bottom-10" style="text-align: center">
-                              <span>There is no offers.</span>
-                           </div>
-                        {% endif %}
+
 					</div>
                 </div>
 

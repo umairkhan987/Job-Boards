@@ -37,9 +37,9 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-face"></i> Bookmarked Freelancers</h3>
 						</div>
-                        {% if bookmarks|length > 0 %}
-    						<div class="content">
+    						<div class="content js-employer-bookmark-list">
     							<ul class="dashboard-box-list">
+                                {% if bookmarks %}
                                 {% for bookmark in bookmarks %}
     								<li>
 									<!-- Overview -->
@@ -74,14 +74,14 @@
 									</div>
 								</li>
                                 {% endfor %}
-
+                            {% else %}
+                                <div class="margin-top-10 margin-bottom-10" style="text-align: center">
+                                    <span>There is no bookmark.</span>
+                                </div>
+                            {% endif %}
 							</ul>
 						    </div>
-                        {% else %}
-                             <div class="margin-top-10 margin-bottom-10" style="text-align: center">
-                                <span>There is no bookmark.</span>
-                            </div>
-                        {% endif %}
+
 					</div>
 				</div>
 
@@ -93,50 +93,58 @@
 						<div class="headline">
 							<h3><i class="icon-material-outline-business-center"></i> Bookmarked Jobs</h3>
 						</div>
-                        {% if bookmarks|length > 0 %}
-						    <div class="content">
+						    <div class="content js-freelancer-bookmark-list">
 							    <ul class="dashboard-box-list">
-                                {% for bookmark in bookmarks %}
-    								<li>
-									<!-- Job Listing -->
-									<div class="job-listing">
-										<!-- Job Listing Details -->
-										<div class="job-listing-details">
-											<!-- Details -->
-											<div class="job-listing-description">
-												<h3 class="job-listing-title"><a href="{% url 'view_task' bookmark.id %}">{{ bookmark.title }}</a></h3>
+                                    {% if bookmarks %}
+                                    {% for bookmark in bookmarks %}
+                                        <li>
+                                            <!-- Job Listing -->
+                                            <div class="job-listing">
+                                                <!-- Job Listing Details -->
+                                                <div class="job-listing-details">
+                                                    <!-- Details -->
+                                                    <div class="job-listing-description">
+                                                        <h3 class="job-listing-title"><a
+                                                                href="{% url 'view_task' bookmark.id %}">{{ bookmark.title }}</a></h3>
 
-												<!-- Job Listing Footer -->
-												<div class="job-listing-footer">
-													<ul>
-														<li><i class="icon-material-outline-business-center"></i>Level: {{ bookmark.exp_level.capitalize }}</li>
-														<li><i class="icon-material-outline-folder "></i>Type: {{bookmark.project_type.capitalize}}</li>
-														{% if bookmark.project_type == "fixed" %}
-                                                            <li><i class="icon-line-awesome-hourglass-half"></i>Days: {{ bookmark.no_of_days }} days</li>
-														{% endif %}
-													</ul>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- Buttons -->
-									<div class="buttons-to-right">
-										<a href="javascript:" data-id="{{ bookmark.id }}" data-url="{% url 'bookmarks' %}" class="button red ripple-effect ico delete-freelancer-bookmark" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
-									</div>
-								</li>
-                                {% endfor %}
-							</ul>
+                                                        <!-- Job Listing Footer -->
+                                                        <div class="job-listing-footer">
+                                                            <ul>
+                                                                <li>
+                                                                    <i class="icon-material-outline-business-center"></i>Level: {{ bookmark.exp_level.capitalize }}
+                                                                </li>
+                                                                <li>
+                                                                    <i class="icon-material-outline-folder "></i>Type: {{ bookmark.project_type.capitalize }}
+                                                                </li>
+                                                                {% if bookmark.project_type == "fixed" %}
+                                                                    <li><i class="icon-line-awesome-hourglass-half"></i>Days: {{ bookmark.no_of_days }}
+                                                                        days
+                                                                    </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Buttons -->
+                                            <div class="buttons-to-right">
+                                                <a href="javascript:" data-id="{{ bookmark.id }}" data-url="{% url 'bookmarks' %}"
+                                                   class="button red ripple-effect ico delete-freelancer-bookmark" title="Remove"
+                                                   data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="margin-top-10 margin-bottom-10" style="text-align: center">
+                                        <span>There is no bookmark.</span>
+                                    </div>
+                                {% endif %}
+					    		</ul>
                         </div>
-                        {% else %}
-                           <div class="margin-top-10 margin-bottom-10" style="text-align: center">
-                              <span>There is no bookmark.</span>
-                           </div>
-                        {% endif %}
+
 					</div>
                 </div>
                 {% endif %}
-
-
 			</div>
 			<!-- Row / End -->
 
