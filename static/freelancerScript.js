@@ -2,6 +2,8 @@ $(document).ready(function () {
     // Submit proposal
     $('#submit-proposal').submit(function (event) {
         event.preventDefault();
+        $(".js-days-error").hide().html("");
+
         const url = $(this).attr('action');
         const data = $(this).serialize();
 
@@ -11,14 +13,19 @@ $(document).ready(function () {
             url: url,
             data: data,
             success: function (data) {
-                // console.log(data);
+                console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
                     setTimeout(() => {
                         window.location = data.url;
                     }, 1000);
                 } else {
-                    snackbar_error_msg(data.errors);
+                    if(data.errors["days"]){
+                        $(".js-days-error").show().html(data.errors['days']);
+                    }
+                    else{
+                        snackbar_error_msg(Object.values(data.errors)[0]);
+                    }
                 }
             }
         })
@@ -47,7 +54,6 @@ $(document).ready(function () {
     });
 
     // delete proposals
-    // TODO: when the all bid is deleted then displayed the message or create partial views to display all bids via ajax
     $('#delete-confirm-popup').click(function () {
         const data = {
             "csrfmiddlewaretoken": getCookie('csrftoken'),
@@ -68,8 +74,11 @@ $(document).ready(function () {
                 // console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
-                    if(data.delete){
-                        delete_btn_ref.closest('li').hide();
+                    if(data.deleted){
+                        if(data.html != null)
+                            $(".js-proposals-list ul").html(data.html);
+                        else
+                            delete_btn_ref.closest('li').hide();
                     }
                     else {
                         setTimeout(() => {
@@ -83,7 +92,6 @@ $(document).ready(function () {
         })
     });
 
-    // TODO: change location.reload to ajax functionality
     // complete job button click
     $('#complete_job_Btn').click(function (event) {
         const url = $(this).attr('data-url');
@@ -252,5 +260,4 @@ $(document).ready(function () {
             backgroundColor: '#DC3139'
         });
     }
-
 });

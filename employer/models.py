@@ -78,6 +78,19 @@ class PostTask(models.Model):
             return False
         return user.bookmarks.filter(task_id=self.id).exists()
 
+    def is_hourly_task(self):
+        if self.project_type == "hourly":
+            return True
+        return False
+
+    def get_job_status_color(self):
+        if self.job_status == "Pending":
+            return "yellow"
+        elif self.job_status == "Completed":
+            return "green"
+        else:
+            return "blue"
+
 
 def upload_offer_file(instance, filename):
     return 'Files/Offer/{filename}'.format(filename=filename)

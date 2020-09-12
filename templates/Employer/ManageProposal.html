@@ -87,7 +87,7 @@
                                                     <!-- Bid Details -->
                                                     <ul class="dashboard-task-info bid-info">
                                                         <li><strong>$ {{ proposal.rate }}</strong><span>{{ task.project_type }} Price</span></li>
-                                                        <li><strong> {{ proposal.days }} Days</strong><span>Delivery Time</span></li>
+                                                        {% if not proposal.task.is_hourly_task %}<li><strong> {{ proposal.days }} Days</strong><span>Delivery Time</span></li>{% endif %}
                                                     </ul>
 
                                                     <!-- Buttons -->

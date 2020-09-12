@@ -121,11 +121,12 @@ def create_notification_place_on_bid(sender, instance, created, **kwargs):
 def create_offer_notification(sender, instance, created, **kwargs):
     if created:
         try:
-            old_notification = Notification.objects.first()
+            old_notification = Notification.objects.filter(recipient=instance.profile.user).first()
             if old_notification and (
                     old_notification.actor == instance.sender and
                     old_notification.recipient == instance.profile.user and
                     old_notification.action == Notification.MAKE_OFFER):
+                print("old notifications ", old_notification)
                 old_notification.delete()
 
             notification = Notification(actor=instance.sender, recipient=instance.profile.user, target=instance,
@@ -156,7 +157,6 @@ def notification_handler(actor, recipient, action, **kwargs):
 
 
 # delete offer notifications
-# TODO: delete other two models notifications
 @receiver(post_delete, sender=Offers)
 @receiver(post_delete, sender=Proposal)
 @receiver(post_delete, sender=PostTask)

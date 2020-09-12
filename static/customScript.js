@@ -140,7 +140,7 @@ $(document).ready(function () {
 
     // when user click on page tow view proposal against each task
     // js- include and its working....
-    // TODO: find the way to call through ajax way...
+    // TODO: fix star-rating after append with ajax
     $('.proposals-list-div').on('click', '.js-pagination a', function (event) {
         event.preventDefault();
         const parameter = $(this).attr('href');

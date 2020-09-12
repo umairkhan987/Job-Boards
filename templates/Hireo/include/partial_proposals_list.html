@@ -9,7 +9,7 @@
                 <div class="bids-avatar">
                     <div class="freelancer-avatar">
                         <div class="verified-badge"></div>
-                        <a>
+                        <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">
                             {% if proposal.user.profileImg %}
                                 <img src="{{ proposal.user.profileImg.url }}" alt="">
                             {% else %}
@@ -25,7 +25,7 @@
                     <!-- Name -->
                     <div class="freelancer-name">
                         <h4>
-                            <a>{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
+                            <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
                         </h4>
                         <div class="star-rating"
                              data-rating="{{ proposal.user.profile.calculate_rating }}"></div>

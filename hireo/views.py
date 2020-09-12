@@ -126,18 +126,19 @@ def freelancer_profile(request, id):
     session = request.session.session_key
     ip = request.META['REMOTE_ADDR']
 
-    if (request.user.is_authenticated and not HitCount.objects.filter(
-            Q(profile=profile) & Q(user=request.user)).exists()) or (
-            not request.user.is_authenticated and not (
-            HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
+    if request.user != profile.user:
+        if (request.user.is_authenticated and not HitCount.objects.filter(
+                Q(profile=profile) & Q(user=request.user)).exists()) or (
+                not request.user.is_authenticated and not (
+                HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
 
-        view = HitCount.objects.create(profile=profile)
-        if request.user.is_authenticated:
-            view.user = request.user
-            view.session = session
-        else:
-            view.ip = ip
-        view.save()
+            view = HitCount.objects.create(profile=profile)
+            if request.user.is_authenticated:
+                view.user = request.user
+                view.session = session
+            else:
+                view.ip = ip
+            view.save()
 
     work_history_list = profile.user.proposals.select_related('task').filter(status__exact='completed').order_by(
         'created_at')

@@ -24,6 +24,10 @@ input::-webkit-inner-spin-button {
     background: #E9F7FE;
     color:#319BC0;
 }
+.blue{
+	background: #E9F7FE;
+    color:#319BC0;
+}
 
 .bookmark-anchor {
     background-color: #404040;
@@ -122,3 +126,9 @@ input::-webkit-inner-spin-button {
 	}
 }
 
+
+a.task-list {
+	color: #333;
+	font-size: 20px;
+	line-height: 30px;
+}

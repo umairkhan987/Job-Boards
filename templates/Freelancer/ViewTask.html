@@ -23,7 +23,7 @@
                                 <ul>
                                     <li><i class="icon-material-outline-folder "></i> Type:
                                         <strong>{{ task.project_type.capitalize }}</strong></li>
-                                    {% if task.project_type == 'fixed' %}
+                                    {% if not task.is_hourly_task %}
                                         <li><i class="icon-line-awesome-hourglass-half"></i> Days:
                                             <strong>{{ task.no_of_days }}</strong></li>
                                     {% endif %}
@@ -108,11 +108,10 @@
             <!-- Sidebar -->
             <div class="col-xl-4 col-lg-4">
                 <div class="sidebar-container">
-                    {# TODO: Change color #}
-                    <div class="countdown green margin-bottom-30">{{ task.job_status.capitalize }}</div>
+                    <div class="countdown margin-bottom-30 {{ task.get_job_status_color }}">{{ task.job_status.capitalize }}</div>
 
                     {# send message #}
-                    {% if request.user.is_authenticated %}
+                    {% if request.user.is_authenticated and request.user != task.user %}
                         <a href="#small-dialog-2" class="apply-now-button popup-with-zoom-anim margin-bottom-30"
                             data-firstName="{{ task.user.first_name }}" data-id="{{ task.user.id }}" data-url="{% url 'messages' %}">
                             <i class="icon-feather-mail"></i>
@@ -137,16 +136,16 @@
                                            data-slider-max="500" data-slider-value="{{ task.get_avg_value }}"
                                            data-slider-step="5" data-slider-tooltip="hide"/>
 
-                                    <!-- Headline -->
-                                    <span class="bidding-detail margin-top-30">Set your <strong>delivery time</strong></span>
-
-                                    <!-- Fields -->
-                                    <div class="bidding-fields">
+                                    {% if not task.is_hourly_task %}
+                                        <!-- Headline -->
+                                        <span class="bidding-detail margin-top-30">Set your <strong>delivery time</strong></span>
+                                        <!-- Fields -->
+                                        <div class="bidding-fields">
                                         <div class="bidding-field">
                                             <!-- Quantity Buttons -->
                                             <div class="qtyButtons">
                                                 <div class="qtyDec"></div>
-                                                <input type="text" name="days"
+                                                <input type="number" name="days"
                                                        value="{% widthratio task.no_of_days 2 1 %}">
                                                 <div class="qtyInc"></div>
                                             </div>
@@ -157,9 +156,12 @@
                                             </select>
                                         </div>
                                     </div>
+                                        <div class="alert alert-danger margin-top-20 js-days-error" style="display: none">
+                                            <span>Error</span>
+                                        </div>
+                                    {% endif %}
 
-                                    <!-- TODO: find a better way to tackle this when user is not loggedIn -->
-                                    {% if request.user.is_authenticated %}
+                                    {% if request.user.is_Freelancer %}
                                     <!-- Button -->
                                     <button type="submit"
                                             class="button ripple-effect move-on-hover full-width margin-top-30"
@@ -178,6 +180,7 @@
                                     {% endif %}
                                 </form>
                             </div>
+
                             {% if not request.user.is_authenticated %}
                                 <div class="bidding-signup">Don't have an account?
                                     <a href="#sign-in-dialog"class="register-tab sign-in popup-with-zoom-anim">

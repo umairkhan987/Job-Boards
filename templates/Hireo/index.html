@@ -226,7 +226,7 @@
                                         <ul>
                                             <li><i class="icon-material-outline-business-center"></i>Level: <strong>{{ task.exp_level.capitalize }}</strong></li>
                                             <li><i class="icon-material-outline-folder"></i>Type: <strong>{{ task.project_type.capitalize }}</strong></li>
-                                            {% if task.project_type != "hourly" %}<li><i class="icon-line-awesome-hourglass-half"></i>Days: <strong>{{ task.no_of_days }}</strong></li>{% endif %}
+                                            {% if not task.is_hourly_task %}<li><i class="icon-line-awesome-hourglass-half"></i>Days: <strong>{{ task.no_of_days }}</strong></li>{% endif %}
                                             <li><i class="icon-material-outline-access-time"></i> {{ task.created_at|timesince }} ago</li>
                                         </ul>
                                     </div>

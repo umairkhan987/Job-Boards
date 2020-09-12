@@ -1,4 +1,4 @@
-from calendar import month_abbr, month_name
+from calendar import month_name
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -31,9 +31,13 @@ def submit_proposals(request):
                 proposal.user = request.user
                 proposal.task = task
                 proposal.save()
-            return JsonResponse(
-                {"success": True, "msg": "Your bid has been submitted.", "url": redirect('my_proposals').url})
-        if request.method == "POST" and not request.is_ajax():
+                return JsonResponse(
+                    {"success": True, "msg": "Your bid has been submitted.", "url": redirect('my_proposals').url})
+            else:
+                errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+                return JsonResponse({'success': False, 'errors': errors})
+
+        else:
             raise Http404("Invalid request.")
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
@@ -44,7 +48,7 @@ def submit_proposals(request):
 def my_proposals(request):
     sort = request.GET.get("sort-by", None)
 
-    proposal_list = Proposal.objects.filter(user=request.user).exclude(task_id=None)
+    proposal_list = Proposal.objects.filter(user=request.user).select_related("task").exclude(task_id=None)
     if sort != 'pending' and sort != "relevance" and sort:
         proposal_list = proposal_list.filter(status__iexact=sort)
     elif sort == "pending":
@@ -77,7 +81,13 @@ def delete_proposal(request, id):
                     {"success": False, "errors": "You are not permitted to delete this Proposal"})
 
             proposal.delete()
-            return JsonResponse({"success": True, "delete": True, "msg": "Proposal successfully deleted."})
+            html = None
+            if not request.user.proposals.exclude(task_id=None).exists():
+                msg = "Currently you have not placed any bid yet."
+                html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
+            return JsonResponse({"success": True, "deleted": True, "html": html, "msg": "Proposal successfully deleted."})
+        else:
+            raise Http404("Invalid request")
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 
@@ -97,6 +107,8 @@ def cancel_task(request, id):
             proposal.save()
             notification_handler(request.user, proposal.task.user, Notification.TASK_CANCELLED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job cancelled."})
+        else:
+            raise Http404("Invalid request")
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 
@@ -117,6 +129,8 @@ def task_completed(request, id):
             proposal.save()
             notification_handler(request.user, proposal.task.user, Notification.TASK_COMPLETED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job Completed."})
+        else:
+            raise Http404("Invalid request")
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 

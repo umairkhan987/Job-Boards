@@ -1,4 +1,13 @@
 {% load static %}
+{% load humanize %}
+
+{% if equal %}
+    <!-- Time Sign -->
+    <div class="message-time-sign">
+        <span>{{ message.created_at|naturalday }}</span>
+    </div>
+{% endif %}
+
 <div class="message-bubble me">
     <div class="message-bubble-inner">
         <div class="message-avatar">

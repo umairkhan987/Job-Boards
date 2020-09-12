@@ -11,21 +11,6 @@ from .forms import TaskForm, OfferForm
 from .models import PostTask
 from notification.models import Notification, notification_handler
 
-# deprecated
-"""
-class FreelancerDetailView(HitCountDetailView):
-    model = Profile
-    context_object_name = "profile"
-    template_name = "Employer/freelancerProfile.html"
-
-    count_hit = True
-
-    def get_context_data(self, **kwargs):
-        context = super(FreelancerDetailView, self).get_context_data(**kwargs)
-        context['work_history'] = self.object.user.proposals.filter(status__exact='completed')
-        return context
-"""
-
 
 @login_required
 @employer_required
@@ -97,12 +82,16 @@ def delete_task(request, id):
                                      "errors":
                                          "Your are not permitted to perform this action. Only Pending task will be delete."
                                      })
-
             title = task.title
             task.task_file.delete()
             task.delete()
-            return JsonResponse({"success": True, "msg": "" + title + " delete successfully"})
-
+            html = None
+            if not request.user.tasks.exists():
+                msg = "There are no tasks"
+                html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
+            return JsonResponse({"success": True, "msg": "" + title + " delete successfully", "html": html})
+        else:
+            raise Http404("Invalid request")
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 
@@ -219,25 +208,28 @@ def reviews(request):
 @login_required
 @employer_required
 def post_reviews(request, id):
-    if request.method == "POST" and request.is_ajax():
-        proposal = get_object_or_404(Proposal, pk=id)
-        if not request.user.tasks.filter(proposals=proposal).exists():
-            return JsonResponse({"success": False, 'errors': "You are not permitted to perform this action."})
+    try:
+        if request.method == "POST" and request.is_ajax():
+            proposal = get_object_or_404(Proposal, pk=id)
+            if not request.user.tasks.filter(proposals=proposal).exists():
+                return JsonResponse({"success": False, 'errors': "You are not permitted to perform this action."})
 
-        budget = request.POST.get('onBudget')
-        time = request.POST.get('onTime')
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
+            budget = request.POST.get('onBudget')
+            time = request.POST.get('onTime')
+            rating = request.POST.get('rating')
+            comment = request.POST.get('comment')
 
-        proposal.onBudget = True if budget == "yes" else False
-        proposal.onTime = True if time == "yes" else False
-        proposal.rating = rating
-        proposal.comment = comment
-        proposal.save()
-        notification_handler(request.user, proposal.user, Notification.POST_REVIEW, target=proposal.task)
-        return JsonResponse({"success": True, 'msg': "Review submitted"})
-    else:
-        raise Http404("Invalid request")
+            proposal.onBudget = True if budget == "yes" else False
+            proposal.onTime = True if time == "yes" else False
+            proposal.rating = rating
+            proposal.comment = comment
+            proposal.save()
+            notification_handler(request.user, proposal.user, Notification.POST_REVIEW, target=proposal.task)
+            return JsonResponse({"success": True, 'msg': "Review submitted"})
+        else:
+            raise Http404("Invalid request")
+    except Exception as e:
+        raise Http404(str(e))
 
 
 @login_required
@@ -259,5 +251,7 @@ def send_offers(request):
             else:
                 errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
                 return JsonResponse({"success": False, "errors": errors})
+        else:
+            raise Http404("Invalid request")
     except Exception as e:
         raise Http404(str(e))

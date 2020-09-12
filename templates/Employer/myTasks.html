@@ -44,9 +44,9 @@
 							</div>
 						</div>
 
-						<div class="content">
-                            {% if tasks|length > 0 %}
+						<div class="content js-task-list">
 							    <ul class="dashboard-box-list">
+                                {% if tasks|length > 0 %}
                                 {% for task in tasks %}
     								<li>
 									<!-- Job Listing -->
@@ -58,14 +58,7 @@
 											<!-- Details -->
 											<div class="job-listing-description">
 												<h3 class="job-listing-title">{{ task.title }}
-                                                    {% if task.job_status == "Pending" %}
-                                                        <span class="dashboard-status-button yellow">{{ task.job_status }}</span>
-                                                    {% elif task.job_status == 'Completed' %}
-                                                        <span class="dashboard-status-button green">{{ task.job_status }}</span>
-                                                    {% else %}
-                                                        <span class="dashboard-status-button blue">{{ task.job_status }}</span>
-                                                    {% endif %}
-
+                                                    <span class="dashboard-status-button {{ task.get_job_status_color }}">{{ task.job_status }}</span>
                                                 </h3>
 
 												<!-- Job Listing Footer -->
@@ -97,13 +90,13 @@
 									</div>
 								</li>
                                 {% endfor %}
-
-							</ul>
                                 {% else %}
-                                <div class="margin-top-10 margin-bottom-10">
-                                    <p style="text-align-last: center">There are no post</p>
-                                </div>
-                             {% endif %}
+                                    <div class="margin-top-10 margin-bottom-10">
+                                        <p style="text-align-last: center">There are no tasks</p>
+                                    </div>
+                                 {% endif %}
+                            </ul>
+
 						</div>
 					</div>
 				</div>

@@ -106,16 +106,18 @@ $(document).ready(function () {
 
         const url = $(this).attr('action');
         const receiver_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
-        let data = $(this).serialize() + "&receiver_id="+receiver_id;
-        console.log(data);
+        let formData = $(this).serialize() + "&receiver_id="+receiver_id;
+
         $.ajax({
             type: "ajax",
             method: "POST",
             url: url,
-            data: data,
+            data: formData,
             success: function (data) {
+                console.log(data);
                 if(data.success){
-                    $('#message_content_div').append(data.current_message)
+                    $('#message_content_div').append(data.current_message);
+                    $("#send-message-form input[name=last_message_date]").val(data.date);
                     message_textarea_ref.val("");
                 }
                 else{

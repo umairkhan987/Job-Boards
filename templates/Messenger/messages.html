@@ -106,6 +106,7 @@
 							</div>
 
 							<!-- Message Content Inner -->
+                            <!-- TODO: adjust the scrollbar for message -->
 							<div id="message_content_div" class="message-content-inner">
 
                                 {% if message_details %}
@@ -157,7 +158,6 @@
                                              {% endif %}
                                          {% endwith %}
                                             <!-- End Display Date -->
-
                                      {% endfor %}
                                 {% endif %}
                             </div>
@@ -167,6 +167,7 @@
                             {% if message_details %}
                                 <form id="send-message-form" method="post" action="{% url 'messages' %}">
                                     <div class="message-reply yellow">
+                                        <input type="hidden" name="last_message_date" value="{{ last_message_date }}">
                                         {% csrf_token %}
                                         <textarea name="message_content" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>
                                         <button type="submit" class="button ripple-effect">Send</button>

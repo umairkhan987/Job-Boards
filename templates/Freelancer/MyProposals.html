@@ -45,9 +45,9 @@
 							</div>
 						</div>
 
-						<div class="content">
-                            {% if proposals%}
+						<div class="content js-proposals-list">
 							    <ul class="dashboard-box-list">
+                                {% if proposals%}
 								{% for proposal in proposals %}
                                     <li>
 									<!-- Job Listing -->
@@ -58,13 +58,18 @@
 
 											<!-- Details -->
 											<div class="job-listing-description">
-												<h3 class="job-listing-title">{{ proposal.task.title }}
+												<h3 class="job-listing-title">
+                                                    {% if proposal.task.job_status != "Completed" %}
+                                                        <a href="{% url 'view_task' proposal.task.id %}" style="font-size: 20px; line-height: 30px">{{ proposal.task.title }}</a>
+                                                    {% else %}
+                                                        {{ proposal.task.title }}
+                                                    {% endif %}
                                                     {% if proposal.status == 'accepted' %}
-                                                        <span class="dashboard-status-button green">Accepted</span>
+                                                        <span class="dashboard-status-button blue">Accepted</span>
                                                     {% elif proposal.status == 'cancelled' %}
                                                         <span class="dashboard-status-button red">Cancelled</span>
                                                     {% elif proposal.status == 'completed' %}
-                                                        <span class="dashboard-status-button blue">Completed</span>
+                                                        <span class="dashboard-status-button green">Completed</span>
                                                     {% else %}
                                                         <span class="dashboard-status-button yellow">Pending</span>
                                                     {% endif %}
@@ -83,7 +88,7 @@
 									<!-- Task Details -->
 									<ul class="dashboard-task-info">
 										<li><strong>$ {{ proposal.rate }}</strong><span>{{ proposal.task.project_type.capitalize}}</span></li>
-										<li><strong> {{ proposal.days }} Days</strong><span>Delivery Time</span></li>
+										{% if not proposal.task.is_hourly_task %}<li><strong> {{ proposal.days }} Days</strong><span>Delivery Time</span></li>{% endif %}
 									</ul>
 
 									<!-- Buttons -->
@@ -99,13 +104,12 @@
 
 								</li>
                                 {% endfor %}
-
-							</ul>
                                 {% else %}
                                  <div class="margin-top-10 margin-bottom-10">
                                     <p style="text-align-last: center">Currently you have not placed any bid yet.</p>
                                 </div>
-                            {% endif %}
+                                {% endif %}
+							</ul>
 
 						</div>
 					</div>

@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -102,12 +103,18 @@ class Profile(models.Model):
     def calculate_success_rate(self):
         if self.total_job_done < 1:
             return 0
-        return int((self.total_job_done / self.total_hired) * 100)
+        else:
+            total_progress = self.user.proposals.filter(status__iexact="accepted").count()
+            total_worked = self.total_hired - total_progress
+        return int((self.total_job_done / total_worked) * 100)
 
     def calculate_rating(self):
         if self.total_job_done < 1:
             return 0
-        return round((self.total_job_done / self.total_hired) * 5, 1)
+        else:
+            total_progress = self.user.proposals.filter(status__iexact="accepted").count()
+            total_worked = self.total_hired - total_progress
+        return round((self.total_job_done / total_worked) * 5, 1)
 
     def calculate_onBudget(self):
         completed_job = self.user.proposals.filter(status__iexact="completed")
@@ -121,14 +128,14 @@ class Profile(models.Model):
         total_on_time = completed_job.filter(onTime__gt=0).count()
         return (total_on_time / total_job_completed) * 100
 
-    def get_work_history(self):
-        return self.user.proposals.filter(status__exact='completed')
-
     def get_bookmark_profile(self):
         user = get_current_user()
         if not user.is_authenticated:
             return False
         return user.bookmarks.filter(freelancer_profile=self).exists()
+
+    # def get_work_history(self):
+    #     return self.user.proposals.filter(status__exact='completed')
 
 
 # Create freelancer profile if user signup as freelancer using Signals

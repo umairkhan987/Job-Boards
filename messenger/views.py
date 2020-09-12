@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse, Http404
@@ -18,13 +20,21 @@ def messages(request):
             form = MessageForm(request.POST)
             if form.is_valid():
                 receiver_id = request.POST.get('receiver_id')
+                last_date = request.POST.get("last_message_date")
                 receiver = User.objects.get(pk=receiver_id)
                 message = form.save(commit=False)
                 message.receiver = receiver
                 message.sender = request.user
                 message.save()
-                current_message = render_to_string("Messenger/include/partial_message.html", {"message": message})
-                return JsonResponse({"success": True, "msg": "Message Sent", "current_message": current_message})
+                date = datetime.strptime(last_date, "%Y-%m-%d")
+                Equal = True
+                if datetime.today().date() == date.date():
+                    Equal = False
+
+                current_message = render_to_string("Messenger/include/partial_message.html",
+                                                   {"message": message, "equal": Equal})
+                return JsonResponse({"success": True, "msg": "Message Sent", "current_message": current_message,
+                                     "date": datetime.today().date()})
             else:
                 errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
                 return JsonResponse({'success': False, 'errors': errors})
@@ -32,6 +42,7 @@ def messages(request):
             message_list = get_current_user_msg(request)
             return render(request, 'Messenger/messages.html', {"messages": message_list})
     except Exception as e:
+        print(str(e))
         raise Http404(str(e))
 
 
@@ -49,11 +60,12 @@ def message_details(request, id):
         message_detail = Messages.objects.filter(
             Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)).order_by(
             'created_at')
-
+        last_message = str(message_detail.last().created_at.date())
     context = {
         "full_name": full_name,
         "messages": message_list,
         "message_details": message_detail,
+        "last_message_date": last_message
     }
     return render(request, 'Messenger/messages.html', context)
 

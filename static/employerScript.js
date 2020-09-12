@@ -16,7 +16,9 @@ $(document).ready(function () {
     });
 
     let URL = null;
+    let delete_btn_ref = null;
     $('a.show-popup').click(function (event) {
+        delete_btn_ref = $(this);
         const title = $(this).attr('data-content');
         URL = $(this).attr('data-url');
         $('#task_name').html(title);
@@ -37,13 +39,14 @@ $(document).ready(function () {
             data: data,
             success: function (data) {
                 $.magnificPopup.close();
-                // console.log(data);
+                console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
+                    if(data.html != null)
+                        $(".js-task-list ul").html(data.html);
+                    else
+                        delete_btn_ref.closest("li").remove();
+                    } else {
                     snackbar_error_msg(data.errors);
                 }
             }
@@ -97,11 +100,9 @@ $(document).ready(function () {
     });
 
     //  Leave Review submit
-    // TODO: Remove window.location.reload and set functionality using ajax method
     $('#leave-review-form').submit(function (event) {
         event.preventDefault();
         const data= $(this).serialize();
-
         if(review_url == null){
             console.log("Leave Review url is null");
             return;

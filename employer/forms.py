@@ -7,7 +7,6 @@ experience_level = (
     ('expert', 'Expert')
 )
 
-
 project_choose = [
     ("fixed", 'Fixed Price Project'), ('hourly', 'Hourly Project')
 ]
@@ -16,6 +15,7 @@ project_choose = [
 class TaskForm(forms.ModelForm):
     exp_level = forms.ChoiceField(choices=experience_level, required=True, )
     project_type = forms.CharField(widget=forms.RadioSelect(choices=project_choose), initial="fixed")
+
     # skills = forms.MultipleChoiceField(choices=skills, required=True)
 
     class Meta:
@@ -28,6 +28,14 @@ class TaskForm(forms.ModelForm):
         if filename:
             return filename
         return None
+
+    def clean(self):
+        data = self.cleaned_data
+        min_price = data.get("min_price", None)
+        max_price = data.get("max_price", None)
+        if max_price <= min_price:
+            self.add_error('min_price', "Min price is less than Max price")
+        return super().clean()
 
 
 class OfferForm(forms.ModelForm):

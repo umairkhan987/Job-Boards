@@ -23,7 +23,7 @@
                         {% if user.is_Employer %}
                             <li><a class="{% if 'freelancers' in request.path or "employer/profile" in request.path %} current{% endif %}" href="{% url 'find_freelancer' %}">Find a Freelancer</a></li>
                             <li><a class="{% if 'postTask' in request.path %} current{% endif %}" href="{% url 'post_task' %}">Post a Task</a></li>
-                            <li><a class="{% if 'employer/tasks' in request.path %} current{% endif %}" href="{% url 'my_tasks' %}">My Jobs</a></li>
+                            <li><a class="{% if 'employer/tasks' in request.path or "/manage/" in request.path %} current{% endif %}" href="{% url 'my_tasks' %}">My Jobs</a></li>
                             <li><a class="{% if 'employer/dashboard' in request.path %} current{% endif %}" href="{% url 'emp_dashboard' %}">Dashboard</a></li>
                         {% elif user.is_Freelancer %}
                             <li><a class="{% if 'tasks' in request.path or "task" in request.path %} current{% endif %}" href="{% url 'find_tasks' %}">Find Task</a></li>
@@ -50,7 +50,8 @@
 
 						<!-- Trigger -->
 						<div class="header-notifications-trigger">
-							<a href="javascript:" data-url="{% url 'notification-unread' %}" class="js-user-notification"><i class="icon-feather-bell"></i>
+							<a href="javascript:" data-url="{% url 'notification-unread' %}" class="js-user-notification" data-tippy-placement="bottom" title="Notifications">
+                                <i class="icon-feather-bell"></i>
                                {% if notifications_count %}<span>{{ notifications_count }}</span>{% endif %}
                             </a>
 						</div>
@@ -80,7 +81,8 @@
 					<!-- Messages Notifications-->
 					<div class="header-notifications">
                         <div class="header-notifications-trigger">
-                            <a class="js-message-notification" href="javascript:void(0);" data-url="{% url 'unread' %}" ><i class="icon-feather-mail"></i>
+                            <a class="js-message-notification" href="javascript:void(0);" data-url="{% url 'unread' %}" title="Messages" data-tippy-placement="bottom" >
+                                <i class="icon-feather-mail"></i>
                                 {% if message_notification_count %} <span>{{ message_notification_count }} </span>{% endif %}</a>
                         </div>
 
@@ -119,7 +121,7 @@
                                     <img style="height: 42px" src=" {% if user.profileImg %}
                                       {{ user.profileImg.url }}
                                       {% else %}
-                                      {% static 'images/user-avatar-big-01.jpg' %}
+                                      {% static 'images/user-avatar-placeholder.png' %}
                                     {% endif %}"  alt="">
                                 </div>
                             </a>
@@ -137,7 +139,7 @@
                                         <img style="height: 42px;" src="{% if user.profileImg %}
                                             {{ user.profileImg.url }}
                                             {% else %}
-                                            {% static 'images/user-avatar-small-01.jpg' %}
+                                            {% static 'images/user-avatar-placeholder.png' %}
                                             {% endif %}" alt="">
                                     </div>
 									<div class="user-name">

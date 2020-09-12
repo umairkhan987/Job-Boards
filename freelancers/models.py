@@ -8,7 +8,7 @@ class Proposal(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='proposals')
     task = models.ForeignKey(PostTask, on_delete=models.SET_NULL, null=True, related_name='proposals')
     rate = models.IntegerField(default=0)
-    days = models.IntegerField(default=1)
+    days = models.IntegerField(default=1, blank=True)
     status = models.CharField(blank=True, null=True, max_length=250)
     rating = models.FloatField(default=0.0)
     onBudget = models.BooleanField(default=False)
