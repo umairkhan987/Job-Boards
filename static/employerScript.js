@@ -208,7 +208,7 @@ $(document).ready(function () {
             contentType: false,
             cache: false,
             success:function (data) {
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                     $.magnificPopup.close();
                     snackbar_msg(data.msg);

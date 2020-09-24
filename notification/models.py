@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -126,7 +128,6 @@ def create_offer_notification(sender, instance, created, **kwargs):
                     old_notification.actor == instance.sender and
                     old_notification.recipient == instance.profile.user and
                     old_notification.action == Notification.MAKE_OFFER):
-                print("old notifications ", old_notification)
                 old_notification.delete()
 
             notification = Notification(actor=instance.sender, recipient=instance.profile.user, target=instance,
@@ -171,3 +172,12 @@ def delete_offer_notification(sender, instance, **kwargs):
 
     except Exception as e:
         print(str(e))
+
+
+# call the websocket when notification is created.
+@receiver(post_save, sender=Notification)
+def notification_broadcast(sender, instance, created, **kwargs):
+    if created:
+        print("Notification created")
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("notifications", {"type": "websocket_receive"})

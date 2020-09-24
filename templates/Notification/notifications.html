@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="header-notifications">
+
+    <!-- Trigger -->
+    <div class="header-notifications-trigger">
+        <a href="javascript:" data-url="{% url 'notification-unread' %}" class="js-user-notification"
+           data-tippy-placement="bottom" title="Notifications">
+            <i class="icon-feather-bell"></i>
+{#            {% if notifications_count %}<span>{{ notifications_count }} </span>{% endif %}#}
+            <span {% if notifications_count == 0 %} hidden {% endif %}>{{ notification_count }}</span>
+        </a>
+    </div>
+
+    <!-- Dropdown -->
+    <div class="header-notifications-dropdown">
+
+        <div class="header-notifications-headline">
+            <h4>Notifications</h4>
+            <button id="js-notify-mark-all-as-read" data-url="{% url 'notify-mark-all-as-read' %}"
+                    class="mark-as-read ripple-effect-dark" title="Mark all as read" data-tippy-placement="left">
+                <i class="icon-feather-check-square"></i>
+            </button>
+        </div>
+
+        <div class="header-notifications-content js-header-user-notifications">
+            <div class="header-notifications-scroll" data-simplebar>
+                <ul>
+                    {% include 'Notification/include/partial_notification_list.html' %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>

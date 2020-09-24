@@ -183,7 +183,7 @@ $(document).ready(function () {
             success: function (data) {
                 // console.log(data);
                 if(data.success){
-                    thisRef.find('span').hide();
+                    thisRef.find('span').attr("hidden", true);
                     $(".js-header-user-notifications ul").html(data.html);
                 }
             }

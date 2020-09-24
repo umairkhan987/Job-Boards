@@ -12,6 +12,8 @@ django-widget-tweaks = "*"
 django-multiselectfield = "*"
 django-currentuser = "*"
 django-hitcount = "*"
+channels = "*"
+channels-redis = "*"
 
 [requires]
 python_version = "3.7"
