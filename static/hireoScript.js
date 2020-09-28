@@ -94,103 +94,7 @@ $(document).ready(function () {
 
     });
 
-    // Replay message
-    $('#send-message-form').submit(function (event) {
-        event.preventDefault();
-        const message_textarea_ref = $('#send-message-form textarea');
-        // check if user enter some message content or not
-        if(message_textarea_ref.val().length === 0){
-            console.log("Textarea is empty");
-            return;
-        }
-
-        const url = $(this).attr('action');
-        const receiver_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
-        let formData = $(this).serialize() + "&receiver_id="+receiver_id;
-
-        $.ajax({
-            type: "ajax",
-            method: "POST",
-            url: url,
-            data: formData,
-            success: function (data) {
-                console.log(data);
-                if(data.success){
-                    $('#message_content_div').append(data.current_message);
-                    $("#send-message-form input[name=last_message_date]").val(data.date);
-                    message_textarea_ref.val("");
-                }
-                else{
-                    snackbar_error_msg(data.errors);
-                }
-            }
-        });
-    });
-
-    // TODO: add message detail using ajax
-    // $('a.js-detail-message-chat').click(function (event) {
-    //     event.preventDefault();
-    //
-    //     const url = $(this).attr('href');
-    //     console.log("Message click ", url);
-    // });
-
-    // views Message notification
-    $(".js-message-notification").on("click", function () {
-        const thisRef = $(this);
-        const url = $(this).data("url");
-
-        $.ajax({
-            type: "ajax",
-            method: "GET",
-            url: url,
-            success: function (data) {
-                // console.log(data);
-                if(data.success){
-                    thisRef.find('span').hide();
-                    $(".js-header-message-notification ul").html(data.html);
-                }
-            }
-        });
-    });
-
-    // message notifications mark-all-as-read
-    $('#js-mark-all-as-read').click(function () {
-        const url = $(this).data("url");
-        $.ajax({
-            type: "ajax",
-            method: "POST",
-            url: url,
-            success: function (data) {
-                console.log(data);
-                if(data.success){
-                    $(".js-header-message-notification ul").html(data.html);
-                }
-            }
-        });
-
-    });
-
-    // views User notification
-    $(".js-user-notification").on("click", function () {
-        const thisRef = $(this);
-        const url = $(this).data("url");
-
-        $.ajax({
-            type: "ajax",
-            method: "GET",
-            url: url,
-            success: function (data) {
-                // console.log(data);
-                if(data.success){
-                    thisRef.find('span').attr("hidden", true);
-                    $(".js-header-user-notifications ul").html(data.html);
-                }
-            }
-        });
-    });
-
-    // Dashboard Notifications
+    // Dashboard Notifications pagination
     $(".js-dashboard-notification-pages").on("click", ".js-dashboard-pages a", function (event) {
         event.preventDefault();
         const parameter = $(this).attr('href');
@@ -232,8 +136,7 @@ $(document).ready(function () {
     // snackbar for display msg
     function snackbar_msg(msg) {
         Snackbar.show({
-            text: msg,
-            pos: 'bottom-center',
+            text: msg,            pos: 'bottom-center',
             showAction: false,
             actionText: "Dismiss",
             duration: 3000,

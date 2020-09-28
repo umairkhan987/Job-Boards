@@ -178,6 +178,22 @@ def delete_offer_notification(sender, instance, **kwargs):
 @receiver(post_save, sender=Notification)
 def notification_broadcast(sender, instance, created, **kwargs):
     if created:
-        print("Notification created")
+        payload = {
+            "type": "websocket_receive",
+            "key": "user_notification",
+        }
+
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)("notifications", {"type": "websocket_receive"})
+        async_to_sync(channel_layer.group_send)("notifications", payload)
+
+
+@receiver(post_save, sender=MessageNotification)
+def message_notification_broadcast(sender, instance, created, **kwargs):
+    if created:
+        # print("message notification created")
+        payload = {
+            "type": "websocket_receive",
+            "key": "msg_notification",
+        }
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("notifications", payload)

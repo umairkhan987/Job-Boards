@@ -30,7 +30,7 @@
 
 				<div class="messages-container">
 					<div class="messages-container-inner">
-						<div class="messages-inbox data-simplebar">
+						<div class="messages-inbox">
 						    <!-- Messages Search Area -->
 							<div class="messages-headline">
 								<div class="input-with-icon">
@@ -108,7 +108,6 @@
 							<!-- Message Content Inner -->
                             <!-- TODO: adjust the scrollbar for message -->
 							<div id="message_content_div" class="message-content-inner">
-
                                 {% if message_details %}
                                     <!-- Time Sign -->
                                     <div class="message-time-sign">
@@ -121,9 +120,9 @@
 										<div class="message-bubble-inner">
 											<div class="message-avatar">
                                                 {% if detail.sender.profileImg %}
-                                                    <img src="{{ detail.sender.profileImg.url }}" alt="" />
+                                                    <img  title="{{ full_name }}" data-tippy-placement="right"  src="{{ detail.sender.profileImg.url }}" alt="" />
                                                 {% else %}
-                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                    <img title="{{ full_name }}" data-tippy-placement="right" src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
                                                 {% endif %}
                                             </div>
 											<div class="message-text"><p>{{ detail.message_content }}</p></div>

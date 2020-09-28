@@ -7,7 +7,6 @@
         <a href="javascript:" data-url="{% url 'notification-unread' %}" class="js-user-notification"
            data-tippy-placement="bottom" title="Notifications">
             <i class="icon-feather-bell"></i>
-{#            {% if notifications_count %}<span>{{ notifications_count }} </span>{% endif %}#}
             <span {% if notifications_count == 0 %} hidden {% endif %}>{{ notification_count }}</span>
         </a>
     </div>
