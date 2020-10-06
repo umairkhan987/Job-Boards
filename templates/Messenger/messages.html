@@ -28,6 +28,7 @@
 
 			</div>
 
+            <!-- TODO: adjust the scrollbar for message and add search func... -->
 				<div class="messages-container">
 					<div class="messages-container-inner">
 						<div class="messages-inbox">
@@ -38,7 +39,7 @@
 									<i class="icon-material-outline-search"></i>
 								</div>
 							</div>
-
+                            {# TODO: change the messages_list into ajax request #}
                             {% if messages %}
 							  <ul>
 								{% for message in messages %}
@@ -106,8 +107,8 @@
 							</div>
 
 							<!-- Message Content Inner -->
-                            <!-- TODO: adjust the scrollbar for message -->
-							<div id="message_content_div" class="message-content-inner">
+{#							<div id="message_content_div" class="message-content-inner">#}
+							<div id="message_content_div" class="conversation">
                                 {% if message_details %}
                                     <!-- Time Sign -->
                                     <div class="message-time-sign">
@@ -162,7 +163,7 @@
                             </div>
                             <!-- Message Content Inner / End -->
 
-                           <!-- Reply Area -->
+                           <!-- send message form -->
                             {% if message_details %}
                                 <form id="send-message-form" method="post" action="{% url 'messages' %}">
                                     <div class="message-reply yellow">
@@ -253,3 +254,60 @@
     <!-- Delete Offer Popup / End -->
 
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            window.onload = $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
+
+            function addNewMessage(message_id, equal){
+                let data = {
+                  "message_id": message_id,
+                  "equal": equal,
+                };
+
+                $.ajax({
+                    type: "ajax",
+                    method: "GET",
+                    url: `{% url 'received_message' %}`,
+                    data: data,
+                    success: function (data) {
+                        console.log("receive side data ", data);
+                        if(data.success){
+                            $('#message_content_div').append(data.received_msg);
+                            $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
+                            $("#send-message-form textarea").focus();
+                        }
+                    }
+                });
+            }
+
+            if(window.location.pathname.match(/(\d+)/g)){
+
+                const activeUser_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+
+                let ws_schema = window.location.protocol == "https:" ? "wss" : "ws";
+                let ws_path = ws_schema + '://' + window.location.host +`/{{ request.user.id }}/`;
+                let ws = new WebSocket(ws_path);
+
+                ws.onopen = function (event) {
+                    console.log("CONNECTED websocket");
+                    {#console.log("opened ", event);#}
+                };
+
+                ws.onclose = function (event) {
+                    console.log("DISCONNECTED websocket");
+                    {#console.log("closed ", event)#}
+                };
+
+                ws.onmessage = function (event) {
+                    let data = JSON.parse(event.data);
+                    console.log("on message data ", data);
+                    if(data.sender_id === activeUser_id) {
+                        addNewMessage(data.message_id, data.Equal);
+                    }
+                };
+            }
+        });
+    </script>
+{% endblock scripts %}

@@ -43,11 +43,11 @@ $(document).ready(function () {
     let ws = new WebSocket(ws_path);
 
     ws.onopen = function (event) {
-        console.log("opened ", event);
+        // console.log("opened ", event);
     };
 
     ws.onclose = function (event) {
-        console.log("closed ", event)
+        // console.log("closed ", event)
     };
 
     ws.onmessage = function (event) {

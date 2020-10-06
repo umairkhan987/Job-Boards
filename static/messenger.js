@@ -1,4 +1,11 @@
 $(document).ready(function () {
+      // try{
+      //      window.onload = $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
+      // }catch (e) {
+      //     console.log("height error");
+      // }
+
+
     // TODO: add message detail using ajax
     // $('a.js-detail-message-chat').click(function (event) {
     //     event.preventDefault();
@@ -6,7 +13,6 @@ $(document).ready(function () {
     //     const url = $(this).attr('href');
     //     console.log("Message click ", url);
     // });
-
     // message notifications mark-all-as-read
     $('#js-mark-all-as-read').click(function () {
         const url = $(this).data("url");
@@ -44,11 +50,12 @@ $(document).ready(function () {
             url: url,
             data: formData,
             success: function (data) {
-                // console.log(data);
                 if(data.success){
                     $('#message_content_div').append(data.current_message);
                     $("#send-message-form input[name=last_message_date]").val(data.date);
+                    $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                     message_textarea_ref.val("");
+                    message_textarea_ref.focus();
                 }
                 else{
                     snackbar_error_msg(data.errors);
@@ -56,6 +63,8 @@ $(document).ready(function () {
             }
         });
     });
+
+
 
     // snackbar for display error msg
     function snackbar_error_msg(msg) {

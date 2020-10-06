@@ -4,6 +4,7 @@ from channels.security.websocket import AllowedHostsOriginValidator, OriginValid
 from django.urls import path
 
 from notification.consumer import NotificationsConsumer
+from messenger.consumer import MessengerConsumer
 
 application = ProtocolTypeRouter({
     'websocket': AllowedHostsOriginValidator(
@@ -11,6 +12,7 @@ application = ProtocolTypeRouter({
             URLRouter(
                 [
                     path('notifications/', NotificationsConsumer),
+                    path("<int:user_id>/", MessengerConsumer),
                 ]
             )
         )

@@ -1,5 +1,6 @@
 from django.db import models
-
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from accounts.models import User
 
 
@@ -11,3 +12,16 @@ class Messages(models.Model):
 
     def __str__(self):
         return self.message_content
+
+    @staticmethod
+    def broadcast_msg(sender, receiver, message, equal):
+        payload = {
+            "type": "websocket_receive",
+            "message_id": message.id,
+            "sender": str(sender),
+            "sender_id": sender.id,
+            "receiver": str(receiver),
+            "Equal": equal,
+        }
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(f"{receiver.id}", payload)

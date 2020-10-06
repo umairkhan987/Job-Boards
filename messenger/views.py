@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 
@@ -20,7 +20,7 @@ def messages(request):
             form = MessageForm(request.POST)
             if form.is_valid():
                 receiver_id = request.POST.get('receiver_id')
-                last_date = request.POST.get("last_message_date")
+                last_date = request.POST.get("last_message_date", str(datetime.today().date()))
                 receiver = User.objects.get(pk=receiver_id)
                 message = form.save(commit=False)
                 message.receiver = receiver
@@ -30,6 +30,10 @@ def messages(request):
                 Equal = True
                 if datetime.today().date() == date.date():
                     Equal = False
+
+                # send msg to receiver using websocket
+                # TODO: send date to broadcast....
+                Messages.broadcast_msg(sender=request.user, receiver=receiver, message=message, equal=Equal)
 
                 current_message = render_to_string("Messenger/include/partial_message.html",
                                                    {"message": message, "equal": Equal})
@@ -90,6 +94,22 @@ def messages_delete(request):
             raise Http404("Invalid request")
     except Exception as e:
         raise Http404(str(e))
+
+
+@login_required
+def received_message(request):
+    try:
+        if request.method == "GET" and request.is_ajax():
+            message_id = request.GET.get("message_id")
+            Equal = True if request.GET.get("equal") == 'true' else False
+            msg = get_object_or_404(Messages, pk=message_id)
+            full_name = msg.sender.first_name + " " + msg.sender.last_name
+            received_msg = render_to_string("Messenger/include/partial_received_msg.html",
+                                            {"message": msg, "equal": Equal, "full_name": full_name})
+            return JsonResponse({"success": True, "received_msg": received_msg})
+    except Exception as e:
+        raise Http404(str(e))
+    return None
 
 
 # TODO: convert this query into django queryset
