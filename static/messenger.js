@@ -1,11 +1,4 @@
 $(document).ready(function () {
-      // try{
-      //      window.onload = $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
-      // }catch (e) {
-      //     console.log("height error");
-      // }
-
-
     // TODO: add message detail using ajax
     // $('a.js-detail-message-chat').click(function (event) {
     //     event.preventDefault();
@@ -22,7 +15,7 @@ $(document).ready(function () {
             url: url,
             success: function (data) {
                 console.log(data);
-                if(data.success){
+                if (data.success) {
                     $(".js-header-message-notification ul").html(data.html);
                 }
             }
@@ -30,19 +23,33 @@ $(document).ready(function () {
 
     });
 
+    function get_inbox_users_list() {
+        const url = $(".js-message-users-lists-div").data("url");
+        console.log("get_inbox_users_list call ", url);
+        $.ajax({
+            type: "ajax",
+            method: "GET",
+            url: url,
+            success: function (data) {
+                console.log("data ", data);
+                $(".js-message-users-lists-div ul").html(data);
+            }
+        });
+    }
+
     // Send direct Message
     $('#send-message-form').submit(function (event) {
         event.preventDefault();
         const message_textarea_ref = $('#send-message-form textarea');
         // check if user enter some message content or not
-        if(message_textarea_ref.val().length === 0){
+        if (message_textarea_ref.val().length === 0) {
             console.log("Textarea is empty");
             return;
         }
 
         const url = $(this).attr('action');
-        const receiver_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
-        let formData = $(this).serialize() + "&receiver_id="+receiver_id;
+        const receiver_id = parseInt(window.location.pathname.replace(/[^\d.]/g, ""));
+        let formData = $(this).serialize() + "&receiver_id=" + receiver_id;
 
         $.ajax({
             type: "ajax",
@@ -50,20 +57,20 @@ $(document).ready(function () {
             url: url,
             data: formData,
             success: function (data) {
-                if(data.success){
+                if (data.success) {
+                    get_inbox_users_list();
+
                     $('#message_content_div').append(data.current_message);
                     $("#send-message-form input[name=last_message_date]").val(data.date);
                     $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                     message_textarea_ref.val("");
                     message_textarea_ref.focus();
-                }
-                else{
+                } else {
                     snackbar_error_msg(data.errors);
                 }
             }
         });
     });
-
 
 
     // snackbar for display error msg

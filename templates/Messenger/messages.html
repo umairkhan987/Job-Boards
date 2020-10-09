@@ -28,7 +28,6 @@
 
 			</div>
 
-            <!-- TODO: adjust the scrollbar for message and add search func... -->
 				<div class="messages-container">
 					<div class="messages-container-inner">
 						<div class="messages-inbox">
@@ -39,60 +38,17 @@
 									<i class="icon-material-outline-search"></i>
 								</div>
 							</div>
-                            {# TODO: change the messages_list into ajax request #}
+                        <div class="message-users-list js-message-users-lists-div" id="messages-users_list_div"  data-url="{% url 'get_users_list' %}">
                             {% if messages %}
-							  <ul>
-								{% for message in messages %}
-
-                                    {% if message.sender == request.user %}
-                                        <li class="{% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
-									        <a href="{% url 'message_details' message.receiver.id %}" class="js-detail-message-chat">
-										    <div class="message-avatar"><i class="status-icon status-online"></i>
-                                            {% if message.receiver.profileImg %}
-                                                <img src="{{ message.receiver.profileImg.url }}" alt="" />
-                                            {% else %}
-                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" />
-                                            {% endif %}
-                                            </div>
-										    <div class="message-by">
-											    <div class="message-by-headline">
-												    <h5>{{message.receiver.first_name}} {{ message.receiver.last_name }}</h5>
-												    <span>{{ message.created_at|timesince }} ago</span>
-											    </div>
-											    <p>{{message.message_content}}</p>
-										    </div>
-									        </a>
-								        </li>
-
-                                    {% else %}
-
-                                        <li class="{% if message.sender.id|stringformat:"s"  in request.path %}active-message{% endif %}">
-                                            <a href="{% url 'message_details' message.sender.id %}">
-										    <div class="message-avatar"><i class="status-icon status-online"></i>
-                                            {% if message.sender.profileImg %}
-                                                <img src="{{ message.sender.profileImg.url }}" alt="" />
-                                            {% else %}
-                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" />
-                                            {% endif %}
-                                            </div>
-										    <div class="message-by">
-											    <div class="message-by-headline">
-												    <h5>{{message.sender.first_name}} {{ message.sender.last_name }}</h5>
-												    <span>{{ message.created_at|timesince }} ago</span>
-											    </div>
-											    <p>{{message.message_content}}</p>
-										    </div>
-									        </a>
-								        </li>
-                                    {% endif %}
-
-								{% endfor %}
-							</ul>
+							  <ul >
+                                {% include 'Messenger/include/partial_messages_users_list.html' %}
+                              </ul>
                             {% else %}
                                 <div class="margin-bottom-10 margin-top-10" style="text-align: center">
                                     <span>No messages found. </span>
                                 </div>
                             {% endif %}
+                        </div>
 						</div>
 						<!-- Messages / End -->
 
@@ -260,6 +216,20 @@
         $(document).ready(function () {
             window.onload = $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
 
+            function get_inbox_users_list() {
+                const url = $(".js-message-users-lists-div").data("url");
+                console.log("get_inbox_users_list call ", url);
+                $.ajax({
+                    type: "ajax",
+                    method: "GET",
+                    url: url,
+                    success: function (data) {
+                        console.log("data ", data);
+                        $(".js-message-users-lists-div ul").html(data);
+                    }
+                });
+            }
+
             function addNewMessage(message_id, equal){
                 let data = {
                   "message_id": message_id,
@@ -272,10 +242,12 @@
                     url: `{% url 'received_message' %}`,
                     data: data,
                     success: function (data) {
-                        console.log("receive side data ", data);
+                        {#console.log("receive side data ", data);#}
                         if(data.success){
+                            get_inbox_users_list();
                             $('#message_content_div').append(data.received_msg);
                             $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
+                            $("#send-message-form input[name=last_message_date]").val(data.date);
                             $("#send-message-form textarea").focus();
                         }
                     }
@@ -302,7 +274,7 @@
 
                 ws.onmessage = function (event) {
                     let data = JSON.parse(event.data);
-                    console.log("on message data ", data);
+                    {#console.log("on message data ", data);#}
                     if(data.sender_id === activeUser_id) {
                         addNewMessage(data.message_id, data.Equal);
                     }

@@ -1,0 +1,46 @@
+{% load static %}
+
+{% for message in messages %}
+    {% if message.sender == request.user %}
+        <li class=" {% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+            <a href="{% url 'message_details' message.receiver.id %}" class="js-detail-message-chat">
+                <div class="message-avatar"><i class="status-icon status-online"></i>
+                    {% if message.receiver.profileImg %}
+                        <img src="{{ message.receiver.profileImg.url }}" alt=""/>
+                    {% else %}
+                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt=""/>
+                    {% endif %}
+                </div>
+                <div class="message-by">
+                    <div class="message-by-headline">
+                        <h5>{{ message.receiver.first_name }} {{ message.receiver.last_name }}</h5>
+                        <span>{{ message.created_at|timesince }} ago</span>
+                    </div>
+                    <p>{{ message.message_content }}</p>
+                </div>
+            </a>
+        </li>
+
+    {% else %}
+
+        <li class="{% if message.sender.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+            <a href="{% url 'message_details' message.sender.id %}">
+                <div class="message-avatar"><i class="status-icon status-online"></i>
+                    {% if message.sender.profileImg %}
+                        <img src="{{ message.sender.profileImg.url }}" alt=""/>
+                    {% else %}
+                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt=""/>
+                    {% endif %}
+                </div>
+                <div class="message-by">
+                    <div class="message-by-headline">
+                        <h5>{{ message.sender.first_name }} {{ message.sender.last_name }}</h5>
+                        <span>{{ message.created_at|timesince }} ago</span>
+                    </div>
+                    <p>{{ message.message_content }}</p>
+                </div>
+            </a>
+        </li>
+    {% endif %}
+
+{% endfor %}

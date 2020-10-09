@@ -32,7 +32,6 @@ def messages(request):
                     Equal = False
 
                 # send msg to receiver using websocket
-                # TODO: send date to broadcast....
                 Messages.broadcast_msg(sender=request.user, receiver=receiver, message=message, equal=Equal)
 
                 current_message = render_to_string("Messenger/include/partial_message.html",
@@ -60,10 +59,12 @@ def message_details(request, id):
     receiver = User.objects.get(pk=id)
     full_name = receiver.first_name + " " + receiver.last_name
     message_detail = []
+    last_message = None
     if receiver:
         message_detail = Messages.objects.filter(
             Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)).order_by(
             'created_at')
+        message_detail.update(is_read=True)
         last_message = str(message_detail.last().created_at.date())
     context = {
         "full_name": full_name,
@@ -106,10 +107,17 @@ def received_message(request):
             full_name = msg.sender.first_name + " " + msg.sender.last_name
             received_msg = render_to_string("Messenger/include/partial_received_msg.html",
                                             {"message": msg, "equal": Equal, "full_name": full_name})
-            return JsonResponse({"success": True, "received_msg": received_msg})
+            return JsonResponse({"success": True, "received_msg": received_msg, "date": datetime.today().date()})
     except Exception as e:
         raise Http404(str(e))
     return None
+
+
+@login_required
+def get_users_list(request):
+    if request.is_ajax():
+        message_list = get_current_user_msg(request)
+        return render(request, 'Messenger/include/partial_messages_users_list.html', {"messages": message_list})
 
 
 # TODO: convert this query into django queryset

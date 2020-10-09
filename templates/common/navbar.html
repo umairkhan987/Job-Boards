@@ -54,6 +54,7 @@
                             <a class="js-message-notification" href="javascript:" data-url="{% url 'unread' %}" title="Messages" data-tippy-placement="bottom" >
                                 <i class="icon-feather-mail"></i>
                                 <span{% if message_notification_count == 0 %} hidden {% endif %}> {{ message_notification_count }}</span>
+                            </a>
                         </div>
 
                         <!-- Dropdown -->

@@ -6,8 +6,9 @@ from accounts.models import User
 
 class Messages(models.Model):
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='senders')
-    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='receivers')
+    receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='messages')
     message_content = models.CharField(max_length=500)
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

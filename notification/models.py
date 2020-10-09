@@ -13,11 +13,12 @@ from messenger.models import Messages
 from employer.models import Offers, PostTask
 
 
+# TODO: i think is_read is not here it's inside message model
 class MessageNotification(models.Model):
     actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="msg_notify_actor")
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="msg_notifications")
     timestamp = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=500, blank=True, null=True)
+    text = models.CharField(max_length=500, null=True, blank=True)
     is_seen = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
 
