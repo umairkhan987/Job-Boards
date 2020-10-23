@@ -36,10 +36,3 @@ def notification_unread(request):
     html = render_to_string("Notification/include/partial_notification_list.html",
                             {"notifications_list": notifications}, request)
     return JsonResponse({"success": True, "html": html})
-
-
-# TODO: under process
-@login_required
-@csrf_exempt
-def notify_mark_all_as_read(request):
-    return None

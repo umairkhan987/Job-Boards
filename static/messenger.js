@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    // TODO: add message detail using ajax
     // $('a.js-detail-message-chat').click(function (event) {
     //     event.preventDefault();
     //
@@ -14,7 +13,7 @@ $(document).ready(function () {
             method: "POST",
             url: url,
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if (data.success) {
                     $(".js-header-message-notification ul").html(data.html);
                 }
@@ -23,24 +22,10 @@ $(document).ready(function () {
 
     });
 
-    function get_inbox_users_list() {
-        const url = $(".js-message-users-lists-div").data("url");
-        console.log("get_inbox_users_list call ", url);
-        $.ajax({
-            type: "ajax",
-            method: "GET",
-            url: url,
-            success: function (data) {
-                console.log("data ", data);
-                $(".js-message-users-lists-div ul").html(data);
-            }
-        });
-    }
-
     // Send direct Message
     $('#send-message-form').submit(function (event) {
         event.preventDefault();
-        const message_textarea_ref = $('#send-message-form textarea');
+        const message_textarea_ref = $('#send-message-form input[name=message_content]');
         // check if user enter some message content or not
         if (message_textarea_ref.val().length === 0) {
             console.log("Textarea is empty");
@@ -71,7 +56,6 @@ $(document).ready(function () {
             }
         });
     });
-
 
     // snackbar for display error msg
     function snackbar_error_msg(msg) {

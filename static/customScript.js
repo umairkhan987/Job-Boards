@@ -47,16 +47,17 @@ $(document).ready(function () {
         event.preventDefault();
         const formData = loginForm.serialize();
         const url = loginForm.attr('action');
+        let path = window.location.pathname;
+
         $.ajax({
             type:"ajax",
             url:url,
             method:"POST",
             data:formData,
             success:function (data) {
-                    // console.log(data);
                     if(data.success){
                          $.magnificPopup.close();
-                         window.location = '/';
+                         window.location = path;
                     }
                     else {
                         loginForm.find('input[type=password]').val("");

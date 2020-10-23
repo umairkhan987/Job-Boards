@@ -181,7 +181,7 @@ $(document).ready(function () {
     let offer_url = null;
     let offer_btn_ref=null;
     $('a[href=#small-dialog]').click(function () {
-         offer_btn_ref = $(this);
+        offer_btn_ref = $(this);
         offer_url = $(this).attr("data-url");
     });
 
@@ -207,8 +207,12 @@ $(document).ready(function () {
                     snackbar_msg(data.msg);
                     if(data.html != null)
                         $(".js-freelancer-offer-list ul").html(data.html);
-                    else
-                        offer_btn_ref.closest('li').hide();
+                    else{
+                        setTimeout(function () {
+                           window.location.reload()
+                        }, 1000);
+                        // offer_btn_ref.closest('li').hide();
+                        }
                 }
                 else{
                     snackbar_error_msg(data.errors);

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    // views User notification
     $(".js-user-notification").on("click", function () {
         const thisRef = $(this);
         const url = $(this).data("url");

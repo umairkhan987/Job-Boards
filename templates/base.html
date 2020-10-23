@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/colors/blue.css' %}">
     <link rel="stylesheet" href="{% static 'css/custom-style.css' %}">
@@ -60,9 +62,10 @@
 
 {% if user.is_authenticated %}
     <script src="{% static 'notification.js' %}"></script>
-    <script src="{% static 'messenger.js' %}"></script>
     <script src="{% static 'hireoScript.js' %}"></script>
     {% block scripts %}{% endblock %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static 'messenger.js' %}"></script>
 {% endif %}
 
 </body>

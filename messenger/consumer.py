@@ -1,8 +1,6 @@
-from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 
-# TODO:change the group name
 class MessengerConsumer(AsyncJsonWebsocketConsumer):
     async def websocket_connect(self, event):
         # print("CONNECTED ", event)

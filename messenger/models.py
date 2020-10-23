@@ -1,6 +1,8 @@
 from django.db import models
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django_currentuser.middleware import get_current_user
+
 from accounts.models import User
 
 
@@ -13,6 +15,10 @@ class Messages(models.Model):
 
     def __str__(self):
         return self.message_content
+
+    def is_sender(self):
+        user = get_current_user()
+        return True if user == self.sender else False
 
     @staticmethod
     def broadcast_msg(sender, receiver, message, equal):

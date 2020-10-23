@@ -85,7 +85,8 @@ def messages_delete(request):
                 Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user))
             if conversation.exists():
                 conversation.delete()
-                # TODO: update query and find alternative way to delete messages.
+                # TODO: update query and find alternative way to delete messages only on user sides who want
+                #  to delete message.
                 # conversation.filter(sender=request.user).update(sender=None)
                 # conversation.filter(receiver=request.user).update(receiver=None)
                 return JsonResponse({"success": True, "msg": "Conversation Deleted.", "url": redirect("messages").url})
@@ -116,8 +117,60 @@ def received_message(request):
 @login_required
 def get_users_list(request):
     if request.is_ajax():
+        path = request.GET.get("path")
         message_list = get_current_user_msg(request)
-        return render(request, 'Messenger/include/partial_messages_users_list.html', {"messages": message_list})
+        users_list = render_to_string("Messenger/include/partial_messages_users_list.html",
+                                      {"messages": message_list, "path": path})
+        return JsonResponse({"success": True, "users_list": users_list})
+
+
+# TODO: change the way to hide notification...
+@login_required
+def mark_as_read_message(request):
+    if request.is_ajax():
+        try:
+            message_id = request.GET.get("message_id")
+            message = Messages.objects.get(id=message_id)
+            if message:
+                message.is_read = True
+                message.save()
+                # print("message is read")
+
+            messageNotification = MessageNotification.objects.get(message=message_id)
+            if messageNotification:
+                messageNotification.delete()
+                # print("message notification is deleted")
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            print(str(e))
+            return JsonResponse({"success": False, "errors": str(e)})
+
+
+@login_required
+def get_users_form_inbox(request):
+    if "term" in request.GET:
+        keyword = request.GET.get("term")
+        message_list = get_current_user_msg(request)
+        queryset = [row for row in message_list]
+        names = []
+        for i in queryset:
+            if i.sender == request.user and keyword.lower() in i.receiver.first_name.lower() and i.receiver != request.user:
+                obj = {
+                    "full_name": i.receiver.first_name + " " + i.receiver.last_name,
+                    "id": str(i.receiver.id)
+                }
+                names.append(obj)
+                # names["full_name"] = i.receiver.first_name + " " + i.receiver.last_name
+            elif keyword.lower() in i.sender.first_name.lower() and i.sender != request.user:
+                obj = {
+                    "full_name": i.sender.first_name + " " + i.sender.last_name,
+                    "id": str(i.sender.id)
+                }
+                names.append(obj)
+                # names["full_name"] = i.sender.first_name + " " + i.sender.last_name
+        print("names ", names)
+        return JsonResponse(names, safe=False)
 
 
 # TODO: convert this query into django queryset

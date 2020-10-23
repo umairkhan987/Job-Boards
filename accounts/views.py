@@ -14,7 +14,7 @@ from .models import Profile, User
 
 def login(request):
     try:
-        if request.method == "POST":
+        if request.method == "POST" and request.is_ajax():
             form = AuthenticationForm(data=request.POST)
             if form.is_valid():
                 email = request.POST['username']

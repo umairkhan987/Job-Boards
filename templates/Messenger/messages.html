@@ -6,169 +6,179 @@
 {% block title %} Messages | {% endblock %}
 
 {% block dashboard_content %}
-     <!-- Dashboard Content data-simplebar -->
+    <!-- Dashboard Content data-simplebar -->
     <div class="dashboard-content-container">
-       <div class="dashboard-content-inner" >
+        <div class="dashboard-content-inner">
 
-			<!-- Dashboard Headline -->
-			<div class="dashboard-headline">
-				<h3>Messages </h3>
-				<!-- Breadcrumbs -->
-				<nav id="breadcrumbs" class="dark">
-					<ul>
-						<li><a href="{% url 'index' %}">Home</a></li>
-						 {% if request.user.is_Employer %}
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>Messages </h3>
+                <!-- Breadcrumbs -->
+                <nav id="breadcrumbs" class="dark">
+                    <ul>
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        {% if request.user.is_Employer %}
                             <li><a href="{% url 'emp_dashboard' %}">Dashboard</a></li>
-                            {% else %}
+                        {% else %}
                             <li><a href="{% url 'freelancer_dashboard' %}">Dashboard</a></li>
                         {% endif %}
-						<li>Messages</li>
-					</ul>
-				</nav>
+                        <li>Messages</li>
+                    </ul>
+                </nav>
 
-			</div>
+            </div>
 
-				<div class="messages-container">
-					<div class="messages-container-inner">
-						<div class="messages-inbox">
-						    <!-- Messages Search Area -->
-							<div class="messages-headline">
-								<div class="input-with-icon">
-										<input id="autocomplete-input" type="text" placeholder="Search">
-									<i class="icon-material-outline-search"></i>
-								</div>
-							</div>
-                        <div class="message-users-list js-message-users-lists-div" id="messages-users_list_div"  data-url="{% url 'get_users_list' %}">
+            <div class="messages-container">
+                <div class="messages-container-inner">
+                    <div class="messages-inbox">
+                        <!-- Messages Search Area -->
+                        <div class="messages-headline">
+                            <div class="input-with-icon">
+                                <form action="">
+                                    <input id="inbox-user-list" name="inbox-user-list" type="text" placeholder="Search">
+                                    <i class="icon-material-outline-search"></i>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="message-users-list js-message-users-lists-div" id="messages-users_list_div"
+                             data-url="{% url 'get_users_list' %}">
                             {% if messages %}
-							  <ul >
-                                {% include 'Messenger/include/partial_messages_users_list.html' %}
-                              </ul>
+                                <ul>
+                                    {% include 'Messenger/include/partial_messages_users_list.html' %}
+                                </ul>
                             {% else %}
                                 <div class="margin-bottom-10 margin-top-10" style="text-align: center">
                                     <span>No messages found. </span>
                                 </div>
                             {% endif %}
                         </div>
-						</div>
-						<!-- Messages / End -->
+                    </div>
+                    <!-- Messages / End -->
 
-						<!-- Message Content -->
-						<div class="message-content">
+                    <!-- Message Content -->
+                    <div class="message-content">
 
-							<div class="messages-headline">
-                                {% if message_details %}
-								<h4>{{ full_name }}</h4>
-								    <a href="#small-dialog" class="message-action popup-with-zoom-anim"><i class="icon-feather-trash-2"></i> Delete Conversation</a>
-                                {% endif %}
-							</div>
+                        <div class="messages-headline">
+                            {% if message_details %}
+                                <h4>{{ full_name }}</h4>
+                                <a href="#small-dialog" class="message-action popup-with-zoom-anim"><i
+                                        class="icon-feather-trash-2"></i> Delete Conversation</a>
+                            {% endif %}
+                        </div>
 
-							<!-- Message Content Inner -->
-{#							<div id="message_content_div" class="message-content-inner">#}
-							<div id="message_content_div" class="conversation">
-                                {% if message_details %}
-                                    <!-- Time Sign -->
-                                    <div class="message-time-sign">
-                                        <span>{{ message_details.0.created_at|naturalday }}</span>
-                                    </div>
+                        <!-- Message Content Inner -->
+                        {#							<div id="message_content_div" class="message-content-inner">#}
+                        <div id="message_content_div" class="conversation">
+                            {% if message_details %}
+                                <!-- Time Sign -->
+                                <div class="message-time-sign">
+                                    <span>{{ message_details.0.created_at|naturalday }}</span>
+                                </div>
 
-                                     {% for detail in message_details %}
-                                        {% if detail.sender != request.user %}
-                                            <div class="message-bubble">
-										<div class="message-bubble-inner">
-											<div class="message-avatar">
-                                                {% if detail.sender.profileImg %}
-                                                    <img  title="{{ full_name }}" data-tippy-placement="right"  src="{{ detail.sender.profileImg.url }}" alt="" />
-                                                {% else %}
-                                                    <img title="{{ full_name }}" data-tippy-placement="right" src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                {% endif %}
+                                {% for detail in message_details %}
+                                    {% if detail.sender != request.user %}
+                                        <div class="message-bubble">
+                                            <div class="message-bubble-inner">
+                                                <div class="message-avatar">
+                                                    {% if detail.sender.profileImg %}
+                                                        <img title="{{ full_name }}" data-tippy-placement="right"
+                                                             src="{{ detail.sender.profileImg.url }}" alt=""/>
+                                                    {% else %}
+                                                        <img title="{{ full_name }}" data-tippy-placement="right"
+                                                             src="{% static 'images/user-avatar-placeholder.png' %}"
+                                                             alt="">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="message-text"><p>{{ detail.message_content }}</p></div>
                                             </div>
-											<div class="message-text"><p>{{ detail.message_content }}</p></div>
-										</div>
-										<div class="clearfix"></div>
-									</div>
-                                        {% else %}
-        									<div class="message-bubble me">
-										<div class="message-bubble-inner">
-											<div class="message-avatar">
-                                                {% if detail.sender.profileImg %}
-                                                    <img src="{{ detail.sender.profileImg.url }}" alt="" />
-                                                {% else %}
-                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                {% endif %}
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    {% else %}
+                                        <div class="message-bubble me">
+                                            <div class="message-bubble-inner">
+                                                <div class="message-avatar">
+                                                    {% if detail.sender.profileImg %}
+                                                        <img src="{{ detail.sender.profileImg.url }}" alt=""/>
+                                                    {% else %}
+                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}"
+                                                             alt="">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="message-text"><p>{{ detail.message_content }}</p></div>
                                             </div>
-											<div class="message-text"><p>{{ detail.message_content }}</p></div>
-										</div>
-										<div class="clearfix"></div>
-									</div>
-                                        {% endif %}
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    {% endif %}
 
-                                            <!-- for display date -->
-                                         {% with next_element=message_details|next_message:forloop.counter0  %}
-                                            <!-- check if next element is not null -->
-                                            {% if next_element.created_at %}
-                                             {% ifnotequal detail.created_at|date:"Ymd"  next_element.created_at|date:"Ymd" %}
-                                                 <div class="message-time-sign">
+                                    <!-- for display date -->
+                                    {% with next_element=message_details|next_message:forloop.counter0 %}
+                                        <!-- check if next element is not null -->
+                                        {% if next_element.created_at %}
+                                            {% ifnotequal detail.created_at|date:"Ymd"  next_element.created_at|date:"Ymd" %}
+                                                <div class="message-time-sign">
                                                     <span>{{ next_element.created_at|naturalday }}</span>
                                                 </div>
                                             {% endifnotequal %}
-                                             {% endif %}
-                                         {% endwith %}
-                                            <!-- End Display Date -->
-                                     {% endfor %}
-                                {% endif %}
-                            </div>
-                            <!-- Message Content Inner / End -->
-
-                           <!-- send message form -->
-                            {% if message_details %}
-                                <form id="send-message-form" method="post" action="{% url 'messages' %}">
-                                    <div class="message-reply yellow">
-                                        <input type="hidden" name="last_message_date" value="{{ last_message_date }}">
-                                        {% csrf_token %}
-                                        <textarea name="message_content" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>
-                                        <button type="submit" class="button ripple-effect">Send</button>
-                                    </div>
-                                </form>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <!-- End Display Date -->
+                                {% endfor %}
                             {% endif %}
-
                         </div>
-                        <!-- Message Content -->
-                    </div>
-                </div>
-                <!--Messages Container / End -->
+                        <!-- Message Content Inner / End -->
 
-			<!-- Footer -->
-			<div class="dashboard-footer-spacer"></div>
-			<div class="small-footer margin-top-15">
-				<div class="small-footer-copyrights">
-					© 2018 <strong>Hireo</strong>. All Rights Reserved.
-				</div>
-				<ul class="footer-social-links">
-					<li>
-						<a href="#" title="Facebook" data-tippy-placement="top">
-							<i class="icon-brand-facebook-f"></i>
-						</a>
-					</li>
-					<li>
-						<a href="#" title="Twitter" data-tippy-placement="top">
-							<i class="icon-brand-twitter"></i>
-						</a>
-					</li>
-					<li>
-						<a href="#" title="Google Plus" data-tippy-placement="top">
-							<i class="icon-brand-google-plus-g"></i>
-						</a>
-					</li>
-					<li>
-						<a href="#" title="LinkedIn" data-tippy-placement="top">
-							<i class="icon-brand-linkedin-in"></i>
-						</a>
-					</li>
-				</ul>
-				<div class="clearfix"></div>
-			</div>
-			<!-- Footer / End -->
-		</div>
+                        <!-- send message form -->
+                        {% if message_details %}
+                            <form id="send-message-form" method="post" action="{% url 'messages' %}">
+                                <div class="message-reply yellow">
+                                    <input type="hidden" name="last_message_date" value="{{ last_message_date }}">
+                                    {% csrf_token %}
+                                    <input name="message_content" placeholder="Your Message" type="text" autofocus
+                                           style="box-shadow: none;">
+                                    {#                                        <textarea name="message_content" cols="1" rows="1" placeholder="Your Message" data-autoresize></textarea>#}
+                                    <button type="submit" class="button ripple-effect">Send</button>
+                                </div>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                    <!-- Message Content -->
+                </div>
+            </div>
+            <!--Messages Container / End -->
+
+            <!-- Footer -->
+            <div class="dashboard-footer-spacer"></div>
+            <div class="small-footer margin-top-15">
+                <div class="small-footer-copyrights">
+                    © 2018 <strong>Hireo</strong>. All Rights Reserved.
+                </div>
+                <ul class="footer-social-links">
+                    <li>
+                        <a href="#" title="Facebook" data-tippy-placement="top">
+                            <i class="icon-brand-facebook-f"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Twitter" data-tippy-placement="top">
+                            <i class="icon-brand-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="Google Plus" data-tippy-placement="top">
+                            <i class="icon-brand-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" title="LinkedIn" data-tippy-placement="top">
+                            <i class="icon-brand-linkedin-in"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <!-- Footer / End -->
+        </div>
     </div>
     <!-- Dashboard Content / End -->
 
@@ -177,35 +187,36 @@
     <div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
         <div class="sign-in-form">
 
-		<ul class="popup-tabs-nav">
-			<li><a href="#tab" id="popup-tabs" >Delete Conversation</a></li>
-		</ul>
+            <ul class="popup-tabs-nav">
+                <li><a href="#tab" id="popup-tabs">Delete Conversation</a></li>
+            </ul>
 
-		<div class="popup-tabs-container">
+            <div class="popup-tabs-container">
 
-			<!-- Tab -->
-			<div class="popup-tab-content" id="tab">
+                <!-- Tab -->
+                <div class="popup-tab-content" id="tab">
 
-				<!-- Welcome Text -->
-				<div class="welcome-text">
-                    <p>Are you sure you want to delete this conversations.</p>
-				</div>
-
-                <div class="row">
-                    <div class="col-lg-4"></div>
-                    <div class="col-lg-4" style="text-align: center">
-                        <!-- Button -->
-                        <a class="button gray ripple-effect-dark cancel-popup">Cancel</a>
+                    <!-- Welcome Text -->
+                    <div class="welcome-text">
+                        <p>Are you sure you want to delete this conversations.</p>
                     </div>
 
-                    <div class="col-lg-4" style="text-align: center">
-                        <!-- Button -->
-                        <a href="javascript:" data-url="{% url 'messages_delete' %}" id="delete-conversation-popup" class="button ripple-effect " style="background-color: #de5959">Delete</a>
+                    <div class="row">
+                        <div class="col-lg-4"></div>
+                        <div class="col-lg-4" style="text-align: center">
+                            <!-- Button -->
+                            <a class="button gray ripple-effect-dark cancel-popup">Cancel</a>
+                        </div>
+
+                        <div class="col-lg-4" style="text-align: center">
+                            <!-- Button -->
+                            <a href="javascript:" data-url="{% url 'messages_delete' %}" id="delete-conversation-popup"
+                               class="button ripple-effect " style="background-color: #de5959">Delete</a>
+                        </div>
                     </div>
                 </div>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
     </div>
     <!-- Delete Offer Popup / End -->
 
@@ -213,27 +224,55 @@
 
 {% block scripts %}
     <script>
+        var path = `{{ request.path }}`;
         $(document).ready(function () {
             window.onload = $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
 
-            function get_inbox_users_list() {
+            {# live search for inbox user field #}
+            $('#inbox-user-list').autocomplete({
+               source:`{% url 'get_users_from_inbox' %}`
+            }).autocomplete("instance")._renderItem = function(ul, item){
+                let url =`{% url 'message_details' 1234 %}`.replace("1234", item.id.toString());
+                 return $( "<li>" )
+                .append(`<div><a href="${url}"> ${item.full_name} </a></div>` )
+                .appendTo(ul);
+            };
+
+            window.get_inbox_users_list = function () {
                 const url = $(".js-message-users-lists-div").data("url");
-                console.log("get_inbox_users_list call ", url);
                 $.ajax({
                     type: "ajax",
                     method: "GET",
                     url: url,
+                    data: {"path": path},
                     success: function (data) {
-                        console.log("data ", data);
-                        $(".js-message-users-lists-div ul").html(data);
+                        if (data.success) {
+                            $(".js-message-users-lists-div ul").html(data.users_list);
+                        }
+                    }
+                });
+            };
+
+            {# TODO: change the way to hide notification or event not created when websocket is open it's just for testing#}
+            {# it's not the best way findout the alternative way to stop creating notification when socket is connected           #}
+            function markAsReadMessage(message_id) {
+                $.ajax({
+                    type:"ajax",
+                    method:"GET",
+                    url: `{% url 'mark_as_read_message' %}`,
+                    data: {"message_id": message_id},
+                    success: function (data) {
+                        if(data.success){
+                            $(".js-message-notification").find("span").attr("hidden", true);
+                        }
                     }
                 });
             }
 
-            function addNewMessage(message_id, equal){
+            function addNewMessage(message_id, equal) {
                 let data = {
-                  "message_id": message_id,
-                  "equal": equal,
+                    "message_id": message_id,
+                    "equal": equal,
                 };
 
                 $.ajax({
@@ -243,23 +282,23 @@
                     data: data,
                     success: function (data) {
                         {#console.log("receive side data ", data);#}
-                        if(data.success){
-                            get_inbox_users_list();
+                        if (data.success) {
+                            markAsReadMessage(message_id);
                             $('#message_content_div').append(data.received_msg);
                             $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                             $("#send-message-form input[name=last_message_date]").val(data.date);
-                            $("#send-message-form textarea").focus();
+                            $("#send-message-form input[name=message_content]").focus();
                         }
                     }
                 });
             }
 
-            if(window.location.pathname.match(/(\d+)/g)){
+            if (window.location.pathname.match(/(\d+)/g)) {
 
-                const activeUser_id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+                const activeUser_id = parseInt(window.location.pathname.replace(/[^\d.]/g, ""));
 
                 let ws_schema = window.location.protocol == "https:" ? "wss" : "ws";
-                let ws_path = ws_schema + '://' + window.location.host +`/{{ request.user.id }}/`;
+                let ws_path = ws_schema + '://' + window.location.host + `/{{ request.user.id }}/`;
                 let ws = new WebSocket(ws_path);
 
                 ws.onopen = function (event) {
@@ -274,8 +313,9 @@
 
                 ws.onmessage = function (event) {
                     let data = JSON.parse(event.data);
+                    get_inbox_users_list();
                     {#console.log("on message data ", data);#}
-                    if(data.sender_id === activeUser_id) {
+                    if (data.sender_id === activeUser_id) {
                         addNewMessage(data.message_id, data.Equal);
                     }
                 };

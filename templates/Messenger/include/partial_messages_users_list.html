@@ -1,8 +1,8 @@
 {% load static %}
 
 {% for message in messages %}
-    {% if message.sender == request.user %}
-        <li class=" {% if message.receiver.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+    {% if message.is_sender %}
+        <li class=" {%if message.receiver.id|stringformat:"s"  in request.path or message.receiver.id|stringformat:"s" in path %}active-message{% endif %}">
             <a href="{% url 'message_details' message.receiver.id %}" class="js-detail-message-chat">
                 <div class="message-avatar"><i class="status-icon status-online"></i>
                     {% if message.receiver.profileImg %}
@@ -23,7 +23,7 @@
 
     {% else %}
 
-        <li class="{% if message.sender.id|stringformat:"s"  in request.path %}active-message{% endif %}">
+        <li class="{% if message.sender.id|stringformat:"s"  in request.path or message.sender.id|stringformat:"s" in path %}active-message{% endif %}">
             <a href="{% url 'message_details' message.sender.id %}">
                 <div class="message-avatar"><i class="status-icon status-online"></i>
                     {% if message.sender.profileImg %}
