@@ -24,35 +24,38 @@
 
             <!-- Search Bar -->
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-4">
+                    <ul class="intro-stats margin-top-95 hide-under-992px">
+                        <li>
+                            <strong class="counter">{{ total_tasks_posted|intcomma }}</strong>
+                            <span>Tasks Posted</span>
+                        </li>
+                        <li>
+                            <strong class="counter">{{ total_freelancers|intcomma }}</strong>
+                            <span>Freelancers</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-8 col-sm-12">
                     <div class="intro-banner-search-form margin-top-95">
-
-                        <!-- Search Field -->
-                        <div class="intro-search-field with-autocomplete">
-                            <label for="autocomplete-input" class="field-title ripple-effect">Where?</label>
-                            <div class="input-with-icon">
-                                <input id="autocomplete-input" type="text" placeholder="Online Job">
-                                <i class="icon-material-outline-location-on"></i>
-                            </div>
-                        </div>
 
                         <!-- Search Field -->
                         <div class="intro-search-field">
                             <label for="intro-keywords" class="field-title ripple-effect">What job you want?</label>
-                            <input id="intro-keywords" type="text" placeholder="Job Title or Keywords">
+                            <input id="search-job" type="text" placeholder="Job Title or Keywords">
                         </div>
 
                         <!-- Button -->
                         <div class="intro-search-button">
                             <button class="button ripple-effect"
-                                    onclick="window.location.href='jobs-list-layout-full-page-map.html'">Search
+                                    onclick="window.location.href=`{% url 'find_tasks' %}?skills=${document.getElementById('search-job').value}`">Search
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Stats -->
+            <!-- Stats
             <div class="row">
                 <div class="col-md-12">
                     <ul class="intro-stats margin-top-45 hide-under-992px">
@@ -67,6 +70,7 @@
                     </ul>
                 </div>
             </div>
+            -->
 
         </div>
     </div>
@@ -336,3 +340,20 @@
 
 
 {% endblock content %}
+
+{% block scripts %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+            const availableTags = [
+                "Angular", "React", "Vue", "CSS", "Html", "Bootstrap", "JavaScript", "C#", "C++","Java",
+                "Python", "Php", "Ruby", "Objective-C", "Swift", "Logo Design","Game Design","PhotoShop Editing",
+                "Banner Ads","Business Card"];
+
+            $("#search-job").autocomplete({
+               source: availableTags,
+            });
+        });
+    </script>
+
+{% endblock %}

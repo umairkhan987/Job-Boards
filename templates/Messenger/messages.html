@@ -223,6 +223,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         var path = `{{ request.path }}`;
         $(document).ready(function () {
@@ -230,12 +231,13 @@
 
             {# live search for inbox user field #}
             $('#inbox-user-list').autocomplete({
-               source:`{% url 'get_users_from_inbox' %}`
+                source:`{% url 'get_users_from_inbox' %}`,
+                minLength: 2,
             }).autocomplete("instance")._renderItem = function(ul, item){
                 let url =`{% url 'message_details' 1234 %}`.replace("1234", item.id.toString());
-                 return $( "<li>" )
-                .append(`<div><a href="${url}"> ${item.full_name} </a></div>` )
-                .appendTo(ul);
+                return $( "<li>" )
+                    .append(`<div><a href="${url}"> ${item.full_name} </a></div>` )
+                    .appendTo(ul);
             };
 
             window.get_inbox_users_list = function () {
@@ -322,4 +324,5 @@
             }
         });
     </script>
+
 {% endblock scripts %}

@@ -243,5 +243,3 @@ def deactivate_account(request):
 
     except Exception as e:
         raise Http404(str(e))
-
-

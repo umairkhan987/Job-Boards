@@ -44,7 +44,6 @@
 <script src="{% static 'js/magnific-popup.min.js' %}"></script>
 <script src="{% static 'js/slick.min.js' %}"></script>
 <script src="{% static 'js/custom.js' %}"></script>
-
 {# custom javascript files #}
 <script src="{% static 'customScript.js' %}"></script>
 
@@ -63,8 +62,8 @@
 {% if user.is_authenticated %}
     <script src="{% static 'notification.js' %}"></script>
     <script src="{% static 'hireoScript.js' %}"></script>
+
     {% block scripts %}{% endblock %}
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="{% static 'messenger.js' %}"></script>
 {% endif %}
 

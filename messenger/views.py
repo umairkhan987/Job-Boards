@@ -161,15 +161,12 @@ def get_users_form_inbox(request):
                     "id": str(i.receiver.id)
                 }
                 names.append(obj)
-                # names["full_name"] = i.receiver.first_name + " " + i.receiver.last_name
             elif keyword.lower() in i.sender.first_name.lower() and i.sender != request.user:
                 obj = {
                     "full_name": i.sender.first_name + " " + i.sender.last_name,
                     "id": str(i.sender.id)
                 }
                 names.append(obj)
-                # names["full_name"] = i.sender.first_name + " " + i.sender.last_name
-        print("names ", names)
         return JsonResponse(names, safe=False)
 
 
