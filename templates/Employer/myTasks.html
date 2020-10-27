@@ -37,7 +37,7 @@
                                     <select name="sort-by" class="selectpicker hide-tick" onchange="this.form.submit()">
 									    <option  value="relevance">Relevance</option>
 									    <option {% if "pending" in request.get_full_path %} selected {% endif %} value="pending">Pending</option>
-									    <option {% if "progress" in request.get_full_path %} selected {% endif %} value="progress">In Progress</option>
+									    <option {% if "progress" in request.get_full_path %} selected {% endif %} value="in progress">In Progress</option>
 									    <option {% if "completed" in request.get_full_path %} selected {% endif %} value="completed">Completed</option>
 								    </select>
                                 </form>

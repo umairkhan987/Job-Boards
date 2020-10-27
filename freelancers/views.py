@@ -54,7 +54,10 @@ def my_proposals(request):
     elif sort == "pending":
         proposal_list = proposal_list.filter(status__isnull=True)
     else:
-        proposal_list = proposal_list.order_by('-created_at')
+        order = ['accepted', None, 'completed', 'cancelled']
+        order = {key: i for i, key in enumerate(order)}
+        proposal_list = sorted(proposal_list, key=lambda proposal: order.get(proposal.status, 0))
+        # proposal_list = proposal_list.order_by('-created_at')
 
     page = request.GET.get('page', 1)
     paginator = Paginator(proposal_list, 4)

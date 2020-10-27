@@ -17,11 +17,14 @@ from .models import Bookmark, HitCount
 def index(request):
     tasks = PostTask.objects.all()
     freelancers = Profile.objects.all()
+    freelancers_profile = freelancers.filter(created_at__lt=F('updated_at'))
+    sorted_freelancers = sorted(freelancers_profile, key=lambda a: a.calculate_rating(), reverse=True)
+
     context = {
         "total_tasks_posted": tasks.count(),
         "total_freelancers": freelancers.count(),
         "tasks": tasks.exclude(job_status__exact="Completed").order_by('-created_at')[:5],
-        "freelancers": freelancers.filter(created_at__lt=F('updated_at')).order_by('created_at')[:6]
+        "freelancers": sorted_freelancers[:6]
     }
     return render(request, 'Hireo/index.html', context)
 

@@ -5,7 +5,6 @@ from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import User
 from notification.models import MessageNotification
@@ -62,8 +61,10 @@ def message_details(request, id):
     last_message = None
     if receiver:
         message_detail = Messages.objects.filter(
-            Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)).order_by(
-            'created_at')
+            Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)) \
+            .exclude(message_not_visible_to=request.user.id) \
+            .order_by('created_at')
+
         message_detail.update(is_read=True)
         last_message = str(message_detail.last().created_at.date())
     context = {
@@ -82,13 +83,19 @@ def messages_delete(request):
             id = request.POST.get("receiver_id")
             receiver = User.objects.get(pk=id)
             conversation = Messages.objects.filter(
-                Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user))
+                Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)).all()
+
             if conversation.exists():
-                conversation.delete()
-                # TODO: update query and find alternative way to delete messages only on user sides who want
-                #  to delete message.
-                # conversation.filter(sender=request.user).update(sender=None)
-                # conversation.filter(receiver=request.user).update(receiver=None)
+                delete_conversation = conversation.filter(
+                    ~Q(message_not_visible_to=0) & ~Q(message_not_visible_to=request.user.id))
+                if delete_conversation.exists():
+                    delete_conversation.delete()
+
+                if conversation.filter(message_not_visible_to=0).exists():
+                    conversation = conversation.filter(message_not_visible_to=0).all()
+                    conversation.filter(Q(sender=request.user) | Q(receiver=request.user)) \
+                        .update(message_not_visible_to=request.user.id)
+
                 return JsonResponse({"success": True, "msg": "Conversation Deleted.", "url": redirect("messages").url})
             else:
                 return JsonResponse({"success": False, "errors": "Conversation not found."})
@@ -178,6 +185,6 @@ def get_current_user_msg(request):
         from (  select *, max(created_at)
         over (partition by min(receiver_id, sender_id), max(receiver_id, sender_id)) last_date
         from messenger_messages
-        where %s in (receiver_id, sender_id) )
+        where %s in (receiver_id, sender_id) and %s != message_not_visible_to)
         where created_at = last_date order by id desc
-        """, [request.user.id])
+        """, [request.user.id, request.user.id])

@@ -12,6 +12,8 @@ class Messages(models.Model):
     message_content = models.CharField(max_length=500)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    # hide message when user delete the message
+    message_not_visible_to = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return self.message_content

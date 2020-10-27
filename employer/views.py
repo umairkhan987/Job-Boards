@@ -33,6 +33,10 @@ def my_tasks(request):
     task_list = PostTask.objects.filter(user=request.user).order_by('-created_at')
     if sort and sort != "relevance":
         task_list = task_list.filter(job_status__iexact=sort)
+    else:
+        order = ['In Progress', 'Pending', 'Completed']
+        order = {key: i for i, key in enumerate(order)}
+        task_list = sorted(task_list, key=lambda task: order.get(task.job_status, 0))
 
     page = request.GET.get('page', 1)
     paginator = Paginator(task_list, 4)
