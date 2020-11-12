@@ -88,7 +88,8 @@ def delete_proposal(request, id):
             if not request.user.proposals.exclude(task_id=None).exists():
                 msg = "Currently you have not placed any bid yet."
                 html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
-            return JsonResponse({"success": True, "deleted": True, "html": html, "msg": "Proposal successfully deleted."})
+            return JsonResponse(
+                {"success": True, "deleted": True, "html": html, "msg": "Proposal successfully deleted."})
         else:
             raise Http404("Invalid request")
     except Exception as e:
@@ -130,6 +131,13 @@ def task_completed(request, id):
             proposal.task.save()
             proposal.user.profile.save()
             proposal.save()
+
+            # calculate success rate and overall profile rating
+            user = request.user
+            user.profile.success_rate = user.profile.calculate_success_rate()
+            user.profile.rating = user.profile.calculate_rating()
+            user.save()
+
             notification_handler(request.user, proposal.task.user, Notification.TASK_COMPLETED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job Completed."})
         else:

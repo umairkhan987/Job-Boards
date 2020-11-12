@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{% static 'css/custom-style.css' %}">
 </head>
 <body>
-<div class="wrapper">
+<div id="wrapper">
     {% include 'common/navbar.html' %}
 
     {% block content %}{% endblock content %}
@@ -45,26 +45,26 @@
 <script src="{% static 'js/slick.min.js' %}"></script>
 <script src="{% static 'js/custom.js' %}"></script>
 {# custom javascript files #}
-<script src="{% static 'customScript.js' %}"></script>
+<script src="{% static 'custom/customScript.js' %}"></script>
 
 {% if user.is_Freelancer and 'settings' in request.path %}
-    <script src="{% static 'profileScript.js' %}"></script>
+    <script src="{% static 'custom/profileScript.js' %}"></script>
 {% endif %}
 
 {% if user.is_Employer %}
-    <script src="{% static 'employerScript.js' %}"></script>
+    <script src="{% static 'custom/employerScript.js' %}"></script>
 {% endif %}
 
 {% if user.is_Freelancer %}
-    <script src="{% static 'freelancerScript.js' %}"></script>
+    <script src="{% static 'custom/freelancerScript.js' %}"></script>
 {% endif %}
 
 {% if user.is_authenticated %}
-    <script src="{% static 'notification.js' %}"></script>
-    <script src="{% static 'hireoScript.js' %}"></script>
+    <script src="{% static 'custom/notification.js' %}"></script>
+    <script src="{% static 'custom/hireoScript.js' %}"></script>
 
     {% block scripts %}{% endblock %}
-    <script src="{% static 'messenger.js' %}"></script>
+    <script src="{% static 'custom/messenger.js' %}"></script>
 {% endif %}
 
 </body>

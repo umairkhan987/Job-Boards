@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.db import connection
 
 from accounts.models import User
 from notification.models import MessageNotification
@@ -179,12 +180,26 @@ def get_users_form_inbox(request):
 
 # TODO: convert this query into django queryset
 def get_current_user_msg(request):
-    return Messages.objects.raw(
-        """
-        select id, receiver_id, sender_id, message_content, created_at
-        from (  select *, max(created_at)
-        over (partition by min(receiver_id, sender_id), max(receiver_id, sender_id)) last_date
-        from messenger_messages
-        where %s in (receiver_id, sender_id) and %s != message_not_visible_to)
-        where created_at = last_date order by id desc
-        """, [request.user.id, request.user.id])
+    if connection.vendor == 'sqlite':
+        return Messages.objects.raw(
+            """
+                    select id, receiver_id, sender_id, message_content, created_at
+                    from (  select *, max(created_at)
+                    over (partition by min(receiver_id, sender_id), max(receiver_id, sender_id)) last_date
+                    from messenger_messages
+                    where %s in (receiver_id, sender_id) and %s != message_not_visible_to)
+                    where created_at = last_date order by id desc
+                    """, [request.user.id, request.user.id])
+    else:
+        return Messages.objects.raw(
+            """
+            select h.* from messenger_messages h
+            where %s in (receiver_id, sender_id) and %s != message_not_visible_to 
+            and not exists (
+            select 1 from messenger_messages
+            where LEAST(receiver_id, sender_id) = LEAST(h.receiver_id, h.sender_id)
+                and GREATEST(receiver_id, sender_id) = GREATEST(h.receiver_id, h.sender_id)
+            and created_at > h.created_at
+            )  
+            order by h.id desc
+            """, [request.user.id, request.user.id])

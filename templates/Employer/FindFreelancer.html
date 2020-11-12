@@ -105,10 +105,9 @@
                 </div>
 
 
-                <!-- Freelancers List Container -->
-                <div class="freelancers-container freelancers-list-layout margin-top-35">
-
-                    {% if freelancers|length > 0 %}
+                 {% if freelancers %}
+                    <!-- Freelancers List Container -->
+                    <div class="freelancers-container freelancers-list-layout margin-top-35">
                         {% for freelancer in freelancers %}
                             <!--Freelancer -->
                             <div class="freelancer">
@@ -126,7 +125,7 @@
                                             <a href="{% url 'freelancer_profile' freelancer.id %}">
                                                 {% if freelancer.user.profileImg %}
                                                     <img src="{{ freelancer.user.profileImg.url }}" alt="">
-                                                    {% else %}
+                                                {% else %}
                                                     <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No-Image" />
                                                 {% endif %}
 
@@ -164,10 +163,13 @@
                             </div>
                             <!-- Freelancer / End -->
                         {% endfor %}
-                    {% endif %}
-
-                </div>
-                <!-- Freelancers Container / End -->
+                    </div>
+                    <!-- Freelancers Container / End -->
+                 {% else %}
+                    <div class="margin-top-30 margin-bottom-10">
+                        <p style="text-align-last: center">Currently no freelancers is available.</p>
+                    </div>
+                 {% endif %}
 
                 <!-- Pagination -->
                 <div class="clearfix"></div>

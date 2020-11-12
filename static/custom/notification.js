@@ -41,12 +41,13 @@ $(document).ready(function () {
     let ws_path = ws_schema + '://' + window.location.host + "/notifications/";
     let ws = new WebSocket(ws_path);
 
+    // console.log("ws_path ", ws_path);
     ws.onopen = function (event) {
         // console.log("opened ", event);
     };
 
     ws.onclose = function (event) {
-        // console.log("closed ", event)
+        // console.error("closed ", event)
     };
 
     ws.onmessage = function (event) {
@@ -75,7 +76,7 @@ $(document).ready(function () {
     };
 
     ws.onerror = function (event) {
-        console.log("error ", event)
+        // console.error("error ", event)
     };
 
 });

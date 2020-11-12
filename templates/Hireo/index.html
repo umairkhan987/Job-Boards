@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load thumbnail %}
 
 {% block content %}
     <!-- Intro Banner
@@ -206,10 +207,9 @@
                         <h3>Featured Jobs</h3>
                         <a href="{% url 'find_tasks' %}" class="headline-link">Browse All Jobs</a>
                     </div>
-
-                    <!-- Jobs Container -->
-                    <div class="listings-container compact-list-layout margin-top-35">
-                        {% if tasks %}
+                    {% if tasks %}
+                            <!-- Jobs Container -->
+                        <div class="listings-container compact-list-layout margin-top-35">
                             {% for task in tasks %}
                                 <a href="{% url 'view_task' task.id %}" class="job-listing with-apply-button">
 
@@ -241,14 +241,13 @@
                             </div>
                         </a>
                             {% endfor %}
+                        </div>
+                            <!-- Jobs Container / End -->
                         {% else %}
                             <div class="margin-top-10 margin-bottom-10" style="text-align: center">
                                 <span>Currently no Jobs is available.</span>
                             </div>
                         {% endif %}
-                    </div>
-                    <!-- Jobs Container / End -->
-
                 </div>
             </div>
         </div>
@@ -286,11 +285,18 @@
                                         <div class="freelancer-avatar">
                                             <div class="verified-badge"></div>
                                             <a href="{% url 'freelancer_profile' freelancer.id %}">
-                                            {% if freelancer.user.profileImg %}
+                                                {% thumbnail freelancer.user.profileImg "x80" as im %}
+                                                    <img src="{{ im.url }}" alt="" style="height: 118px">
+                                                {% empty %}
+                                                     <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" style="height: 118px">
+                                                {% endthumbnail %}
+                                            {% comment %}
+                                                {% if freelancer.user.profileImg %}
                                                 <img src="{{ freelancer.user.profileImg.url }}" alt="" style="height: 118px">
                                             {% else %}
                                                 <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" style="height: 118px">
                                             {% endif %}
+                                            {% endcomment %}
                                             </a>
                                         </div>
 

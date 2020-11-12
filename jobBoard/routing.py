@@ -11,8 +11,8 @@ application = ProtocolTypeRouter({
         AuthMiddlewareStack(
             URLRouter(
                 [
-                    path('notifications/', NotificationsConsumer),
-                    path("<int:user_id>/", MessengerConsumer),
+                    path('notifications/', NotificationsConsumer.as_asgi()),
+                    path("<int:user_id>/", MessengerConsumer.as_asgi()),
                 ]
             )
         )

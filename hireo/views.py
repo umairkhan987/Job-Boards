@@ -16,7 +16,7 @@ from .models import Bookmark, HitCount
 
 def index(request):
     tasks = PostTask.objects.all()
-    freelancers = Profile.objects.all()
+    freelancers = Profile.objects.select_related('user').all()
     freelancers_profile = freelancers.filter(created_at__lt=F('updated_at'))
     sorted_freelancers = sorted(freelancers_profile, key=lambda a: a.calculate_rating(), reverse=True)
 
@@ -88,7 +88,7 @@ def view_task(request, id):
 
 
 def find_freelancer(request):
-    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).order_by('created_at')
+    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by('created_at')
     if request.GET:
         search = request.GET.get('search', None)
         rate = request.GET.get('rate', None)

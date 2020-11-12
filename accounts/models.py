@@ -76,6 +76,7 @@ class User(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name="profile")
+    # price
     rate = models.IntegerField(default=5)
     skills = models.CharField(blank=True, null=True, max_length=250)
     tags = models.CharField(blank=True, max_length=250)
@@ -84,6 +85,10 @@ class Profile(models.Model):
     userCV = models.FileField(upload_to=upload_user_cv, blank=True, null=True)
     total_hired = models.IntegerField(default=0)
     total_job_done = models.IntegerField(default=0)
+    # calculate success rate
+    success_rate = models.IntegerField(default=0)
+    rating = models.DecimalField(default=0.0, max_digits=2)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

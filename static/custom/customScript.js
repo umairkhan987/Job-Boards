@@ -48,7 +48,6 @@ $(document).ready(function () {
         const formData = loginForm.serialize();
         const url = loginForm.attr('action');
         let path = window.location.pathname;
-
         $.ajax({
             type:"ajax",
             url:url,

@@ -15,6 +15,10 @@ django-hitcount = "*"
 channels = "*"
 channels-redis = "*"
 python-decouple = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
+django-debug-toolbar = "*"
+sorl-thumbnail = "*"
 
 [requires]
 python_version = "3.7"
