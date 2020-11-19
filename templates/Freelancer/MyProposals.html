@@ -94,7 +94,11 @@
 									<!-- Buttons -->
 									<div class="buttons-to-right always-visible">
                                         {% if proposal.status == 'accepted' %}
-                                            <a href="javascript:" id="complete_job_Btn" data-url="{% url 'task_completed' proposal.id %}" class="button ripple-effect"><i class="icon-material-outline-check"></i> Complete Job</a>
+                                            <a href="javascript:" id="complete_job_Btn" data-url="{% url 'task_completed' proposal.id %}" class="button ripple-effect">
+                                                <i class="icon-material-outline-check js-complete-job-check-icon"></i>
+                                                <span hidden class="spinner-border spinner-border-sm mr-1 margin-bottom-1 js-complete-job-loading-spinner" role="status" aria-hidden="true"></span>
+                                                Complete Job
+                                            </a>
                                             <a href="#small-dialog" data-url="{% url 'cancel_task' proposal.id %}" class="popup-with-zoom-anim button red ripple-effect cancel-task-popup"><i class="icon-feather-alert-circle"></i> Cancel Job</a>
                                         {% elif proposal.status is None %}
                                             <a href="#small-dialog" data-url="{% url 'delete_proposal' proposal.id %}"  data-content="{{ proposal.task.title }}" class=" popup-with-zoom-anim button red ripple-effect ico delete-popup" data-tippy-placement="top" title="Delete Bid"><i class="icon-feather-trash-2"></i></a>
@@ -181,6 +185,13 @@
 				<div class="welcome-text">
                     <p id="delete-proposal-p">Are you sure you want to delete</p>
 				</div>
+
+                <div hidden class="d-flex justify-content-center text-danger js-delete-proposal-loading-spinner">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
 
                 <div class="row">
                     <div class="col-lg-4"></div>

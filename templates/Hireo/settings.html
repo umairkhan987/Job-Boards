@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
+{% load thumbnail %}
+
 
 {% block title %} Settings | {% endblock %}
 
@@ -44,59 +47,8 @@
                             <strong id="setting-change-error" class="form-error"></strong>
                         </div>
 
-                        <div class="content with-padding padding-bottom-0">
-
-                            <form id="accountForm" action="{% url 'update-account' %}" method="post"
-                                  enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <div class="avatar-wrapper" data-tippy-placement="bottom"
-                                             title="Edit Profile Pic">
-                                            <img class="profile-pic" id="old_profile"
-                                                 src="{% if user.profileImg %}
-                                                 {{ user.profileImg.url }}
-                                                 {% else %}
-                                                 {% static 'images/user-avatar-placeholder.png' %}
-                                                 {% endif %} "
-                                                 alt=""/>
-                                            <div class="upload-button"></div>
-                                            <input type="file" class="file-upload" name="profileImg" accept="image/*"/>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="row">
-
-                                            <div class="col-xl-6">
-                                                <div class="submit-field">
-                                                    <h5>First Name</h5>
-                                                    <input type="text" name="first_name" class="with-border"
-                                                           value="{{ user.first_name }}" placeholder="First Name">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-xl-6">
-                                                <div class="submit-field">
-                                                    <h5>Last Name</h5>
-                                                    <input type="text" name="last_name" class="with-border"
-                                                           value="{{ user.last_name }}" placeholder="Last Name">
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-12">
-                                                <div class="submit-field">
-                                                    <!-- Button -->
-                                                    <button type="submit"
-                                                            class="button ripple-effect big float-right margin-bottom-25">
-                                                        Save Changes
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                        <div class="content with-padding padding-bottom-0 js-account-setting-div">
+                            {% include 'Hireo/include/partial_account_setting.html' %}
                         </div>
                     </div>
                 </div>
@@ -270,8 +222,8 @@
                                             <!-- Save Button -->
                                             <div class="row">
                                                 <div class="col-xl-12">
-                                                    <button type="submit"
-                                                            class="button ripple-effect big float-right margin-bottom-20">
+                                                    <button type="submit" class="button ripple-effect big float-right margin-bottom-20">
+                                                        <span hidden class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-profile-change-loading-spinner" role="status" aria-hidden="true"></span>
                                                         Save Profile
                                                     </button>
                                                 </div>
@@ -328,6 +280,7 @@
                                     <div class="col-xl-12">
                                         <div class="submit-field">
                                             <button type="submit" class="button ripple-effect big float-right">
+                                                <span hidden class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-password-change-loading-spinner" role="status" aria-hidden="true"></span>
                                                 Save Changes
                                             </button>
                                         </div>

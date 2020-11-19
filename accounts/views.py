@@ -2,10 +2,11 @@ import json
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, Http404
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.shortcuts import render
+from django.template.loader import render_to_string
 
 from .decorators import freelancer_required
 from .forms import CustomUserForm, UserForm, ProfileForm
@@ -51,7 +52,8 @@ def register(request):
 
 @login_required
 def settings(request):
-    return render(request, 'Hireo/settings.html')
+    form = UserForm(instance=request.user)
+    return render(request, 'Hireo/settings.html', {'form': form})
 
 
 @login_required
@@ -74,20 +76,20 @@ def changePassword(request):
 @login_required
 def updateAccount(request):
     try:
-        if request.method == 'POST':
+        if request.method == 'POST' and request.is_ajax():
             user = User.objects.get(email=request.user.email)
+            success = False
             form = UserForm(request.POST, request.FILES, instance=request.user)
-            if form.is_valid():
 
+            if form.is_valid():
                 if form.files and user.profileImg:
                     user.profileImg.delete()
-
                 form.save()
-                return JsonResponse({'success': True, 'msg': 'Successfully updated'})
-            else:
-                errors = form.errors.as_data()
-                print(errors)
-                return JsonResponse({'success': False, 'errors': "Some thing is happened."})
+                success = True
+
+            html = render_to_string("Hireo/include/partial_account_setting.html", {"form": form}, request=request)
+            return JsonResponse({'success': success, 'html': html, "msg": "Successfully updated"})
+
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 

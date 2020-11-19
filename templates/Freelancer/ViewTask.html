@@ -172,7 +172,9 @@
                                         {% if  task.user_submitted_proposal %}
                                             <span>Bid Placed</span>
                                         {% else %}
-                                            <span>Place a Bid </span>
+                                            <span hidden class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-place-bid-loading-spinner" role="status" aria-hidden="true"></span>
+                                            Place a Bid
+
                                         {% endif %}
                                     </button>
                                         {% else %}
@@ -244,7 +246,13 @@
 	<div class="sign-in-form">
 
 		<ul class="popup-tabs-nav">
-			<li><a href="#tab2">Send Message</a></li>
+			<li>
+                <a href="#tab2">Send Message
+                      <div hidden class="spinner-border spinner-border-sm ml-2 margin-top-5 js-send-message-loading-spinner" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </a>
+            </li>
 		</ul>
 
 		<div class="popup-tabs-container">

@@ -11,7 +11,11 @@ $(document).ready(function () {
             url:url,
             method:"POST",
             data:formData,
+            beforeSend:function(){
+                $('#register-loading-spinner').removeAttr("hidden");
+            },
             success:function (data) {
+                  $('#register-loading-spinner').attr("hidden", true);
                 // console.log(data);
                     if(data.success){
                          $.magnificPopup.close();
@@ -45,6 +49,8 @@ $(document).ready(function () {
     const loginForm = $("#login-form");
     $(loginForm).submit(function (event) {
         event.preventDefault();
+        $('#loginError').html("");
+
         const formData = loginForm.serialize();
         const url = loginForm.attr('action');
         let path = window.location.pathname;
@@ -53,7 +59,13 @@ $(document).ready(function () {
             url:url,
             method:"POST",
             data:formData,
+            beforeSend:function(){
+                $('#loading-spinner').removeAttr("hidden");
+                $('#loginError').html("");
+            },
             success:function (data) {
+                $('#loading-spinner').attr("hidden", true);
+
                     if(data.success){
                          $.magnificPopup.close();
                          window.location = path;
@@ -70,73 +82,6 @@ $(document).ready(function () {
             }
         });
     })
-
-        // change Password
-    const chgPsdFormRef = $('#changePasswordForm');
-    $(chgPsdFormRef).submit(function (e) {
-        e.preventDefault();
-        const formData = chgPsdFormRef.serialize();
-        const url = chgPsdFormRef.attr('action');
-
-        $.ajax({
-            type:"ajax",
-            url:url,
-            method:"POST",
-            data:formData,
-            success:function (data) {
-                if(data.success){
-                    snackbar_msg(data.msg);
-                    chgPsdFormRef.trigger('reset');
-                }
-                else{
-                    chgPsdFormRef.trigger('reset');
-                    if(data.errors['old_password']){
-                        $('#old_password-error').show().html(data.errors['old_password']);
-                    }
-                    else{
-                        $('#old_password-error').hide().html("");
-                    }
-
-                    if(data.errors['new_password2']){
-                        $('#new_password-error').show().html(data.errors['new_password2']);
-                    }
-                    else{
-                        $('#new_password-error').hide().html("");
-                    }
-                }
-            }
-        })
-
-    });
-
-    // Account Form
-    const accountFormRef = $('#accountForm');
-    accountFormRef.submit(function (e) {
-        e.preventDefault();
-
-        const url = accountFormRef.attr('action');
-        const formData = new FormData($('#accountForm')[0]);
-        // for(let value of formData.entries())
-        //         console.log(value[0]+'  '+value[1]);
-
-        $.ajax({
-            type:"ajax",
-            url: url,
-            method: "POST",
-            processData: false,
-            contentType: false,
-            cache: false,
-            data: formData,
-            success:function (data) {
-                if(data.success){
-                    snackbar_msg(data.msg)
-                }
-                else{
-                    snackbar_msg(data.errors)
-                }
-            }
-        });
-    });
 
     // when user click on page tow view proposal against each task
     // js- include and its working....

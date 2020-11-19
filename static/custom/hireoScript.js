@@ -52,7 +52,12 @@ $(document).ready(function () {
             method: "POST",
             url: message_url,
             data: data,
+             beforeSend:function(){
+                $('.js-send-message-loading-spinner').removeAttr('hidden');
+             },
             success: function (data) {
+                $('.js-send-message-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 // console.log(data);
                 if (data.success) {

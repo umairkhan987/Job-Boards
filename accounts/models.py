@@ -85,12 +85,11 @@ class Profile(models.Model):
     userCV = models.FileField(upload_to=upload_user_cv, blank=True, null=True)
     total_hired = models.IntegerField(default=0)
     total_job_done = models.IntegerField(default=0)
-    # calculate success rate
-    success_rate = models.IntegerField(default=0)
-    rating = models.DecimalField(default=0.0, max_digits=2)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # calculate success rate
+    success_rate = models.IntegerField(default=0)
+    rating = models.DecimalField(default=0, max_digits=5, decimal_places=1)
 
     def __str__(self):
         return self.user.email
@@ -122,21 +121,30 @@ class Profile(models.Model):
 
     def calculate_onBudget(self):
         completed_job = self.user.proposals.filter(status__iexact="completed")
-        total_job_completed = completed_job.count()
-        total_on_budget = completed_job.filter(onBudget__gt=0).count()
-        return (total_on_budget / total_job_completed) * 100
+        if completed_job.exists():
+            total_job_completed = completed_job.count()
+            total_on_budget = completed_job.filter(onBudget__gt=0).count()
+            return (total_on_budget / total_job_completed) * 100
+        else:
+            return 0
 
     def calculate_onTime(self):
         completed_job = self.user.proposals.filter(status__iexact="completed")
-        total_job_completed = completed_job.count()
-        total_on_time = completed_job.filter(onTime__gt=0).count()
-        return (total_on_time / total_job_completed) * 100
+        if completed_job.exists():
+            total_job_completed = completed_job.count()
+            total_on_time = completed_job.filter(onTime__gt=0).count()
+            return (total_on_time / total_job_completed) * 100
+        else:
+            return 0
 
     def get_bookmark_profile(self):
         user = get_current_user()
         if not user.is_authenticated:
             return False
         return user.bookmarks.filter(freelancer_profile=self).exists()
+
+    def get_rating(self):
+        return 0 if self.rating == 0 else self.rating
 
     # def get_work_history(self):
     #     return self.user.proposals.filter(status__exact='completed')

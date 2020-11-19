@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load thumbnail %}
 
 {% block title %} Freelancer Profile | {% endblock %}
 
@@ -12,15 +13,16 @@
 				<div class="single-page-header-inner">
 					<div class="left-side">
 						<div class="header-image freelancer-avatar">
-                            <img src="{% if profile.user.profileImg %}
-						            {{ profile.user.profileImg.url }}
-						            {% else %}
-						            {% static 'images/user-avatar-placeholder.png' %}
-						        {% endif %} " alt=""></div>
+                            {% thumbnail profile.user.profileImg "150" as im %}
+                                <img src="{{ im.url }}" alt="">
+                            {% empty %}
+                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                            {% endthumbnail %}
+                        </div>
 						<div class="header-details">
 							<h3>{{ profile.user.first_name }} {{ profile.user.last_name }}<span>{{profile.tags}}</span></h3>
 							<ul>
-								<li><div class="star-rating" data-rating="{{ profile.calculate_rating }}"></div></li>
+								<li><div class="star-rating" data-rating="{{ profile.get_rating }}"></div></li>
 								<li>{{ profile.country }}</li>
                                 <li>Viewed: {{ profile.views.count }}</li>
 {#								<li><div class="verified-badge-with-title">Verified</div></li>#}
@@ -56,27 +58,28 @@
                      {% for work in work_history %}
                          {% if work.rating != 0 %}
     					    <li>
-						<div class="boxed-list-item">
-							<!-- Content -->
-							<div class="item-content">
-								<h4>{{work.task.title}}</h4>
-								<div class="item-details margin-top-10">
-									<div class="star-rating" data-rating="{{ work.rating }}"></div>
-									<div class="detail-item"><i class="icon-material-outline-date-range"></i>{{ work.updated_at|date }}</div>
-								</div>
-								<div class="item-description">
-									<p>{{ work.comment }}</p>
-								</div>
-							</div>
-						</div>
-					</li>
-                             {% else %}
-                             <div class="margin-top-30">
-                                <span>Currently employer did not gives any review.</span>
-                             </div>
+						        <div class="boxed-list-item">
+							    <!-- Content -->
+							        <div class="item-content">
+								        <h4>{{work.task.title}}</h4>
+								        <div class="item-details margin-top-10">
+									        <div class="star-rating" data-rating="{{ work.rating }}"></div>
+									        <div class="detail-item"><i class="icon-material-outline-date-range"></i>{{ work.updated_at|date }}</div>
+                                        </div>
+								        <div class="item-description">
+									        <p>{{ work.comment }}</p>
+								        </div>
+							        </div>
+						        </div>
+					        </li>
                          {% endif %}
 				    {% endfor %}
 				    </ul>
+                    {% if work_history.0.rating == 0  %}
+                        <div class="margin-top-30">
+                            <span>Currently employer did not gives any review.</span>
+                        </div>
+                    {% endif %}
                 {% else %}
                     <div class="margin-top-30">
                         <span>Currently no work is done.</span>
@@ -147,8 +150,8 @@
 
 						<!-- Indicator -->
 						<div class="indicator">
-							<strong>{{ profile.calculate_success_rate|floatformat:"0" }}%</strong>
-							<div class="indicator-bar" data-indicator-percentage="{{ profile.calculate_success_rate|floatformat:"0" }}"><span></span></div>
+							<strong>{{ profile.success_rate }}%</strong>
+							<div class="indicator-bar" data-indicator-percentage="{{ profile.success_rate }}"><span></span></div>
 							<span>Job Success</span>
 						</div>
 

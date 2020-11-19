@@ -1,5 +1,6 @@
 {% extends 'common/_dashboard.html' %}
 {% load static %}
+{% load thumbnail %}
 
 {% block title %} Offer | {% endblock %}
 {% block dashboard_content %}
@@ -35,7 +36,7 @@
                                 {% if offers %}
                                     {% for offer in offers %}
                                         <li>
-                                            <!-- Overview -->
+                                            <!-- Single offer -->
                                             <div class="freelancer-overview manage-candidates">
                                                 <div class="freelancer-overview-inner">
 
@@ -43,11 +44,11 @@
                                                     <div class="freelancer-avatar">
                                                         {% if offer.sender %}
                                                             <div class="verified-badge"></div>
-                                                            {% if offer.sender.profileImg %}
-                                                                <img src="{{ offer.sender.profileImg.url }}" alt="">
-                                                            {% else %}
+                                                            {% thumbnail offer.sender.profileImg "x80" as im %}
+                                                                <img src="{{ im.url }}" alt="">
+                                                            {% empty %}
                                                                 <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                            {% endif %}
+                                                            {% endthumbnail %}
                                                         {% else %}
                                                             <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
                                                         {% endif %}
@@ -75,7 +76,7 @@
                                                                         class="icon-feather-mail"></i> Send Message</a>
                                                             {% endif %}
                                                             <a href="#small-dialog" data-url="{% url 'delete_offer' offer.id %}"
-                                                               class=" popup-with-zoom-anim button red ripple-effect ico delete-popup"
+                                                               class=" popup-with-zoom-anim button red ripple-effect ico"
                                                                data-tippy-placement="top" title="Delete offer"><i class="icon-feather-trash-2"></i></a>
                                                         </div>
                                                     </div>
@@ -186,6 +187,11 @@
 				<div class="welcome-text">
                     <p>Are you sure you want to delete this offer.</p>
 				</div>
+                <div hidden  class="d-flex justify-content-center text-primary js-delete-loading-spinner">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-lg-4"></div>
@@ -212,7 +218,13 @@
 	<div class="sign-in-form">
 
 		<ul class="popup-tabs-nav">
-			<li><a href="#tab2">Send Message</a></li>
+			<li>
+                <a href="#tab2">Send Message
+                 <div hidden class="spinner-border spinner-border-sm ml-2 margin-top-5 js-send-message-loading-spinner" role="status">
+                     <span class="sr-only">Loading...</span>
+                 </div>
+                </a>
+            </li>
 		</ul>
 
 		<div class="popup-tabs-container">

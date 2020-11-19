@@ -1,15 +1,16 @@
 {% load static %}
+{% load thumbnail %}
 
 {% for message in messages %}
     {% if message.is_sender %}
         <li class=" {%if message.receiver.id|stringformat:"s"  in request.path or message.receiver.id|stringformat:"s" in path %}active-message{% endif %}">
             <a href="{% url 'message_details' message.receiver.id %}" class="js-detail-message-chat">
                 <div class="message-avatar"><i class="status-icon status-online"></i>
-                    {% if message.receiver.profileImg %}
-                        <img src="{{ message.receiver.profileImg.url }}" alt=""/>
-                    {% else %}
-                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt=""/>
-                    {% endif %}
+                    {% thumbnail message.receiver.profileImg "x80" as im %}
+                        <img src="{{ im.url }}" alt="">
+                    {% empty %}
+                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                    {% endthumbnail %}
                 </div>
                 <div class="message-by">
                     <div class="message-by-headline">

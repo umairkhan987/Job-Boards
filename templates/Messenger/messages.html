@@ -1,6 +1,6 @@
 {% extends 'common/_dashboard.html' %}
 {% load static %}
-{% load humanize %}
+{% load thumbnail humanize %}
 {% load custom_filters %}
 
 {% block title %} Messages | {% endblock %}
@@ -80,14 +80,11 @@
                                         <div class="message-bubble">
                                             <div class="message-bubble-inner">
                                                 <div class="message-avatar">
-                                                    {% if detail.sender.profileImg %}
-                                                        <img title="{{ full_name }}" data-tippy-placement="right"
-                                                             src="{{ detail.sender.profileImg.url }}" alt=""/>
-                                                    {% else %}
-                                                        <img title="{{ full_name }}" data-tippy-placement="right"
-                                                             src="{% static 'images/user-avatar-placeholder.png' %}"
-                                                             alt="">
-                                                    {% endif %}
+                                                {% thumbnail detail.sender.profileImg "x80" as im %}
+                                                    <img src="{{ im.url }}" title="{{ full_name }}" data-tippy-placement="right" alt="">
+                                                {% empty %}
+                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" title="{{ full_name }}" data-tippy-placement="right" alt="">
+                                                {% endthumbnail %}
                                                 </div>
                                                 <div class="message-text"><p>{{ detail.message_content }}</p></div>
                                             </div>
@@ -97,12 +94,11 @@
                                         <div class="message-bubble me">
                                             <div class="message-bubble-inner">
                                                 <div class="message-avatar">
-                                                    {% if detail.sender.profileImg %}
-                                                        <img src="{{ detail.sender.profileImg.url }}" alt=""/>
-                                                    {% else %}
-                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}"
-                                                             alt="">
-                                                    {% endif %}
+                                                {% thumbnail detail.sender.profileImg "x80" as im %}
+                                                    <img src="{{ im.url }}" alt="">
+                                                {% empty %}
+                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                {% endthumbnail %}
                                                 </div>
                                                 <div class="message-text"><p>{{ detail.message_content }}</p></div>
                                             </div>

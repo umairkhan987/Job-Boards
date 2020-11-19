@@ -18,19 +18,19 @@ def index(request):
     tasks = PostTask.objects.all()
     freelancers = Profile.objects.select_related('user').all()
     freelancers_profile = freelancers.filter(created_at__lt=F('updated_at'))
-    sorted_freelancers = sorted(freelancers_profile, key=lambda a: a.calculate_rating(), reverse=True)
+    # sorted_freelancers = sorted(freelancers_profile, key=lambda a: a.calculate_rating(), reverse=True)
 
     context = {
         "total_tasks_posted": tasks.count(),
         "total_freelancers": freelancers.count(),
         "tasks": tasks.exclude(job_status__exact="Completed").order_by('-created_at')[:5],
-        "freelancers": sorted_freelancers[:6]
+        "freelancers": freelancers_profile.order_by('-rating')[:6]
     }
     return render(request, 'Hireo/index.html', context)
 
 
 def findTasks(request):
-    task_lists = PostTask.objects.all().exclude(job_status__exact="Completed").order_by('-created_at')
+    task_lists = PostTask.objects.exclude(job_status__exact="Completed").order_by('-created_at')
 
     if request.GET:
         search = request.GET.get('search', None)
@@ -69,7 +69,7 @@ def findTasks(request):
 
 def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
-    proposals = task.proposals.all().select_related('user').order_by('created_at')
+    proposals = task.proposals.all().select_related('user', 'user__profile').order_by('created_at')
     page = request.GET.get("page", 1)
     paginator = Paginator(proposals, 4)
 

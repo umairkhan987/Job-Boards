@@ -37,7 +37,12 @@ $(document).ready(function () {
             method: 'POST',
             url: URL,
             data: data,
+            beforeSend: function(){
+                $('.js-delete-task-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
+                $('.js-delete-task-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 console.log(data);
                 if (data.success) {
@@ -76,7 +81,12 @@ $(document).ready(function () {
             method: 'POST',
             url: proposal_url,
             data: data,
+            beforeSend: function(){
+                $('.js-accept-proposal-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
+              $('.js-accept-proposal-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 // console.log(data);
                 if (data.success) {

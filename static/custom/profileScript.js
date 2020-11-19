@@ -6,7 +6,7 @@ $(document).ready(function () {
             type:'GET',
             url: '/account/getProfile/',
             success: function (data) {
-                console.log(data);
+                // console.log(data);
                 if(data.success){
                      $('select[name=country]').val(data.profile.country).change();
                      const skills = data.profile.skills.split(",");
@@ -71,22 +71,97 @@ $(document).ready(function () {
             contentType: false,
             cache: false,
             data: formData,
+             beforeSend:function(){
+                 $('.js-profile-change-loading-spinner').removeAttr('hidden');
+             },
              success: function (data) {
-                 console.log(data);
-                if(data.success){
+                $('.js-profile-change-loading-spinner').attr('hidden', true);
+
+                 if(data.success){
                     snackbar_msg(data.msg);
                 }
                 else{
-                    alert("Upload Profile Error");
+                    snackbar_error_msg("Upload Profile Error");
                 }
              }
          })
     });
 
+    // change Password
+    const chgPsdFormRef = $('#changePasswordForm');
+    $(chgPsdFormRef).submit(function (e) {
+        e.preventDefault();
+        const formData = chgPsdFormRef.serialize();
+        const url = chgPsdFormRef.attr('action');
+
+        $.ajax({
+            type:"ajax",
+            url:url,
+            method:"POST",
+            data:formData,
+            beforeSend: function(){
+              $('.js-password-change-loading-spinner').removeAttr('hidden');
+            },
+            success:function (data) {
+              $('.js-password-change-loading-spinner').attr('hidden', true);
+
+                if(data.success){
+                    snackbar_msg(data.msg);
+                    chgPsdFormRef.trigger('reset');
+                }
+                else{
+                    chgPsdFormRef.trigger('reset');
+                    if(data.errors['old_password']){
+                        $('#old_password-error').show().html(data.errors['old_password']);
+                    }
+                    else{
+                        $('#old_password-error').hide().html("");
+                    }
+
+                    if(data.errors['new_password2']){
+                        $('#new_password-error').show().html(data.errors['new_password2']);
+                    }
+                    else{
+                        $('#new_password-error').hide().html("");
+                    }
+                }
+            }
+        })
+
+    });
+
+    // Account Form
+    $('.js-account-setting-div').on('submit', 'form', function (e) {
+        e.preventDefault();
+
+        const url = $(this).attr('action');
+        const formData = new FormData($(this)[0]);
+        // for(let value of formData.entries())
+        //         console.log(value[0]+'  '+value[1]);
+
+        $.ajax({
+            type:"ajax",
+            url: url,
+            method: "POST",
+            processData: false,
+            contentType: false,
+            cache: false,
+            data: formData,
+            beforeSend:function(){
+                $('.js-account-loading-spinner').removeAttr('hidden');
+            },
+            success:function (data) {
+                $('.js-account-loading-spinner').attr('hidden', true);
+                $('.js-account-setting-div').html(data.html);
+                if(data.success){
+                    snackbar_msg(data.msg)
+                }
+            }
+        });
+    });
 
     // snackbar for display msg
-    function snackbar_msg(msg)
-        {
+    function snackbar_msg(msg) {
             Snackbar.show({
                 text: msg,
                 pos: 'bottom-center',
@@ -97,4 +172,18 @@ $(document).ready(function () {
                 backgroundColor: '#2a41e8'
             });
         }
+
+    // snackbar for display error msg
+    function snackbar_error_msg(msg) {
+        Snackbar.show({
+            text: msg,
+            pos: 'bottom-center',
+            showAction: true,
+            actionText: "X",
+            actionTextColor: '#fff',
+            duration: 5000,
+            textColor: '#fff',
+            backgroundColor: '#DC3139'
+        });
+    }
 });

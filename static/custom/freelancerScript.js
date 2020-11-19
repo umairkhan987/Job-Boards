@@ -12,18 +12,21 @@ $(document).ready(function () {
             method: 'POST',
             url: url,
             data: data,
+            beforeSend: function () {
+                $('.js-place-bid-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
-                console.log(data);
+                $('.js-place-bid-loading-spinner').attr('hidden', true);
+
                 if (data.success) {
                     snackbar_msg(data.msg);
                     setTimeout(() => {
                         window.location = data.url;
                     }, 1000);
                 } else {
-                    if(data.errors["days"]){
+                    if (data.errors["days"]) {
                         $(".js-days-error").show().html(data.errors['days']);
-                    }
-                    else{
+                    } else {
                         snackbar_error_msg(Object.values(data.errors)[0]);
                     }
                 }
@@ -36,7 +39,7 @@ $(document).ready(function () {
     });
 
     let URL = null;
-    let delete_btn_ref=null;
+    let delete_btn_ref = null;
     $('a.delete-popup').click(function (event) {
         delete_btn_ref = $(this);
         const title = $(this).attr('data-content');
@@ -69,18 +72,22 @@ $(document).ready(function () {
             method: 'POST',
             url: URL,
             data: data,
+            beforeSend: function () {
+                $('.js-delete-proposal-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
+                $('.js-delete-proposal-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 // console.log(data);
                 if (data.success) {
                     snackbar_msg(data.msg);
-                    if(data.deleted){
-                        if(data.html != null)
+                    if (data.deleted) {
+                        if (data.html != null)
                             $(".js-proposals-list ul").html(data.html);
                         else
                             delete_btn_ref.closest('li').hide();
-                    }
-                    else {
+                    } else {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -96,22 +103,26 @@ $(document).ready(function () {
     $('#complete_job_Btn').click(function (event) {
         const url = $(this).attr('data-url');
         const token = getCookie('csrftoken');
-        console.log("Ajax submitted");
 
         $.ajax({
             type: 'ajax',
             method: 'POST',
             url: url,
             data: {csrfmiddlewaretoken: token},
+            beforeSend: function () {
+                $(".js-complete-job-check-icon").attr("hidden", true);
+                $(".js-complete-job-loading-spinner").removeAttr("hidden");
+            },
             success: function (data) {
-                // console.log(data);
-                if(data.success){
+                $(".js-complete-job-check-icon").removeAttr("hidden");
+                $(".js-complete-job-loading-spinner").attr("hidden", true);
+
+                if (data.success) {
                     snackbar_msg(data.msg);
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         window.location.reload();
                     }, 1000);
-                }
-                else{
+                } else {
                     snackbar_error_msg(data.errors);
                 }
             }
@@ -121,11 +132,11 @@ $(document).ready(function () {
 
     // get bookmark btn
     $('#bookmark_btn').click(function () {
-        const id = parseInt(window.location.pathname.replace(/[^\d.]/g,""));
+        const id = parseInt(window.location.pathname.replace(/[^\d.]/g, ""));
         const url = $(this).attr('data-url');
         const data = {
             "id": id,
-             "csrfmiddlewaretoken": getCookie('csrftoken'),
+            "csrfmiddlewaretoken": getCookie('csrftoken'),
         };
 
         $.ajax({
@@ -133,11 +144,10 @@ $(document).ready(function () {
             method: 'POST',
             url: url,
             data: data,
-            success:function (data) {
-                if(data.success){
+            success: function (data) {
+                if (data.success) {
                     snackbar_msg(data.msg);
-                }
-                else{
+                } else {
                     console.log(data.errors);
                 }
             }
@@ -151,24 +161,23 @@ $(document).ready(function () {
         const url = $(this).attr('data-url');
         const data = {
             "id": id,
-             "csrfmiddlewaretoken": getCookie('csrftoken'),
+            "csrfmiddlewaretoken": getCookie('csrftoken'),
         };
 
-         $.ajax({
+        $.ajax({
             type: 'ajax',
             method: 'POST',
             url: url,
             data: data,
-            success:function (data) {
+            success: function (data) {
                 // console.log(data);
-                if(data.success){
+                if (data.success) {
                     snackbar_msg(data.msg);
-                    if(data.html != null)
+                    if (data.html != null)
                         $(".js-freelancer-bookmark-list ul").html(data.html);
                     else
                         btn_ref.closest("li").hide();
-                }
-                else{
+                } else {
                     console.log(data.errors);
                 }
             }
@@ -176,10 +185,9 @@ $(document).ready(function () {
         });
     });
 
-
     // delete offer
     let offer_url = null;
-    let offer_btn_ref=null;
+    let offer_btn_ref = null;
     $('a[href=#small-dialog]').click(function () {
         offer_btn_ref = $(this);
         offer_url = $(this).attr("data-url");
@@ -187,12 +195,12 @@ $(document).ready(function () {
 
     $('#delete-offer-popup').click(function () {
 
-        if(offer_url === null){
+        if (offer_url === null) {
             console.log("offer url is null");
             return;
         }
         const data = {
-             "csrfmiddlewaretoken": getCookie('csrftoken'),
+            "csrfmiddlewaretoken": getCookie('csrftoken'),
         };
 
         $.ajax({
@@ -200,21 +208,25 @@ $(document).ready(function () {
             method: 'POST',
             url: offer_url,
             data: data,
-            success:function (data) {
+            beforeSend: function () {
+                $(".js-delete-loading-spinner").removeAttr("hidden");
+            },
+            success: function (data) {
+                $(".js-delete-loading-spinner").attr("hidden", true);
+
                 $.magnificPopup.close();
                 // console.log(data);
-                if(data.success){
+                if (data.success) {
                     snackbar_msg(data.msg);
-                    if(data.html != null)
+                    if (data.html != null)
                         $(".js-freelancer-offer-list ul").html(data.html);
-                    else{
+                    else {
                         setTimeout(function () {
-                           window.location.reload()
+                            window.location.reload()
                         }, 1000);
                         // offer_btn_ref.closest('li').hide();
-                        }
-                }
-                else{
+                    }
+                } else {
                     snackbar_error_msg(data.errors);
                 }
             }

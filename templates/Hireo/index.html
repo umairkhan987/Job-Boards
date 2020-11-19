@@ -309,7 +309,7 @@
 
                                         <!-- Rating -->
                                         <div class="freelancer-rating">
-                                            <div class="star-rating" data-rating="{{ freelancer.calculate_rating }}"></div>
+                                            <div class="star-rating" data-rating="{{ freelancer.get_rating }}"></div>
                                         </div>
                                     </div>
                                     </div>
@@ -321,7 +321,7 @@
                                                 <li>Location <strong><i class="icon-material-outline-location-on"></i>
                                                     {{freelancer.country}}</strong></li>
                                                 <li>Rate <strong>${{ freelancer.rate }} / hr</strong></li>
-                                                <li>Job Success <strong>{{ freelancer.calculate_success_rate}}%</strong></li>
+                                                <li>Job Success <strong>{{ freelancer.success_rate}}%</strong></li>
                                             </ul>
                                         </div>
                                         <a href="{% url 'freelancer_profile' freelancer.id %}"

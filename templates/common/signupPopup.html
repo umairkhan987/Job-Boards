@@ -25,6 +25,13 @@
                 <!-- Form -->
                 <form method="post" action="{% url 'login' %}" id="login-form">
                     {% csrf_token %}
+
+                    <div id="loading-spinner" hidden class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
                     <div class="text-danger margin-bottom-10"><span id="loginError"></span></div>
 
                     <div class="input-with-icon-left">
@@ -69,6 +76,14 @@
                 <!-- Form -->
                 <form method="post" action="{% url 'register' %}" id="register-account-form" >
                         {% csrf_token %}
+
+                        <div id="register-loading-spinner" hidden class="d-flex justify-content-center padding-bottom-20">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+
                     <!-- Account Type -->
                     <div class="account-type">
                         <div>

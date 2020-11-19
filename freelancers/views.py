@@ -3,6 +3,7 @@ from calendar import month_name
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
+from django.forms import model_to_dict
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -48,7 +49,8 @@ def submit_proposals(request):
 def my_proposals(request):
     sort = request.GET.get("sort-by", None)
 
-    proposal_list = Proposal.objects.filter(user=request.user).select_related("task").exclude(task_id=None)
+    proposal_list = Proposal.objects.filter(user=request.user).select_related("task").exclude(task_id=None).order_by(
+        '-updated_at')
     if sort != 'pending' and sort != "relevance" and sort:
         proposal_list = proposal_list.filter(status__iexact=sort)
     elif sort == "pending":
@@ -109,6 +111,13 @@ def cancel_task(request, id):
             proposal.task.save()
             proposal.user.profile.save()
             proposal.save()
+
+            # calculate success rate and overall profile rating
+            user = request.user
+            user.profile.success_rate = user.profile.calculate_success_rate()
+            user.profile.rating = user.profile.calculate_rating()
+            user.profile.save()
+
             notification_handler(request.user, proposal.task.user, Notification.TASK_CANCELLED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job cancelled."})
         else:
@@ -136,7 +145,7 @@ def task_completed(request, id):
             user = request.user
             user.profile.success_rate = user.profile.calculate_success_rate()
             user.profile.rating = user.profile.calculate_rating()
-            user.save()
+            user.profile.save()
 
             notification_handler(request.user, proposal.task.user, Notification.TASK_COMPLETED, target=proposal.task)
             return JsonResponse({"success": True, "msg": "Job Completed."})

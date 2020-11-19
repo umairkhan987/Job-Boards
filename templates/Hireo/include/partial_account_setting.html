@@ -1,0 +1,70 @@
+{% load static %}
+{% load thumbnail widget_tweaks %}
+
+<form id="accountForm" action="{% url 'update-account' %}" method="post"
+      enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-auto">
+            <div class="avatar-wrapper" data-tippy-placement="bottom"
+                 title="Edit Profile Pic">
+                {% thumbnail request.user.profileImg "200" as im %}
+                    <img class="profile-pic" id="old_profile" src="{{ im.url }}" alt="">
+                {% empty %}
+                    <img class="profile-pic" id="old_profile" src="{% static 'images/user-avatar-placeholder.png' %}"
+                         alt="">
+                {% endthumbnail %}
+                {#                                            <img class="profile-pic" id="old_profile"#}
+                {#                                                 src="{% if user.profileImg %}#}
+                {#                                                 {{ user.profileImg.url }}#}
+                {#                                                 {% else %}#}
+                {#                                                 {% static 'images/user-avatar-placeholder.png' %}#}
+                {#                                                 {% endif %} "#}
+                {#                                                 alt=""/>#}
+                <div class="upload-button"></div>
+                <input type="file" class="file-upload" name="profileImg" accept="image/*"/>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="row">
+
+                <div class="col-xl-6">
+                    <div class="submit-field">
+                        <h5>First Name</h5>
+                        {#                                                    <input type="text" name="first_name" class="with-border"#}
+                        {#                                                           value="{{ user.first_name }}" placeholder="First Name">#}
+                        {% render_field form.first_name class="with-border" placeholder="First Name" %}
+                        {% if form.first_name.errors %}
+                            <div class="alert alert-danger"><strong>{{ form.first_name.errors.0 }}</strong></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div class="submit-field">
+                        <h5>Last Name</h5>
+                        {% render_field form.last_name class="with-border" placeholder="Last Name" %}
+                        {% if form.last_name.errors %}
+                            <div class="alert alert-danger"><strong>{{ form.last_name.errors.0 }}</strong></div>
+                        {% endif %}
+                        {#                                                    <input type="text" name="last_name" class="with-border"#}
+                        {#                                                           value="{{ user.last_name }}" placeholder="Last Name">#}
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div class="submit-field">
+                        <!-- Button -->
+                        <button type="submit" class="button ripple-effect big float-right margin-bottom-25">
+                            <span hidden
+                                  class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-account-loading-spinner"
+                                  role="status" aria-hidden="true"></span>
+                                 Save Changes
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>

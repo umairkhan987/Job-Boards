@@ -1,5 +1,7 @@
 {% extends 'common/_dashboard.html' %}
 {% load static %}
+{% load thumbnail %}
+
 {% block title %} Bookmarks | {% endblock %}
 
 {% block dashboard_content %}
@@ -49,11 +51,11 @@
 											<!-- Avatar -->
 											<div class="freelancer-avatar">
 												<div class="verified-badge"></div>
-                                                {% if bookmark.profileImg %}
-                                                    <a href="{% url 'freelancer_profile' bookmark.id %}"><img src="{{ bookmark.profileImg.url }}" alt=""></a>
-                                                {% else %}
+                                                {% thumbnail bookmark.profileImg "x80" as im %}
+                                                    <a href="{% url 'freelancer_profile' bookmark.id %}"><img src="{{ im.url }}" alt=""></a>
+                                                {% empty %}
                                                     <a href="{% url 'freelancer_profile' bookmark.id %}"><img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No_image"></a>
-                                                {% endif %}
+                                                {% endthumbnail %}
 											</div>
 
 											<!-- Name -->

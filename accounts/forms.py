@@ -22,6 +22,8 @@ class CustomUserForm(UserCreationForm):
 
 
 class UserForm(forms.ModelForm):
+    last_name = forms.CharField(required=True)
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'profileImg')

@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load thumbnail %}
 
 <ul class="boxed-list-ul">
     {% for proposal in proposals %}
@@ -9,13 +9,18 @@
                 <div class="bids-avatar">
                     <div class="freelancer-avatar">
                         <div class="verified-badge"></div>
+{#                            {% if proposal.user.profileImg %}#}
+{#                                <img src="{{ proposal.user.profileImg.url }}" alt="">#}
+{#                            {% else %}#}
+{#                                <img src="{% static 'images/user-avatar-placeholder.png' %}"#}
+{#                                     alt="">#}
+{#                            {% endif %}#}
                         <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">
-                            {% if proposal.user.profileImg %}
-                                <img src="{{ proposal.user.profileImg.url }}" alt="">
-                            {% else %}
-                                <img src="{% static 'images/user-avatar-placeholder.png' %}"
-                                     alt="">
-                            {% endif %}
+                            {% thumbnail proposal.user.profileImg "x80" as im %}
+                                <img src="{{ im.url }}" alt="">
+                            {% empty %}
+                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                            {% endthumbnail %}
                         </a>
                     </div>
                 </div>
@@ -28,7 +33,7 @@
                             <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">{{ proposal.user.first_name }} {{ proposal.user.last_name }} </a>
                         </h4>
                         <div class="star-rating"
-                             data-rating="{{ proposal.user.profile.calculate_rating }}"></div>
+                             data-rating="{{ proposal.user.profile.rating }}"></div>
                     </div>
                 </div>
 

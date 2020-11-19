@@ -1,7 +1,8 @@
 def notifications(request):
     if request.user.is_authenticated:
         message_notifications = request.user.msg_notifications.order_by("-timestamp")
-        notifications_list = request.user.notifications.all()
+        notifications_list = request.user.notifications.select_related('actor').all()
+
         return {
             "message_notification_count": message_notifications.filter(is_seen=False).count(),
             'message_notifications': message_notifications,

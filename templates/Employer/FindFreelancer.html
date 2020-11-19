@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load templatehelpers %}
+{% load thumbnail %}
 
 {% block title %} Freelancers | {% endblock %}
 
@@ -123,11 +124,11 @@
                                         <div class="freelancer-avatar">
                                             <div class="verified-badge"></div>
                                             <a href="{% url 'freelancer_profile' freelancer.id %}">
-                                                {% if freelancer.user.profileImg %}
-                                                    <img src="{{ freelancer.user.profileImg.url }}" alt="">
-                                                {% else %}
-                                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No-Image" />
-                                                {% endif %}
+                                                {% thumbnail freelancer.user.profileImg "x80" as im %}
+                                                    <img src="{{ im.url }}" alt="">
+                                                {% empty %}
+                                                     <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                {% endthumbnail %}
 
                                             </a>
                                         </div>
@@ -138,7 +139,7 @@
                                             <span>{{ freelancer.tags }}</span>
                                             <!-- Rating -->
                                             <div class="freelancer-rating">
-                                                <div class="star-rating" data-rating="{{ freelancer.calculate_rating }}"></div>
+                                                <div class="star-rating" data-rating="{{ freelancer.get_rating }}"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -153,7 +154,7 @@
                                                 {{ freelancer.country }}</strong>
                                             </li>
                                             <li>Rate <strong>${{freelancer.rate}} / hr</strong></li>
-                                            <li>Job Success <strong>{{ freelancer.calculate_success_rate|floatformat:"0" }}%</strong></li>
+                                            <li>Job Success <strong>{{ freelancer.success_rate }}%</strong></li>
                                         </ul>
                                     </div>
                                     <a href="{% url 'freelancer_profile' freelancer.id %}"

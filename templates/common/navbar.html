@@ -1,4 +1,5 @@
 {% load static %}
+{% load thumbnail %}
 
 <!-- Header Container -->
 <header id="header-container" class="fullwidth transparent">
@@ -89,11 +90,16 @@
 						<div class="header-notifications-trigger">
 							<a href="#">
                                 <div class="user-avatar status-online">
-                                    <img style="height: 42px" src=" {% if user.profileImg %}
-                                      {{ user.profileImg.url }}
-                                      {% else %}
-                                      {% static 'images/user-avatar-placeholder.png' %}
-                                    {% endif %}"  alt="">
+                                {% thumbnail user.profileImg "x80" as im %}
+                                    <img src="{{ im.url }}" alt="" style="height: 42px">
+                                {% empty %}
+                                    <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" style="height: 42px">
+                                {% endthumbnail %}
+{#                                    <img style="height: 42px" src=" {% if user.profileImg %}#}
+{#                                      {{ user.profileImg.url }}#}
+{#                                      {% else %}#}
+{#                                      {% static 'images/user-avatar-placeholder.png' %}#}
+{#                                    {% endif %}"  alt="">#}
                                 </div>
                             </a>
 						</div>
@@ -107,11 +113,16 @@
 								<!-- User Name / Avatar -->
 								<div class="user-details">
 									<div class="user-avatar status-online">
-                                        <img style="height: 42px;" src="{% if user.profileImg %}
-                                            {{ user.profileImg.url }}
-                                            {% else %}
-                                            {% static 'images/user-avatar-placeholder.png' %}
-                                            {% endif %}" alt="">
+                                     {% thumbnail user.profileImg "x80" as im %}
+                                        <img src="{{ im.url }}" alt="" style="height: 42px">
+                                     {% empty %}
+                                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="" style="height: 42px">
+                                     {% endthumbnail %}
+{#                                        <img style="height: 42px;" src="{% if user.profileImg %}#}
+{#                                            {{ user.profileImg.url }}#}
+{#                                            {% else %}#}
+{#                                            {% static 'images/user-avatar-placeholder.png' %}#}
+{#                                            {% endif %}" alt="">#}
                                     </div>
 									<div class="user-name">
 										{{ user.email }}
