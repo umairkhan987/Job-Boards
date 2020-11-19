@@ -1,16 +1,17 @@
 $(document).ready(function () {
-
     // Display freelancers profile for editing...
    function getProfileData() {
+       console.log("get profile data");
+
         $.ajax({
             type:'GET',
             url: '/account/getProfile/',
             success: function (data) {
-                // console.log(data);
+                console.log(data);
                 if(data.success){
                      $('select[name=country]').val(data.profile.country).change();
-                     const skills = data.profile.skills.split(",");
-                     $('select[name=skills]').val(skills).change();
+                     // const skills = data.profile.skills.split(",");
+                     // $('select[name=skills]').val(skills).change();
 
                      if(data.file){
                      const filename = data.file.split("/").pop().replace('"', "");
@@ -23,14 +24,22 @@ $(document).ready(function () {
             }
         })
    }
-   // call function to set data
-    getProfileData();
+   //  getProfileData();
 
+    // change value of rate when slider slide
+    $('.js-profile-setting-div').on('change', '.js-bidding-slider', function (e) {
+        e.preventDefault();
+        let value = $(this).val();
+        $("#biddingVal").html(value);
+    });
 
     // when click Upload File Button for upload User CV
     let userCvFile = null;
-    $('#upload').change(function () {
-        let file = $('#upload')[0].files[0];
+    let fileChange = false;
+
+    $('.js-profile-setting-div').on("change", "#upload", function () {
+        let file = $(this)[0].files[0];
+        fileChange = true;
         userCvFile = file;
         if (file) {
             let extension = file.name.split('.').pop().toUpperCase();
@@ -39,9 +48,11 @@ $(document).ready(function () {
         }
     });
 
-    // Delete File Click
-    $('#attachmentBox').delegate('#removeFile','click', function () {
+    // Delete File Click delegate
+    $('.js-profile-setting-div').on('click','#removeFile', function () {
         userCvFile = null;
+        fileChange = true;
+
         $('#upload').val(null);
         $('#attachmentBox').hide().html("");
         $('#uploadFileName').html('Maximum file size: 10 MB');
@@ -49,17 +60,13 @@ $(document).ready(function () {
 
 
     // Save Profile Button Click
-    const profileFormRef = $('#profileForm');
-    profileFormRef.submit(function (e) {
+
+    $('.js-profile-setting-div').on("submit", "form",function (e) {
         e.preventDefault();
-        const url = profileFormRef.attr('action');
-        const formData =new FormData(profileFormRef[0]);
-
-        // convert list of skills into string
-        const skills = formData.getAll('skills');
-        formData.delete('skills');
-        formData.append('skills', skills.toString());
-
+        const url = $(this).attr('action');
+        const formData = new FormData($(this)[0]);
+        if(userCvFile === null && fileChange === true)
+            formData.set('userCV', null);
          // for(let value of formData.entries())
          //        console.log(value[0]+'  '+value[1]);
 
@@ -75,24 +82,28 @@ $(document).ready(function () {
                  $('.js-profile-change-loading-spinner').removeAttr('hidden');
              },
              success: function (data) {
+                 // console.log(data);
                 $('.js-profile-change-loading-spinner').attr('hidden', true);
+                $('.js-profile-setting-div').html(data.html);
+                $('.selectpicker').selectpicker('render');
+                $('.bidding-slider').slider();
 
                  if(data.success){
                     snackbar_msg(data.msg);
                 }
-                else{
-                    snackbar_error_msg("Upload Profile Error");
-                }
+                // else{
+                //     snackbar_error_msg("Upload Profile Error");
+                // }
              }
          })
     });
 
     // change Password
-    const chgPsdFormRef = $('#changePasswordForm');
-    $(chgPsdFormRef).submit(function (e) {
+    $('.js-password-change-div').on('submit','form', function (e) {
         e.preventDefault();
-        const formData = chgPsdFormRef.serialize();
-        const url = chgPsdFormRef.attr('action');
+
+        const formData = $(this).serialize();
+        const url = $(this).attr('action');
 
         $.ajax({
             type:"ajax",
@@ -104,27 +115,26 @@ $(document).ready(function () {
             },
             success:function (data) {
               $('.js-password-change-loading-spinner').attr('hidden', true);
+              $('.js-password-change-div').html(data.html);
 
                 if(data.success){
                     snackbar_msg(data.msg);
-                    chgPsdFormRef.trigger('reset');
                 }
-                else{
-                    chgPsdFormRef.trigger('reset');
-                    if(data.errors['old_password']){
-                        $('#old_password-error').show().html(data.errors['old_password']);
-                    }
-                    else{
-                        $('#old_password-error').hide().html("");
-                    }
-
-                    if(data.errors['new_password2']){
-                        $('#new_password-error').show().html(data.errors['new_password2']);
-                    }
-                    else{
-                        $('#new_password-error').hide().html("");
-                    }
-                }
+                // else{
+                //     chgPsdFormRef.trigger('reset');
+                //     if(data.errors['old_password']){
+                //         $('#old_password-error').show().html(data.errors['old_password']);
+                //     }
+                //     else{
+                //         $('#old_password-error').hide().html("");
+                //     }
+                //
+                //     if(data.errors['new_password2']){
+                //         $('#new_password-error').show().html(data.errors['new_password2']);
+                //     }
+                //     else{
+                //         $('#new_password-error').hide().html("");
+                //     }}
             }
         })
 

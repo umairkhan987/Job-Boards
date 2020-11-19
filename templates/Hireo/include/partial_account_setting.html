@@ -32,9 +32,7 @@
                 <div class="col-xl-6">
                     <div class="submit-field">
                         <h5>First Name</h5>
-                        {#                                                    <input type="text" name="first_name" class="with-border"#}
-                        {#                                                           value="{{ user.first_name }}" placeholder="First Name">#}
-                        {% render_field form.first_name class="with-border" placeholder="First Name" %}
+                        {% render_field form.first_name|attr:"autofocus" class="with-border" placeholder="First Name" %}
                         {% if form.first_name.errors %}
                             <div class="alert alert-danger"><strong>{{ form.first_name.errors.0 }}</strong></div>
                         {% endif %}

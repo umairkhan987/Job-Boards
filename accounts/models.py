@@ -7,6 +7,7 @@ from django.dispatch import receiver
 
 #  We use it because we change default username with email
 from django_currentuser.middleware import get_current_user
+from multiselectfield import MultiSelectField
 
 
 class CustomUserManager(BaseUserManager):
@@ -74,11 +75,35 @@ class User(AbstractUser):
         return 0
 
 
+skills = (
+    ('Angular', 'Angular'),
+    ('React', 'React'),
+    ('Vue', 'Vue'),
+    ('CSS', 'CSS'),
+    ('Html', 'Html'),
+    ('Bootstrap', 'Bootstrap'),
+    ('JavaScript', 'JavaScript'),
+    ('C#', 'C#'),
+    ('C++', 'C++'),
+    ('Java', 'Java'),
+    ('Python', 'Python'),
+    ('Php', 'Php'),
+    ('Ruby', 'Ruby'),
+    ('Objective-C', 'Objective-C'),
+    ('Swift', 'Swift'),
+    ('Logo Design', 'Logo Design'),
+    ('Game Design', 'Game Design'),
+    ('PhotoShop Editing', 'PhotoShop Editing'),
+    ('Banner Ads', 'Banner Ads'),
+    ('Business Card', 'Business Card'),
+)
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name="profile")
     # price
     rate = models.IntegerField(default=5)
-    skills = models.CharField(blank=True, null=True, max_length=250)
+    skills = MultiSelectField(choices=skills, max_choices=5, min_choices=1)
     tags = models.CharField(blank=True, max_length=250)
     country = models.CharField(blank=True, max_length=250)
     introduction = models.TextField(blank=True, max_length=2000)

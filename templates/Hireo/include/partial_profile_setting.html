@@ -1,0 +1,214 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<form id="profileForm" action="{% url 'update-profile' %}" method="post">
+    {% csrf_token %}
+
+    <ul class="fields-ul">
+        <li>
+            <div class="row">
+
+                <!-- Minimal Rate -->
+                <div class="col-xl-4">
+                    <div class="submit-field">
+                        <div class="bidding-widget">
+                            <!-- Headline -->
+                            <span class="bidding-detail">Set your <strong>minimal hourly rate</strong></span>
+
+                            <!-- Slider -->
+                            <div class="bidding-value margin-bottom-10">$<span
+                                    id="biddingVal">{{ user.profile.rate }}</span></div>
+                            <input class="bidding-slider js-bidding-slider" name="rate" type="text"
+                                   data-slider-handle="custom" data-slider-currency="$"
+                                   data-slider-min="5" data-slider-max="200"
+                                   data-slider-value="{{ user.profile.rate }}" data-slider-step="1"
+                                   data-slider-tooltip="hide"/>
+                            {% if profile_form.rate.errors %}
+                                <div class="alert alert-danger"><strong>{{ profile_form.rate.errors.0 }}</strong></div>
+                            {% endif %}
+{#                            {% render_field profile_form.rate class="bidding-slider" data-slider-value=profile_form.rate data-slider-handle="custom"  data-slider-currency="$" data-slider-min="5" data-slider-max="200" data-slider-step="1" data-slider-tooltip="hide" %}#}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="col-xl-4">
+                    <div class="submit-field">
+                        <h5>Skills <i class="help-icon" data-tippy-placement="right"
+                                      title="Add up to 5 skills"></i></h5>
+
+                        <!-- Skills List -->
+                        <div class="keywords-container margin-top-10">
+                            <div class="keyword-input-container">
+
+                                <select class="selectpicker" name="skills" multiple title="Choose the skills...."
+                                        data-max-options="5" data-size="7" data-live-search="true">
+                                    {% for value, text in profile_form.skills.field.choices %}
+                                        <option value="{{ value }}" {% if value in profile_form.skills.value %} selected="selected" {% endif %} >{{ text }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                {% if profile_form.skills.errors %}
+                                    <div id="title-error" class="alert alert-danger margin-top-15"><strong>{{ profile_form.skills.errors.0 }}</strong></div>
+                                {% endif %}
+
+                            <!--
+                                <select class="selectpicker" name="skills" multiple
+                                        title="Choose the skills...."
+                                        data-max-options="5" data-live-search="true">
+                                    <optgroup label="Web Dev">
+                                        <option>Angular</option>
+                                        <option>React</option>
+                                        <option>Vue</option>
+                                        <option>Bootstrap</option>
+                                        <option>CSS</option>
+                                        <option>Html</option>
+                                        <option>JavaScript</option>
+                                        <option>Wordpress</option>
+                                    </optgroup>
+                                    <optgroup label="Software Dev">
+                                        <option>C#</option>
+                                        <option>C++</option>
+                                        <option>Java</option>
+                                        <option>Python</option>
+                                        <option>Php</option>
+                                        <option>Ruby</option>
+                                        <option>Objective-C</option>
+                                        <option>Swift</option>
+                                    </optgroup>
+                                    <optgroup label="Graphic & Design">
+                                        <option>Logo Design</option>
+                                        <option>Game Design</option>
+                                        <option>PhotoShop Editing</option>
+                                        <option>Banner Ads</option>
+                                        <option>Business Card</option>
+                                    </optgroup>
+                                </select>
+                                -->
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attachments -->
+                <div class="col-xl-4">
+                    <div class="submit-field">
+                        <h5>Attachments</h5>
+
+                        <!-- Attachments -->
+                        {% if profile_form.getCVName %}
+                            <div class="attachments-container margin-top-0 margin-bottom-0">
+                                <div id="attachmentBox" class="attachment-box ripple-effect">
+                                    <span>{{ profile_form.getCVName }}</span>
+                                    <button type="button" id="removeFile" class="remove-attachment" title="Remove" data-tippy-placement="top"></button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="clearfix"></div>
+
+                        <!-- Upload Button -->
+                        <div class="uploadButton margin-top-0">
+                            <input class="uploadButton-input" name="userCV" type="file"
+                                   accept=".doc, .docx, application/pdf" id="upload"/>
+                            <label class="uploadButton-button ripple-effect" for="upload">
+                                Upload File
+                            </label>
+                            <span id="uploadFileName" class="uploadButton-file-name">
+                                {% if profile_form.getCVName %}
+                                    {{  profile_form.getCVName }}
+                                {% else %}
+                                    Maximum file size: 10 MB
+                                {% endif %}
+
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li>
+            <div class="row">
+                <!-- TagLine -->
+                <div class="col-xl-6">
+                    <div class="submit-field">
+                        <h5>Tagline
+                            <i class="help-icon" data-tippy-placement="right"
+                               title="Separate Tag with '+' sign like (iOS Expert + Node Dev)"></i></h5>
+{#                        <input type="text" name="tags" value="{{ user.profile.tags }}" class="with-border">#}
+                        {% render_field profile_form.tags class="with-border" placeholder="eg. (iOS Expert + Node Dev)" %}
+                        {% if profile_form.tags.errors %}
+                            <div class="alert alert-danger"><strong>{{ profile_form.tags.errors.0 }}</strong></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Country -->
+                <div class="col-xl-6">
+                    <div class="submit-field">
+                        <h5>Nationality</h5>
+                        {% render_field profile_form.country class="selectpicker with-border" title="Choose your country" tabindex="-98" %}
+                        {% if profile_form.country.errors %}
+                            <div id="title-error" class="alert alert-danger margin-top-15"><strong>{{ profile_form.country.errors.0 }}</strong></div>
+                        {% endif %}
+                        <!--
+                        <select id="country" name="country" class="selectpicker with-border" data-size="7"
+                                title="Select Country" data-live-search="true">
+                            <option>Australia</option>
+                            <option>Belgium</option>
+                            <option>Brazil</option>
+                            <option>Canada</option>
+                            <option>Colombia</option>
+                            <option>Cyprus</option>
+                            <option>Denmark</option>
+                            <option>Egypt</option>
+                            <option>Hong Kong</option>
+                            <option>Iceland</option>
+                            <option>India</option>
+                            <option>Norway</option>
+                            <option>Pakistan</option>
+                            <option>Panama</option>
+                            <option>Poland</option>
+                            <option>Portugal</option>
+                            <option>Qatar</option>
+                            <option>Russia</option>
+                            <option>Turkey</option>
+                            <option>UK</option>
+                            <option>USA</option>
+                        </select> -->
+                    </div>
+                </div>
+
+                <!-- Introduction -->
+                <div class="col-xl-12">
+                    <div class="submit-field">
+                        <h5>Introduce Yourself</h5>
+                        {% render_field profile_form.introduction|attr:"rows:5"|attr:"cols:30" class="with-border" placeholder="Tell about yourself..." %}
+                        {% if profile_form.introduction.errors %}
+                            <div id="title-error" class="alert alert-danger margin-top-15"><strong>{{ profile_form.introduction.errors.0 }}</strong></div>
+                        {% endif %}
+{#                        <textarea name="introduction" cols="30" rows="5" class="with-border">{{ user.profile.introduction }}</textarea>#}
+                    </div>
+                </div>
+
+            </div>
+        </li>
+
+        <li>
+            <!-- Save Button -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <button type="submit" class="button ripple-effect big float-right margin-bottom-20">
+                        <span hidden
+                              class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-profile-change-loading-spinner"
+                              role="status" aria-hidden="true"></span>
+                        Save Profile
+                    </button>
+                </div>
+            </div>
+        </li>
+    </ul>
+</form>

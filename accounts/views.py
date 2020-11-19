@@ -53,22 +53,30 @@ def register(request):
 @login_required
 def settings(request):
     form = UserForm(instance=request.user)
-    return render(request, 'Hireo/settings.html', {'form': form})
+    password_form = PasswordChangeForm(user=request.user)
+    profile_form = ProfileForm(instance=request.user.profile)
+    context = {
+        'form': form,
+        "password_form": password_form,
+        "profile_form": profile_form,
+    }
+    return render(request, 'Hireo/settings.html', context)
 
 
 @login_required
 def changePassword(request):
     try:
-        if request.method == 'POST':
+        if request.method == 'POST' and request.is_ajax():
             form = PasswordChangeForm(data=request.POST, user=request.user)
+            success = False
             if form.is_valid():
                 user = form.save()
                 update_session_auth_hash(request, user)
-                return JsonResponse({'success': True, 'msg': 'Password is Successfully updated.'})
-            else:
-                errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
-                print(errors)
-                return JsonResponse({'success': False, 'errors': errors})
+                success = True
+                # errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+            html = render_to_string('Hireo/include/partial_password_change_setting.html', {"password_form": form},
+                                    request=request)
+            return JsonResponse({'success': success, "html": html, 'msg': 'Password is Successfully updated.'})
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 
@@ -99,20 +107,29 @@ def updateAccount(request):
 def updateProfile(request):
     try:
         if request.method == "POST" and request.is_ajax():
+            usercv = request.POST.get("userCV", None)
             profile = Profile.objects.get(user=request.user)
             profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+
+            success = False
             if profile_form.is_valid():
-                # check if old cv is exists
+
+                # replace old cv with new one
                 if profile_form.files and profile.userCV:
                     profile.userCV.delete()
 
+                #     delete file when user delete the file
+                if usercv == "null":
+                    profile.userCV.delete()
+                    profile_form.instance.userCV.delete()
+
                 profile_form.save()
-                return JsonResponse({'success': True, 'msg': 'Successfully updated'})
-            else:
-                errors = profile_form.errors.as_data()
-                return JsonResponse({'success': False, 'errors': errors})
-        elif not request.is_ajax():
-            raise Http404("Invalid Request")
+                success = True
+                # return JsonResponse({'success': True, 'msg': 'Successfully updated'})
+                #     errors = profile_form.errors.as_data()
+            html = render_to_string('Hireo/include/partial_profile_setting.html', {"profile_form": profile_form},
+                                    request=request)
+            return JsonResponse({'success': success, 'html': html, 'msg': 'Successfully updated'})
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 
@@ -123,6 +140,8 @@ def getProfile(request):
     if request.method == "GET" and request.is_ajax():
         try:
             data = model_to_dict(request.user.profile)
+            print("data ", data)
+
             data.pop('user')
             filename = None
             if data.get('userCV'):
