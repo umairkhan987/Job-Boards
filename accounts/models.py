@@ -119,8 +119,8 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.email
 
-    def skill_as_list(self):
-        return self.skills.split(',')
+    # def skill_as_list(self):
+    #     return self.skills.split(',')
 
     def get_file_name(self):
         if self.userCV:

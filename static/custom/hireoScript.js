@@ -16,7 +16,12 @@ $(document).ready(function () {
             method: 'POST',
             url: url,
             data: data,
+            beforeSend:function(){
+                $('.js-deactivate-account-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
+                $('.js-deactivate-account-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 if (data.success) {
                     snackbar_msg(data.msg);
@@ -82,7 +87,12 @@ $(document).ready(function () {
             method: 'POST',
             url: url,
             data: data,
+            beforeSend: function(){
+                $('.js-delete-conversation-loading-spinner').removeAttr('hidden');
+            },
             success: function (data) {
+                $('.js-delete-conversation-loading-spinner').attr('hidden', true);
+
                 $.magnificPopup.close();
                 console.log(data);
 

@@ -71,7 +71,7 @@ def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
     proposals = task.proposals.all().select_related('user', 'user__profile').order_by('created_at')
     page = request.GET.get("page", 1)
-    paginator = Paginator(proposals, 4)
+    paginator = Paginator(proposals, 1)
 
     try:
         proposals = paginator.page(page)
