@@ -164,7 +164,7 @@ class Profile(models.Model):
 
     def get_bookmark_profile(self):
         user = get_current_user()
-        if not user.is_authenticated:
+        if user is None or not user.is_authenticated:
             return False
         return user.bookmarks.filter(freelancer_profile=self).exists()
 

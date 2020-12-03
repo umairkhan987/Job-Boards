@@ -2,7 +2,7 @@ import json
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse, HttpResponseBadRequest
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.shortcuts import render
@@ -26,15 +26,15 @@ def login(request):
                     return JsonResponse({'success': True, 'msg': "Successfully Login"})
             else:
                 errors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
-                return JsonResponse({'success': False, 'errors': errors})
-        # return render(request, 'registerForm.html', {'form': form})
+                return JsonResponse({'success': False, 'errors': errors}, status=404)
+        return HttpResponseBadRequest()
     except Exception as e:
-        return JsonResponse({'success': False, 'errors': str(e)})
+        return JsonResponse({'success': False, 'errors': str(e)}, status=400)
 
 
 def register(request):
     try:
-        if request.method == "POST":
+        if request.method == "POST" and request.is_ajax():
             form = CustomUserForm(request.POST)
             if form.is_valid():
                 user = form.save()
@@ -44,22 +44,24 @@ def register(request):
                 customError = dict()
                 for (k, v) in form.errors.as_data().items():
                     customError[k] = [str(error)[1:-1][1:-1] for error in v]
-                return JsonResponse({'success': False, 'errors': customError})
+                return JsonResponse({'success': False, 'errors': customError}, status=400)
                 # customErrors = {field: str(error[0])[1:-1][1:-1] for (field, error) in form.errors.as_data().items()}
+        return HttpResponseBadRequest()
     except Exception as e:
-        return JsonResponse({'success': False, 'errors': str(e)})
+        return JsonResponse({'success': False, 'errors': str(e)}, status=400)
 
 
 @login_required
 def settings(request):
     form = UserForm(instance=request.user)
     password_form = PasswordChangeForm(user=request.user)
-    profile_form = ProfileForm(instance=request.user.profile)
     context = {
         'form': form,
         "password_form": password_form,
-        "profile_form": profile_form,
     }
+    if request.user.is_Freelancer:
+        profile_form = ProfileForm(instance=request.user.profile)
+        context['profile_form'] = profile_form
     return render(request, 'Hireo/settings.html', context)
 
 
@@ -77,8 +79,9 @@ def changePassword(request):
             html = render_to_string('Hireo/include/partial_password_change_setting.html', {"password_form": form},
                                     request=request)
             return JsonResponse({'success': success, "html": html, 'msg': 'Password is Successfully updated.'})
+        return HttpResponseBadRequest()
     except Exception as e:
-        return JsonResponse({'success': False, 'errors': str(e)})
+        return JsonResponse({'success': False, 'errors': str(e)}, status=400)
 
 
 @login_required

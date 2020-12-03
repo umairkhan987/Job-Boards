@@ -60,6 +60,7 @@
 {% endif %}
 
 {% if user.is_authenticated %}
+    <script src="{% static 'custom/reconnecting-websocket.js' %}"></script>
     <script src="{% static 'custom/notification.js' %}"></script>
     <script src="{% static 'custom/hireoScript.js' %}"></script>
 

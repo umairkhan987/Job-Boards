@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt

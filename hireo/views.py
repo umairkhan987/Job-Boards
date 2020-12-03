@@ -71,7 +71,7 @@ def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
     proposals = task.proposals.all().select_related('user', 'user__profile').order_by('created_at')
     page = request.GET.get("page", 1)
-    paginator = Paginator(proposals, 1)
+    paginator = Paginator(proposals, 4)
 
     try:
         proposals = paginator.page(page)
@@ -88,7 +88,8 @@ def view_task(request, id):
 
 
 def find_freelancer(request):
-    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by('created_at')
+    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by(
+        'created_at')
     if request.GET:
         search = request.GET.get('search', None)
         rate = request.GET.get('rate', None)
@@ -143,8 +144,9 @@ def freelancer_profile(request, id):
                 view.ip = ip
             view.save()
 
-    work_history_list = profile.user.proposals.select_related('task').filter(status__exact='completed').order_by(
-        'created_at')
+    work_history_list = profile.user.proposals.filter(Q(status__exact='completed') & Q(rating__gt=0))\
+        .select_related('task').order_by('created_at')
+
     page = request.GET.get("page", 1)
     paginator = Paginator(work_history_list, 4)
 
@@ -154,6 +156,10 @@ def freelancer_profile(request, id):
         work_history = paginator.page(1)
     except EmptyPage:
         work_history = paginator.page(paginator.num_pages)
+
+    html = render_to_string('Hireo/include/partial_work_history_list.html', {"work_history": work_history}, request=request)
+    if request.is_ajax():
+        return JsonResponse({"success": True, "html": html})
 
     context = {
         "profile": profile,

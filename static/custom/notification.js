@@ -38,7 +38,7 @@ $(document).ready(function () {
 
     let ws_schema = window.location.protocol == "https:" ? "wss" : "ws";
     let ws_path = ws_schema + '://' + window.location.host + "/notifications/";
-    let ws = new WebSocket(ws_path);
+    let ws = new ReconnectingWebSocket(ws_path);
 
     // console.log("ws_path ", ws_path);
     ws.onopen = function (event) {

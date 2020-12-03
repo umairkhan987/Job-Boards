@@ -16,22 +16,25 @@ $(document).ready(function () {
             },
             success:function (data) {
                   $('#register-loading-spinner').attr("hidden", true);
-                // console.log(data);
                     if(data.success){
                          $.magnificPopup.close();
                          window.location = '/';
                     }
-                    else{
+            },
+            error:function (xhr, status, error) {
+                $('#register-loading-spinner').attr("hidden", true);
+                if(xhr.status == 400){
+                    let response = xhr.responseJSON;
+                    if(response.success === false){
                         fromRef.find('input[type=password]').val("");
-
-                        if(data.errors['email']) {
-                            $("#emailError").html(data.errors['email'][0]);
+                        if(response.errors['email']) {
+                            $("#emailError").html(response.errors['email'][0]);
                         }else{
                             $('#emailError').html("");
                         }
-                        if(data.errors['password2']){
+                        if(response.errors['password2']){
                             let passwordError = `<ul>`;
-                            for(let error of data.errors['password2']){
+                            for(let error of response.errors['password2']){
                                 passwordError += `<li>${error}</li>`
                             }
                             passwordError += "</ul>";
@@ -41,9 +44,10 @@ $(document).ready(function () {
                             $('#password2Error').html("");
                         }
                     }
+                }
             }
         });
-    })
+    });
 
     //Login Form
     const loginForm = $("#login-form");
@@ -65,25 +69,31 @@ $(document).ready(function () {
             },
             success:function (data) {
                 $('#loading-spinner').attr("hidden", true);
-
                     if(data.success){
                          $.magnificPopup.close();
                          window.location = path;
                     }
-                    else {
+            },
+            error: function (xhr, status, error) {
+                $('#loading-spinner').attr("hidden", true);
+                if(xhr.status == 404){
+                    let response = xhr.responseJSON;
+                    if(response.success === false){
                         loginForm.find('input[type=password]').val("");
-                        if(data.errors){
-                            $("#loginError").html(data.errors['__all__'])
+                        if(response.errors){
+                            $("#loginError").html(response.errors['__all__'])
                         }
                         else{
                             $('#loginError').html("");
                         }
                     }
+                }
+
             }
         });
-    })
+    });
 
-    // when user click on page tow view proposal against each task
+    // when user click on page to view proposal against each task
     $('.js-proposals-list-div').on('click', '.js-pagination a', function (event) {
         event.preventDefault();
         const parameter = $(this).attr('href');
@@ -104,7 +114,31 @@ $(document).ready(function () {
                 }
             }
         });
+    });
 
+    // work history pagination
+    // add js- for working
+    // TODO: debug star-rating
+    $('.partial-work-history-div').on('click', '.js-pagination a', function (e) {
+        e.preventDefault();
+        const parameter = $(this).attr('href');
+
+        if (parameter === "javascript:" || parameter === null) return;
+        let url = window.location.pathname + parameter;
+
+        $.ajax({
+            type: 'ajax',
+            method:'get',
+            url: url,
+            success:function (data) {
+                if(data.success){
+                    $('.js-partial-work-history-div').html(data.html);
+                    starRating('.star-rating');
+                }else{
+                    snackbar_error_msg(data.errors);
+                }
+            }
+        });
     });
 
     // after ajax call we need a function to load star-rating
@@ -188,5 +222,4 @@ $(document).ready(function () {
             backgroundColor: '#DC3139'
         });
     }
-
 });

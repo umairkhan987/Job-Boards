@@ -49,79 +49,8 @@
 			</div>
 
 			<!-- Boxed List -->
-			<div class="boxed-list margin-bottom-60">
-				<div class="boxed-list-headline">
-					<h3><i class="icon-material-outline-thumb-up"></i> Work History and Feedback</h3>
-				</div>
-                {% if work_history %}
-                    <ul class="boxed-list-ul">
-                     {% for work in work_history %}
-                         {% if work.rating != 0 %}
-    					    <li>
-						        <div class="boxed-list-item">
-							    <!-- Content -->
-							        <div class="item-content">
-								        <h4>{{work.task.title}}</h4>
-								        <div class="item-details margin-top-10">
-									        <div class="star-rating" data-rating="{{ work.rating }}"></div>
-									        <div class="detail-item"><i class="icon-material-outline-date-range"></i>{{ work.updated_at|date }}</div>
-                                        </div>
-								        <div class="item-description">
-									        <p>{{ work.comment }}</p>
-								        </div>
-							        </div>
-						        </div>
-					        </li>
-                         {% endif %}
-				    {% endfor %}
-				    </ul>
-                    {% if work_history.0.rating == 0  %}
-                        <div class="margin-top-30">
-                            <span>Currently employer did not gives any review.</span>
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div class="margin-top-30">
-                        <span>Currently no work is done.</span>
-                    </div>
-                {% endif %}
-
-				<!-- Pagination -->
-				<div class="clearfix"></div>
-				<div class="pagination-container margin-top-40 margin-bottom-10">
-					 {% if work_history.has_other_pages %}
-						<nav class="pagination justify-content-center">
-							<ul>
-                                {% if work_history.has_previous %}
-                                    <li class="pagination-arrow"><a href="?page={{ work_history.previous_page_number }}" class="ripple-effect"><i
-                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
-                                {% else %}
-                                    <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
-                                            class="icon-material-outline-keyboard-arrow-left"></i></a></li>
-                                {% endif %}
-
-								{% for i in work_history.paginator.page_range %}
-                                    {% if work_history.number == i %}
-                                        <li><a href="javascript:" class="current-page ripple-effect">{{ i }}</a></li>
-                                    {% else %}
-                                        <li><a href="?page={{ i }}" class="ripple-effect">{{ i }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-
-                            {% if work_history.has_next %}
-                                <li class="pagination-arrow"><a href="?page={{ work_history.next_page_number }}" class="ripple-effect"><i
-                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
-                            {% else %}
-                                <li class="pagination-arrow disabled"><a href="javascript:" class="ripple-effect"><i
-                                        class="icon-material-outline-keyboard-arrow-right"></i></a></li>
-                            {% endif %}
-							</ul>
-						</nav>
-                        {% endif %}
-				</div>
-                <div class="clearfix"></div>
-	    			<!-- Pagination / End -->
-
+			<div class="boxed-list margin-bottom-60 js-partial-work-history-div">
+                {% include 'Hireo/include/partial_work_history_list.html' %}
 			</div>
 			<!-- Boxed List / End -->
 		</div>
