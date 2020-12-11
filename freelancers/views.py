@@ -3,8 +3,7 @@ from calendar import month_name
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
-from django.forms import model_to_dict
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 
@@ -22,7 +21,7 @@ from notification.models import Notification, notification_handler
 def submit_proposals(request):
     try:
         if request.method == "POST" and request.is_ajax():
-            task = PostTask.objects.get(pk=request.POST['task_id'])
+            task = get_object_or_404(PostTask, pk=request.POST['task_id'])
             if task.proposals.filter(user=request.user).exists():
                 return JsonResponse({"success": False, "errors": "You bid has already been submitted."})
 
@@ -39,9 +38,9 @@ def submit_proposals(request):
                 return JsonResponse({'success': False, 'errors': errors})
 
         else:
-            raise Http404("Invalid request.")
+            return HttpResponseBadRequest()
     except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
+        raise Http404(str(e))
 
 
 @login_required
@@ -95,7 +94,7 @@ def delete_proposal(request, id):
         else:
             raise Http404("Invalid request")
     except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
+        raise Http404(str(e))
 
 
 @login_required
@@ -109,7 +108,6 @@ def cancel_task(request, id):
             proposal.status = "cancelled"
 
             proposal.task.save()
-            proposal.user.profile.save()
             proposal.save()
 
             # calculate success rate and overall profile rating
@@ -123,7 +121,7 @@ def cancel_task(request, id):
         else:
             raise Http404("Invalid request")
     except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
+        raise Http404(str(e))
 
 
 @login_required
@@ -152,7 +150,7 @@ def task_completed(request, id):
         else:
             raise Http404("Invalid request")
     except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
+        raise Http404(str(e))
 
 
 @login_required
@@ -211,7 +209,7 @@ def offers(request):
 def delete_offer(request, id):
     try:
         if request.method == "POST" and request.is_ajax():
-            offer = Offers.objects.get(id=id)
+            offer = get_object_or_404(Offers, pk=id)
             if offer:
                 if offer.profile != request.user.profile:
                     return JsonResponse(

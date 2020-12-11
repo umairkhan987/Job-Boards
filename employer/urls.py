@@ -4,7 +4,8 @@ from . import views
 
 urlpatterns = [
     # path('profile/<int:pk>/', views.FreelancerDetailView.as_view(), name='freelancer_profile'),
-    path('postTask/', views.post_a_task, name="post_task"),
+    # path('postTask/', views.post_a_task, name="post_task"),
+    path('postTask/', views.PostTaskView.as_view(), name="post_task"),
     path('tasks/', views.my_tasks, name="my_tasks"),
     path('task/<int:id>/edit/', views.edit_task, name='edit_task'),
     path('task/<int:id>/delete/', views.delete_task, name='delete_task'),

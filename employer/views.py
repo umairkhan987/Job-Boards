@@ -1,8 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView
 
 from accounts.decorators import employer_required, valid_user_for_task
 from accounts.models import User, Profile
@@ -12,18 +15,31 @@ from .models import PostTask
 from notification.models import Notification, notification_handler
 
 
-@login_required
-@employer_required
-def post_a_task(request):
-    form = TaskForm()
-    if request.method == "POST":
-        form = TaskForm(request.POST, request.FILES)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
-            return redirect('my_tasks')
-    return render(request, 'Employer/postATask.html', {"form": form})
+# @login_required
+# @employer_required
+# def post_a_task(request):
+#     form = TaskForm()
+#     if request.method == "POST":
+#         form = TaskForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             task = form.save(commit=False)
+#             task.user = request.user
+#             task.save()
+#             return redirect('my_tasks')
+#     return render(request, 'Employer/postATask.html', {"form": form})
+
+
+@method_decorator([login_required, employer_required], name="dispatch")
+class PostTaskView(CreateView):
+    form_class = TaskForm
+    template_name = "Employer/postATask.html"
+    success_url = reverse_lazy('my_tasks')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 @login_required
@@ -47,7 +63,6 @@ def my_tasks(request):
         tasks = paginator.page(1)
     except EmptyPage:
         tasks = paginator.page(paginator.num_pages)
-
     return render(request, 'Employer/myTasks.html', {"tasks": tasks})
 
 
@@ -94,8 +109,8 @@ def delete_task(request, id):
                 msg = "There are no tasks"
                 html = render_to_string("common/partial_empty_msg.html", {"msg": msg})
             return JsonResponse({"success": True, "msg": "" + title + " delete successfully", "html": html})
-        else:
-            raise Http404("Invalid request")
+
+        return HttpResponseBadRequest()
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
 
@@ -134,8 +149,6 @@ def manage_proposal(request, id):
 def accept_proposal(request, id):
     try:
         proposal = get_object_or_404(Proposal, pk=id)
-        if not proposal and request.is_ajax():
-            return JsonResponse({"success": False, "errors": "Proposal not found."})
         if proposal.task.user != request.user and request.is_ajax():
             return JsonResponse({"success": False, "errors": "You are not permitted to perform this action."})
 
@@ -158,6 +171,7 @@ def accept_proposal(request, id):
 
         if request.method == "POST" and not request.is_ajax():
             raise Http404("Invalid request.")
+        return HttpResponseBadRequest()
     except Exception as e:
         raise Http404(str(e))
 

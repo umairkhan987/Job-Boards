@@ -7,6 +7,8 @@ from django.contrib.auth import login as auth_login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
 from .decorators import freelancer_required
 from .forms import CustomUserForm, UserForm, ProfileForm
@@ -51,18 +53,31 @@ def register(request):
         return JsonResponse({'success': False, 'errors': str(e)}, status=400)
 
 
-@login_required
-def settings(request):
-    form = UserForm(instance=request.user)
-    password_form = PasswordChangeForm(user=request.user)
-    context = {
-        'form': form,
-        "password_form": password_form,
-    }
-    if request.user.is_Freelancer:
-        profile_form = ProfileForm(instance=request.user.profile)
-        context['profile_form'] = profile_form
-    return render(request, 'Hireo/settings.html', context)
+# @login_required
+# def settings(request):
+#     form = UserForm(instance=request.user)
+#     password_form = PasswordChangeForm(user=request.user)
+#     context = {
+#         'form': form,
+#         "password_form": password_form,
+#     }
+#     if request.user.is_Freelancer:
+#         profile_form = ProfileForm(instance=request.user.profile)
+#         context['profile_form'] = profile_form
+#     return render(request, 'Hireo/settings.html', context)
+
+
+@method_decorator(login_required, name="dispatch")
+class SettingView(TemplateView):
+    template_name = "Hireo/settings.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = UserForm(instance=self.request.user)
+        context['password_form'] = PasswordChangeForm(user=self.request.user)
+        if self.request.user.is_Freelancer:
+            context['profile_form'] = ProfileForm(instance=self.request.user.profile)
+        return context
 
 
 @login_required
@@ -100,7 +115,7 @@ def updateAccount(request):
 
             html = render_to_string("Hireo/include/partial_account_setting.html", {"form": form}, request=request)
             return JsonResponse({'success': success, 'html': html, "msg": "Successfully updated"})
-
+        return HttpResponseBadRequest()
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 
@@ -133,6 +148,7 @@ def updateProfile(request):
             html = render_to_string('Hireo/include/partial_profile_setting.html', {"profile_form": profile_form},
                                     request=request)
             return JsonResponse({'success': success, 'html': html, 'msg': 'Successfully updated'})
+        return HttpResponseBadRequest()
     except Exception as e:
         return JsonResponse({'success': False, 'errors': str(e)})
 

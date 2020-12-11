@@ -33,7 +33,7 @@ class TaskForm(forms.ModelForm):
         data = self.cleaned_data
         min_price = data.get("min_price", None)
         max_price = data.get("max_price", None)
-        if max_price <= min_price:
+        if max_price and min_price and max_price <= min_price:
             self.add_error('min_price', "Min price is less than Max price")
         return super().clean()
 
