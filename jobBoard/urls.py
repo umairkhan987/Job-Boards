@@ -26,7 +26,7 @@ urlpatterns = [
     path('notifications/', include("notification.urls")),
     path('', include("messenger.urls")),
 
-    path('admin/', admin.site.urls),
+    path('change-the-admin/', admin.site.urls),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
