@@ -20,6 +20,10 @@ psycopg2-binary = "*"
 django-debug-toolbar = "*"
 sorl-thumbnail = "*"
 redis = "*"
+whitenoise = "*"
+gunicorn = "*"
+twisted = {extras = ["http2", "tls"],version = "*"}
+dj-database-url = "*"
 
 [requires]
 python_version = "3.7"

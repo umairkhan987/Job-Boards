@@ -2,7 +2,8 @@ version: '3.7'
 services:
     web:
         build: .
-        command: python /code/manage.py runserver 0.0.0.0:8000
+#        command: python /code/manage.py runserver 0.0.0.0:8000
+        command: daphne -b 0.0.0.0 -p 8000 jobBoard.asgi:application
         environment:
             - ENVIRONMENT=production
             - DEBUG=0
@@ -13,17 +14,19 @@ services:
         depends_on:
             - db
             - redis
+
+
+    worker:
+        build: .
+        command: python /code/manage.py runworker channels --settings=jobBoard.settings -v2
+        depends_on:
+          - db
+          - redis
+
     db:
         image: postgres:12
-        volumes:
-            - postgres_data:/var/lib/postgresql/data/
         environment:
             - POSTGRES_DB=jobBoardDB
             - POSTGRES_PASSWORD=PAKarmy@98
     redis:
-      image: redis:latest
-      ports:
-      - '6379:6379'
-
-volumes:
-    postgres_data:
+      image: redis:5.0.9
