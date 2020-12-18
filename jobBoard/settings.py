@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = config('DEBUG', cast=bool, default=True)
-DEBUG = int(os.environ.get('DEBUG', default=0))
+DEBUG = int(os.environ.get('DEBUG', default=1))
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
@@ -101,6 +101,8 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [config('REDIS_URL', default='redis://redis:6379')],
+            # without docker uncomment below line
+            # hosts": [("127.0.0.1", 6379)],
         },
     },
 }
@@ -203,7 +205,7 @@ else:
     EMAIL_HOST_USER = config('EMAIL_USER')
     EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
 
-ENVIRONMENT = os.environ.get('ENVIRONMENT', default='production')
+ENVIRONMENT = os.environ.get('ENVIRONMENT', default='development')
 
 # production
 #     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
