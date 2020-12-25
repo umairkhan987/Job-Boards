@@ -2,11 +2,13 @@ version: '3.7'
 services:
     web:
         build: .
-#        command: python /code/manage.py runserver 0.0.0.0:8000
-        command: gunicorn jobBoard.wsgi -b 0.0.0.0:8000
+        command: python /code/manage.py runserver 0.0.0.0:8000
+#        command: gunicorn jobBoard.wsgi -b 0.0.0.0:8000
         environment:
             - ENVIRONMENT=development
             - DEBUG=1
+            - DB_HOST=db
+            - REDIS_HOST=redis
         volumes:
             - .:/code
         ports:

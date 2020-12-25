@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',
+    # 'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
@@ -61,7 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -95,14 +95,13 @@ WSGI_APPLICATION = 'jobBoard.wsgi.application'
 ASGI_APPLICATION = "jobBoard.routing.application"
 
 # REDIS_URL = f'{config("REDIS_URL", default="redis://redis:6379")}/{0}'
+# "hosts": [config('REDIS_URL', default='redis://redis:6379')],
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [config('REDIS_URL', default='redis://redis:6379')],
-            # without docker uncomment below line
-            # hosts": [("127.0.0.1", 6379)],
+            "hosts": [(config("REDIS_HOST", default="127.0.0.1"), 6379)],
         },
     },
 }
@@ -125,7 +124,7 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'db',  # user 'db' for docker
+        'HOST': config('DB_HOST', default=''),
         'PORT': 5432
     }
 }
@@ -209,6 +208,7 @@ ENVIRONMENT = os.environ.get('ENVIRONMENT', default='development')
 
 # production
 #     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+"""
 if ENVIRONMENT == 'production':
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
@@ -226,3 +226,4 @@ if ENVIRONMENT == 'production':
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
+"""
