@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'multiselectfield',
     'sorl.thumbnail',
+    'rest_framework',
 
     # custom app
     'accounts.apps.AccountsConfig',
@@ -110,24 +111,24 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # SQLite3
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-# PostgreSQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default=''),
-        'PORT': 5432
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# PostgreSQL
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST', default=''),
+#         'PORT': 5432
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

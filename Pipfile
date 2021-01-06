@@ -24,6 +24,7 @@ whitenoise = "*"
 gunicorn = "*"
 twisted = {extras = ["http2", "tls"],version = "*"}
 dj-database-url = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.7"

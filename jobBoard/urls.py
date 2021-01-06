@@ -27,14 +27,19 @@ urlpatterns = [
     path('', include("messenger.urls")),
 
     path('change-the-admin/', admin.site.urls),
+
+    #     REST_API urls
+    path("api/", include('hireo.api.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import mimetypes
+
     mimetypes.add_type("application/javascript", ".js", True)
     # print("program in debug mode")
     if 'debug_toolbar' in settings.INSTALLED_APPS:
         # print("debug toolbar is present")
         import debug_toolbar
+
         urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
