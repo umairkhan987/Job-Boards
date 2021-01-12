@@ -197,8 +197,8 @@
 
 					<div class="input-with-icon-left">
 						<i class="icon-material-outline-account-circle"></i>
-						<input type="text" class="input-text with-border" name="full_name" id="full_name" placeholder="First and Last Name" required
-                               {% if request.user.is_authenticated %}
+						<input type="text" class="input-text with-border" name="full_name" id="full_name" placeholder="Full Name" required
+                               {% if request.user.is_authenticated and request.user.first_name %}
                                    value="{{ request.user.first_name }} {{ request.user.last_name }}"
                                {% endif %}
                         />
