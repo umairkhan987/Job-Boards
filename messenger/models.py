@@ -32,5 +32,10 @@ class Messages(models.Model):
             "receiver": str(receiver),
             "Equal": equal,
         }
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(f"{receiver.id}", payload)
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(f"{receiver.id}", payload)
+        except Exception as e:
+            if type(e) == ConnectionRefusedError:
+                # print("connection refused")
+                return True

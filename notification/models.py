@@ -184,8 +184,13 @@ def notification_broadcast(sender, instance, created, **kwargs):
             "key": "user_notification",
         }
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)("notifications", payload)
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("notifications", payload)
+        except Exception as e:
+            if type(e) == ConnectionRefusedError:
+                # print("connection refused")
+                return True
 
 
 @receiver(post_save, sender=MessageNotification)
@@ -196,5 +201,10 @@ def message_notification_broadcast(sender, instance, created, **kwargs):
             "type": "websocket_receive",
             "key": "msg_notification",
         }
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)("notifications", payload)
+        try:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("notifications", payload)
+        except Exception as e:
+            if type(e) == ConnectionRefusedError:
+                # print("connection refused")
+                return True

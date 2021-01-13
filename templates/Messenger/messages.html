@@ -259,6 +259,7 @@
 
             {# TODO: change the way to hide notification or event not created when websocket is open it's just for testing#}
             {# it's not the best way findout the alternative way to stop creating notification when socket is connected           #}
+            {# change the markasReadMessage and directly set readAs#}
             function markAsReadMessage(message_id) {
                 $.ajax({
                     type:"ajax",
@@ -287,7 +288,6 @@
                     success: function (data) {
                         {#console.log("receive side data ", data);#}
                         if (data.success) {
-                            markAsReadMessage(message_id);
                             $('#message_content_div').append(data.received_msg);
                             $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                             $("#send-message-form input[name=last_message_date]").val(data.date);

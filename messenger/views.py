@@ -112,7 +112,16 @@ def received_message(request):
         if request.method == "GET" and request.is_ajax():
             message_id = request.GET.get("message_id")
             Equal = True if request.GET.get("equal") == 'true' else False
+
+            # get message and read it.
             msg = get_object_or_404(Messages, pk=message_id)
+            msg.is_read = True
+            msg.save()
+
+            messageNotification = MessageNotification.objects.get(message=message_id)
+            if messageNotification:
+                messageNotification.delete()
+
             full_name = msg.sender.first_name + " " + msg.sender.last_name
             received_msg = render_to_string("Messenger/include/partial_received_msg.html",
                                             {"message": msg, "equal": Equal, "full_name": full_name})
