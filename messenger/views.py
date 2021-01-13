@@ -118,6 +118,7 @@ def received_message(request):
             msg.is_read = True
             msg.save()
 
+            # TODO: change the way to hide notification...
             messageNotification = MessageNotification.objects.get(message=message_id)
             if messageNotification:
                 messageNotification.delete()
@@ -141,7 +142,6 @@ def get_users_list(request):
         return JsonResponse({"success": True, "users_list": users_list})
 
 
-# TODO: change the way to hide notification...
 @login_required
 def mark_as_read_message(request):
     if request.is_ajax():
