@@ -22,6 +22,23 @@ $(document).ready(function () {
 
     });
 
+    // Duplicate function
+     function get_inbox_users_list() {
+        // {#console.log("get_inbox_users_list is called.");
+        const url = $(".js-message-users-lists-div").data("url");
+        $.ajax({
+            type: "ajax",
+            method: "GET",
+            url: url,
+            data: {"path": path},
+            success: function (data) {
+                if (data.success) {
+                    $(".js-message-users-lists-div ul").html(data.users_list);
+                }
+            }
+        });
+    };
+
     // Send direct Message
     $('#send-message-form').submit(function (event) {
         event.preventDefault();
@@ -41,6 +58,9 @@ $(document).ready(function () {
             method: "POST",
             url: url,
             data: formData,
+            beforeSend: function(){
+                message_textarea_ref.val("");
+            },
             success: function (data) {
                 if (data.success) {
                     get_inbox_users_list();

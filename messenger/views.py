@@ -121,7 +121,9 @@ def received_message(request):
             # TODO: change the way to hide notification...
             messageNotification = MessageNotification.objects.get(message=message_id)
             if messageNotification:
-                messageNotification.delete()
+                messageNotification.is_read = True
+                messageNotification.is_seen = True
+                messageNotification.save()
 
             full_name = msg.sender.first_name + " " + msg.sender.last_name
             received_msg = render_to_string("Messenger/include/partial_received_msg.html",

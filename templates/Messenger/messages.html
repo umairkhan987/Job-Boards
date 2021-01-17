@@ -242,7 +242,8 @@
                     .appendTo(ul);
             };
 
-            window.get_inbox_users_list = function () {
+             function get_inbox_users_list() {
+                {#console.log("get_inbox_users_list is called.");#}
                 const url = $(".js-message-users-lists-div").data("url");
                 $.ajax({
                     type: "ajax",
@@ -275,6 +276,7 @@
             }
 
             function addNewMessage(message_id, equal) {
+                {#console.log("Add message is called ", message_id +"  equal  "+ equal);#}
                 let data = {
                     "message_id": message_id,
                     "equal": equal,
@@ -290,6 +292,7 @@
                         if (data.success) {
                             {#markAsReadMessage(message_id);#}
                             $('#message_content_div').append(data.received_msg);
+                            $(".js-message-notification").find("span").attr("hidden", true);
                             $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                             $("#send-message-form input[name=last_message_date]").val(data.date);
                             $("#send-message-form input[name=message_content]").focus();

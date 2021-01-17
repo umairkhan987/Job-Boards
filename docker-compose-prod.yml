@@ -11,19 +11,21 @@ services:
             - REDIS_HOST=redis
         volumes:
             - static_files:/code/staticfiles
+            - storage:/code/storage
         ports:
               - "8000:8000"
         depends_on:
             - db
             - redis
 
-    # worker:
-    #     build: .
-    #     command: python /code/manage.py runworker channels --settings=jobBoard.settings -v2
-    #     depends_on:
-    #       - db
-    #       - redis
-
+    worker:
+        build: .
+        command: python /code/manage.py runworker channels --settings=jobBoard.settings -v2
+        environment:
+            - REDIS_HOST=redis
+        depends_on:
+            - db
+            - redis
     db:
         image: postgres:12
         environment:
@@ -41,9 +43,11 @@ services:
             dockerfile: nginx/Dockerfile
         volumes:
             - static_files:/code/staticfiles
+            - storage:/code/storage
         ports:
             - 8080:80
         depends_on:
             - web
 volumes:
     static_files:
+    storage:
