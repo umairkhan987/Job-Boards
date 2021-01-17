@@ -242,7 +242,8 @@
                     .appendTo(ul);
             };
 
-            window.get_inbox_users_list = function () {
+             function get_inbox_users_list() {
+                {#console.log("get_inbox_users_list is called.");#}
                 const url = $(".js-message-users-lists-div").data("url");
                 $.ajax({
                     type: "ajax",
@@ -259,6 +260,7 @@
 
             {# TODO: change the way to hide notification or event not created when websocket is open it's just for testing#}
             {# it's not the best way findout the alternative way to stop creating notification when socket is connected           #}
+            {# change the markasReadMessage and directly set readAs#}
             function markAsReadMessage(message_id) {
                 $.ajax({
                     type:"ajax",
@@ -274,6 +276,7 @@
             }
 
             function addNewMessage(message_id, equal) {
+                {#console.log("Add message is called ", message_id +"  equal  "+ equal);#}
                 let data = {
                     "message_id": message_id,
                     "equal": equal,
@@ -287,8 +290,9 @@
                     success: function (data) {
                         {#console.log("receive side data ", data);#}
                         if (data.success) {
-                            markAsReadMessage(message_id);
+                            {#markAsReadMessage(message_id);#}
                             $('#message_content_div').append(data.received_msg);
+                            $(".js-message-notification").find("span").attr("hidden", true);
                             $('.conversation').scrollTop($('.conversation')[0].scrollHeight);
                             $("#send-message-form input[name=last_message_date]").val(data.date);
                             $("#send-message-form input[name=message_content]").focus();
@@ -306,12 +310,12 @@
                 let ws = new ReconnectingWebSocket(ws_path);
 
                 ws.onopen = function (event) {
-                    console.log("CONNECTED websocket");
+                    {#console.log("CONNECTED websocket");#}
                     {#console.log("opened ", event);#}
                 };
 
                 ws.onclose = function (event) {
-                    console.log("DISCONNECTED websocket");
+                    {#console.log("DISCONNECTED websocket");#}
                     {#console.log("closed ", event)#}
                 };
 

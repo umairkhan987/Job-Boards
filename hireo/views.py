@@ -244,7 +244,8 @@ def deactivate_account(request):
             user = User.objects.get(email=request.user.email)
             logout(request)
             user.profileImg.delete()  # delete user image
-            user.profile.userCV.delete()  # delete user profile CV
+            if user.is_Freelancer:
+                user.profile.userCV.delete()  # delete user profile CV
             user.delete()
             return JsonResponse({"success": True, 'msg': "User Deactivated", 'url': redirect('index').url})
         elif request.method == "POST" and not request.is_ajax():

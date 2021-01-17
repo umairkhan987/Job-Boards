@@ -112,7 +112,19 @@ def received_message(request):
         if request.method == "GET" and request.is_ajax():
             message_id = request.GET.get("message_id")
             Equal = True if request.GET.get("equal") == 'true' else False
+
+            # get message and read it.
             msg = get_object_or_404(Messages, pk=message_id)
+            msg.is_read = True
+            msg.save()
+
+            # TODO: change the way to hide notification...
+            messageNotification = MessageNotification.objects.get(message=message_id)
+            if messageNotification:
+                messageNotification.is_read = True
+                messageNotification.is_seen = True
+                messageNotification.save()
+
             full_name = msg.sender.first_name + " " + msg.sender.last_name
             received_msg = render_to_string("Messenger/include/partial_received_msg.html",
                                             {"message": msg, "equal": Equal, "full_name": full_name})
@@ -132,7 +144,6 @@ def get_users_list(request):
         return JsonResponse({"success": True, "users_list": users_list})
 
 
-# TODO: change the way to hide notification...
 @login_required
 def mark_as_read_message(request):
     if request.is_ajax():
