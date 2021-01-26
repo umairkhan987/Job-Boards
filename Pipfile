@@ -25,6 +25,7 @@ gunicorn = "*"
 twisted = {extras = ["http2", "tls"],version = "*"}
 dj-database-url = "*"
 djangorestframework = "*"
+djangorestframework-simplejwt = "*"
 
 [requires]
 python_version = "3.7"

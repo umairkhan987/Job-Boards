@@ -153,6 +153,7 @@ def updateProfile(request):
         return JsonResponse({'success': False, 'errors': str(e)})
 
 
+# deprecated method
 @login_required
 @freelancer_required
 def getProfile(request):
