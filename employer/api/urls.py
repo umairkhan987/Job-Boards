@@ -12,4 +12,5 @@ urlpatterns = [
     path("employer/dashboard/", views.dashboard_view, name="dashboard_view"),
     path("employer/reviews/", views.ReviewView.as_view(), name="reviews"),
     path("employer/review/<int:id>/", views.PostReviewView.as_view(), name="post_reviews_view"),
+    path("employer/offers/", views.SendOfferView.as_view(), name="send_offer"),
 ]

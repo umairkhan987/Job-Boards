@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.models import User
+from accounts.models import User, Profile
 from freelancers.models import Proposal
 from hireo.api.pagination import GeneralPaginationClass
 from .permissions import IsEmployer, IsValidUser
@@ -198,3 +198,8 @@ class PostReviewView(generics.UpdateAPIView):
 class SendOfferView(generics.CreateAPIView):
     serializer_class = OfferSerializer
     permission_classes = [IsAuthenticated, IsEmployer]
+
+    def perform_create(self, serializer):
+        id = int(serializer.validated_data.get("profile_id", None))
+        profile = get_object_or_404(Profile, pk=id)
+        serializer.save(profile=profile, sender=self.request.user)

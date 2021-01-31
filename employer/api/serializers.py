@@ -51,6 +51,8 @@ class ReviewProposalSerializer(serializers.ModelSerializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
+    profile_id = serializers.IntegerField(required=True)
+
     class Meta:
         model = Offers
-        fields = "__all__"
+        fields = ("profile_id", "offer_message", "offer_file")
