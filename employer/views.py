@@ -257,12 +257,10 @@ def send_offers(request):
         if request.method == "POST" and request.is_ajax():
             form = OfferForm(request.POST, request.FILES)
             id = request.POST.get("profile_id")
-            email = request.POST.get("email")
+            profile = get_object_or_404(Profile, pk=id)
             if form.is_valid():
-                profile = get_object_or_404(Profile, pk=id)
-                sender = User.objects.filter(email=email).first()
                 offer = form.save(commit=False)
-                offer.sender = sender if sender is not None else None
+                offer.sender = request.user
                 offer.profile = profile
                 offer.save()
                 return JsonResponse({"success": True, "msg": "Offer send"})

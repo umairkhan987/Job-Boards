@@ -42,25 +42,21 @@
 
                                                     <!-- Avatar -->
                                                     <div class="freelancer-avatar">
-                                                        {% if offer.sender %}
-                                                            <div class="verified-badge"></div>
-                                                            {% thumbnail offer.sender.profileImg "x80" as im %}
-                                                                <img src="{{ im.url }}" alt="">
-                                                            {% empty %}
-                                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                            {% endthumbnail %}
-                                                        {% else %}
+                                                        <div class="verified-badge"></div>
+                                                        {% thumbnail offer.sender.profileImg "x80" as im %}
+                                                            <img src="{{ im.url }}" alt="">
+                                                        {% empty %}
                                                             <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                        {% endif %}
+                                                        {% endthumbnail %}
                                                     </div>
 
                                                     <!-- Name -->
                                                     <div class="freelancer-name">
-                                                        <h4><a>{{ offer.full_name }} </a></h4>
+                                                        <h4><a>{{ offer.get_full_name }} </a></h4>
 
                                                         <!-- Email -->
                                                         <span class="freelancer-detail-item"><a><i
-                                                                class="icon-feather-mail"></i>{{ offer.email }}</a></span>
+                                                                class="icon-feather-mail"></i>{{ offer.sender.email }}</a></span>
 
                                                         <!-- Offer_content -->
                                                         <div class="dashboard-task-info bid-info" style="justify-content: left; text-align: left">

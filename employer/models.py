@@ -98,12 +98,13 @@ def upload_offer_file(instance, filename):
 
 class Offers(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="offers")
-    full_name = models.CharField(max_length=250)
-    email = models.EmailField(max_length=250)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='sent_offers')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_offers')
     offer_message = models.CharField(max_length=500)
     offer_file = models.FileField(upload_to=upload_offer_file, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.offer_message
+
+    def get_full_name(self):
+        return self.sender.first_name + " " + self.sender.last_name

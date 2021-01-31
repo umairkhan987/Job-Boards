@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from accounts.models import Profile
 from employer.models import PostTask
+from hireo.api.pagination import GeneralPaginationClass
 from hireo.api.serializers import PostTaskSerializer, ProfileSerializer, ProposalSerializer, \
     WorkHistoryProposalSerializer
 
@@ -31,10 +32,6 @@ def index(request):
         return Response(context)
     except Exception as e:
         return Response({"detail": str(e)}, status=404)
-
-
-class GeneralPaginationClass(PageNumberPagination):
-    page_size = 2
 
 
 class TaskListApiView(ListAPIView):

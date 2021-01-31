@@ -43,7 +43,6 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = ("id", "rate", "days", "created_at", "updated_at", "user")
-        depth = 1
 
 
 class WorkHistoryProposalSerializer(serializers.ModelSerializer):
