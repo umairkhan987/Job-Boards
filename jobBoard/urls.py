@@ -32,6 +32,7 @@ urlpatterns = [
     path("api/", include('hireo.api.urls')),
     path("api/", include("accounts.api.urls")),
     path("api/", include("employer.api.urls")),
+    path("api/", include("freelancers.api.urls")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

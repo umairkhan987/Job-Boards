@@ -41,7 +41,6 @@ class UpdateAccountView(UpdateAPIView):
         return self.request.user
 
 
-# deprecated due to permission problem
 class UpdateProfileView(UpdateAPIView):
     queryset = Profile.objects.all()
     permission_classes = (IsAuthenticated, IsFreelancer)

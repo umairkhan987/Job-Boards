@@ -139,7 +139,7 @@ class AcceptProposalView(generics.UpdateAPIView):
 @permission_classes([IsAuthenticated, ])
 def dashboard_view(request, *args, **kwargs):
     if not request.user.is_Employer:
-        return Response({"detail": "Please login as freelancer."})
+        return Response({"detail": "Please login as Employer."})
 
     user = User.objects.get(email=request.user.email)
     pending = user.tasks.filter(job_status__exact="Pending").count()
