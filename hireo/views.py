@@ -187,8 +187,9 @@ def bookmarks(request):
 
         # check if user is employer and and if already bookmarked then delete it.
         if user.is_Employer:
-            if request.user.bookmarks.filter(freelancer_profile=profile).exists():
-                Bookmark.objects.filter(user=request.user, freelancer_profile=profile).delete()
+            bookmark = request.user.bookmarks.filter(freelancer_profile=profile)
+            if bookmark.exists():
+                bookmark.delete()
                 html = None
                 if not request.user.bookmarks.exists():
                     msg = "There is no bookmark."
@@ -218,7 +219,7 @@ def bookmarks(request):
         bookmark_list = []
         if request.user.is_Employer:
             ids = request.user.bookmarks.all().values_list("freelancer_profile", flat=True).order_by('-created_at')
-            bookmark_list = User.objects.filter(profile__in=ids).order_by('-profile__bookmark__created_at')
+            bookmark_list = Profile.objects.filter(id__in=ids).order_by('-bookmark__created_at')
 
         if request.user.is_Freelancer:
             ids = request.user.bookmarks.all().values_list('task', flat=True).order_by('-created_at')

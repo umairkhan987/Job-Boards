@@ -147,16 +147,18 @@
 
 				<!-- Sidebar Widget -->
 				<div class="sidebar-widget">
-					<h3>Bookmark</h3>
+
 					<!-- Bookmark Button -->
-                    {% if request.user.is_authenticated %}
-                        <button id="bookmark_Btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if profile.get_bookmark_profile %}bookmarked{% endif %} ">
-                                <span class="bookmark-icon"></span>
-                                <span class="bookmark-text">Bookmark</span>
-                                <span class="bookmarked-text">Bookmarked</span>
-                        </button>
-                    {% else %}
+                    {% if not request.user.is_authenticated %}
+                    <h3>Bookmark</h3>
                         <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star margin-right-5"></i> Bookmark</a>
+                    {% elif request.user.is_Employer %}
+                        <h3>Bookmark</h3>
+                        <button id="bookmark_Btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if profile.get_bookmark_profile %}bookmarked{% endif %} ">
+                            <span class="bookmark-icon"></span>
+                            <span class="bookmark-text">Bookmark</span>
+                            <span class="bookmarked-text">Bookmarked</span>
+                        </button>
                     {% endif %}
 				</div>
 

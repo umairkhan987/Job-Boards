@@ -1,14 +1,18 @@
 from django.db.models import F, Q
-from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.models import Profile
+from accounts.models import Profile, User
 from employer.models import PostTask
 from hireo.api.pagination import GeneralPaginationClass
 from hireo.api.serializers import PostTaskSerializer, ProfileSerializer, ProposalSerializer, \
-    WorkHistoryProposalSerializer
+    WorkHistoryProposalSerializer, UserSerializer, ProfileBookmarkSerializer, TaskBookmarkSerializer, \
+    BookmarkedSerializer
+from hireo.models import Bookmark
 
 
 @api_view(['GET'])
@@ -34,7 +38,7 @@ def index(request):
         return Response({"detail": str(e)}, status=404)
 
 
-class TaskListApiView(ListAPIView):
+class TaskListApiView(generics.ListAPIView):
     pagination_class = GeneralPaginationClass
     serializer_class = PostTaskSerializer
     queryset = PostTask.objects.exclude(job_status__exact="Completed").order_by('-created_at')
@@ -83,7 +87,7 @@ def task_detail_view(request, pk, *args, **kwargs):
         return Response({"detail": "Not Found"}, status=404)
 
 
-class FreelancersListApiView(ListAPIView):
+class FreelancersListApiView(generics.ListAPIView):
     pagination_class = GeneralPaginationClass
     serializer_class = ProfileSerializer
     queryset = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by('created_at')
@@ -129,3 +133,67 @@ def freelancer_profile(request, pk, *args, **kwargs):
 
     except Profile.DoesNotExist:
         return Response({"detail": "Not Found"}, status=404)
+
+
+class BookmarkListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = TaskBookmarkSerializer
+    pagination_class = GeneralPaginationClass
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.request.user.is_Employer:
+            serializer_class = ProfileBookmarkSerializer
+        return serializer_class
+
+    def get_queryset(self):
+        if self.request.user.is_Freelancer:
+            ids = self.request.user.bookmarks.all().values_list('task', flat=True).order_by('-created_at')
+            return PostTask.objects.filter(id__in=ids).order_by('-bookmark__created_at')
+        if self.request.user.is_Employer:
+            ids = self.request.user.bookmarks.all().values_list("freelancer_profile", flat=True).order_by('-created_at')
+            return Profile.objects.filter(id__in=ids).order_by('-bookmark__created_at')
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, ])
+def bookmarked_view(request, *args, **kwargs):
+    serializer = BookmarkedSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    if request.user.is_Freelancer:
+        task = get_object_or_404(PostTask, pk=serializer.validated_data.get("id"))
+        bookmarks = request.user.bookmarks.filter(task=task)
+        if bookmarks.exists():
+            bookmarks.delete()
+            return Response({"detail": "Removed"}, status=200)
+        else:
+            bookmark_task = Bookmark.objects.create(user=request.user, task=task)
+            bookmark_task.save()
+            return Response({"detail": "Bookmarked"}, status=200)
+    elif request.user.is_Employer:
+        profile = get_object_or_404(Profile, pk=serializer.validated_data.get("id"))
+        bookmarks = request.user.bookmarks.filter(freelancer_profile=profile)
+        if bookmarks.exists():
+            bookmarks.delete()
+            return Response({"detail": "Removed"}, status=200)
+        else:
+            bookmark_profile = Bookmark.objects.create(user=request.user, freelancer_profile=profile)
+            bookmark_profile.save()
+            return Response({"detail": "Bookmarked"}, status=200)
+
+
+class DeactivateAccountView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_object(self):
+        return self.request.user
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.profileImg.delete()
+        if instance.is_Freelancer:
+            instance.profile.userCV.delete()
+        self.perform_destroy(instance)
+        return Response({"detail": "Deleted"}, status=status.HTTP_204_NO_CONTENT)

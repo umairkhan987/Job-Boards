@@ -3,6 +3,7 @@ from rest_framework import serializers
 from accounts.models import Profile, User
 from employer.models import PostTask
 from freelancers.models import Proposal
+from hireo.models import Bookmark
 
 
 class PostTaskSerializer(serializers.ModelSerializer):
@@ -54,3 +55,31 @@ class WorkHistoryProposalSerializer(serializers.ModelSerializer):
 
     def get_task_title(self, instance):
         return instance.task.title
+
+
+class BookmarkedSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=True)
+
+
+class ProfileBookmarkSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField(read_only=True)
+    profileImg = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ("name", "tags", "id", "rating", "profileImg")
+
+    def get_name(self, instance):
+        return instance.user.first_name + " " + instance.user.last_name
+
+    def get_profileImg(self, instance):
+        if instance.user.profileImg:
+            return instance.user.profileImg.url
+        else:
+            return None
+
+
+class TaskBookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostTask
+        fields = ("id", "title", "project_type", "no_of_days", "exp_level")

@@ -194,18 +194,18 @@
 
                     <!-- Sidebar Widget -->
                     <div class="sidebar-widget">
-                        <h3>Bookmark or Share</h3>
 
                         <!-- Bookmark Button -->
                         {% if not request.user.is_authenticated %}
+                        <h3>Bookmark</h3>
                             <a href="#sign-in-dialog" class="login popup-with-zoom-anim button dark ripple-effect"><i class="icon-material-outline-star"></i> Bookmark</a>
-
-                            {% else %}
-                                <button id="bookmark_btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if task.get_bookmark_task %}bookmarked{% endif %}">
-                                    <span class="bookmark-icon"></span>
-                                    <span class="bookmark-text">Bookmark</span>
-                                    <span class="bookmarked-text">Bookmarked</span>
-                                </button>
+                            {% elif request.user.is_Freelancer %}
+                            <h3>Bookmark</h3>
+                            <button id="bookmark_btn" data-url="{% url 'bookmarks' %}" class="bookmark-button margin-bottom-25 {% if task.get_bookmark_task %}bookmarked{% endif %}">
+                                <span class="bookmark-icon"></span>
+                                <span class="bookmark-text">Bookmark</span>
+                                <span class="bookmarked-text">Bookmarked</span>
+                            </button>
                         {% endif %}
 
 

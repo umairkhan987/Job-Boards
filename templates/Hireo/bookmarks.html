@@ -51,7 +51,7 @@
 											<!-- Avatar -->
 											<div class="freelancer-avatar">
 												<div class="verified-badge"></div>
-                                                {% thumbnail bookmark.profileImg "x80" as im %}
+                                                {% thumbnail bookmark.user.profileImg "x80" as im %}
                                                     <a href="{% url 'freelancer_profile' bookmark.id %}"><img src="{{ im.url }}" alt=""></a>
                                                 {% empty %}
                                                     <a href="{% url 'freelancer_profile' bookmark.id %}"><img src="{% static 'images/user-avatar-placeholder.png' %}" alt="No_image"></a>
@@ -60,11 +60,11 @@
 
 											<!-- Name -->
 											<div class="freelancer-name">
-												<h4><a href="{% url 'freelancer_profile' bookmark.id %}">{{ bookmark.first_name }} {{ bookmark.last_name }}</a></h4>
-												<span>{{ bookmark.profile.tags }}</span>
+												<h4><a href="{% url 'freelancer_profile' bookmark.id %}">{{ bookmark.user.first_name }} {{ bookmark.user.last_name }}</a></h4>
+												<span>{{ bookmark.tags }}</span>
 												<!-- Rating -->
 												<div class="freelancer-rating">
-													<div class="star-rating" data-rating="{{ bookmark.profile.calculate_rating }}"></div>
+													<div class="star-rating" data-rating="{{ bookmark.rating }}"></div>
 												</div>
 											</div>
 										</div>
@@ -72,7 +72,7 @@
 
 									<!-- Buttons -->
 									<div class="buttons-to-right">
-										<a href="javascript:" data-id="{{ bookmark.profile.id }}" data-url="{% url 'bookmarks' %}" class="button red ripple-effect ico delete-bookmark-Btn" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
+										<a href="javascript:" data-id="{{ bookmark.id }}" data-url="{% url 'bookmarks' %}" class="button red ripple-effect ico delete-bookmark-Btn" title="Remove" data-tippy-placement="left"><i class="icon-feather-trash-2"></i></a>
 									</div>
 								</li>
                                 {% endfor %}

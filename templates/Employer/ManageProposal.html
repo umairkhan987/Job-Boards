@@ -60,30 +60,42 @@
                                                 <!-- Avatar -->
                                                 <div class="freelancer-avatar">
                                                     <div class="verified-badge"></div>
-                                                    <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">
-                                                        {% thumbnail proposal.user.profileImg "100" as im %}
-                                                            <img src="{{ im.url }}" alt="">
-                                                        {% empty %}
-                                                            <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
-                                                        {% endthumbnail %}
-                                                    </a>
+                                                    {% if not proposal.user %}
+                                                        <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                    {% else %}
+                                                        <a href="{% url 'freelancer_profile' proposal.user.profile.id %}">
+                                                            {% thumbnail proposal.user.profileImg "100" as im %}
+                                                                <img src="{{ im.url }}" alt="">
+                                                            {% empty %}
+                                                                <img src="{% static 'images/user-avatar-placeholder.png' %}" alt="">
+                                                            {% endthumbnail %}
+                                                        </a>
+                                                    {% endif %}
                                                 </div>
 
                                                 <!-- Name -->
                                                 <div class="freelancer-name">
-                                                    <h4><a href="{% url 'freelancer_profile' proposal.user.profile.id %}"> {{proposal.user.first_name}} {{ proposal.user.last_name }}</a>
+                                                    <h4>
+                                                        {% if not proposal.user %}
+                                                            Deactivated User
+                                                        {% else %}
+                                                                <a href="{% url 'freelancer_profile' proposal.user.profile.id %}"> {{proposal.user.first_name}} {{ proposal.user.last_name }}</a>
+                                                        {% endif %}
                                                         {% if proposal.status == 'completed' and task.job_status == 'Completed' %}
                                                             <span class="dashboard-status-button green">Completed this task</span>
                                                         {% endif %}
                                                     </h4>
 
                                                     <!-- Details -->
-                                                    <span class="freelancer-detail-item"><i class="icon-feather-mail"></i> <span class="__cf_email__">{{ proposal.user.email }}</span></span>
+                                                    {% if proposal.user %}
+                                                        <span class="freelancer-detail-item"><i class="icon-feather-mail"></i> <span class="__cf_email__">{{ proposal.user.email }}</span></span>
 
                                                     <!-- Rating -->
                                                     <div class="freelancer-rating">
                                                         <div class="star-rating" data-rating="{{ proposal.user.profile.calculate_rating }}"></div>
                                                     </div>
+
+                                                    {% endif %}
 
                                                     <!-- Bid Details -->
                                                     <ul class="dashboard-task-info bid-info">
@@ -100,7 +112,9 @@
                                                         {% elif proposal.staus is None and task.job_status == "Pending" %}
                                                             <a href="#small-dialog-1" data-url="{% url 'accept_proposal' proposal.id %}" data-content="{{ proposal.user.first_name }},{{ proposal.rate }},{{ proposal.days }}"  class="popup-with-zoom-anim button ripple-effect accept-offer"><i class="icon-material-outline-check"></i> Accept Offer</a>
                                                         {% endif %}
-                                                        <a href="#small-dialog-2" data-firstName="{{ proposal.user.first_name }}" data-id="{{ proposal.user.id }}" data-url="{% url 'messages' %}"  class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
+                                                        {% if proposal.user %}
+                                                            <a href="#small-dialog-2" data-firstName="{{ proposal.user.first_name }}" data-id="{{ proposal.user.id }}" data-url="{% url 'messages' %}"  class="popup-with-zoom-anim button dark ripple-effect send-message"><i class="icon-feather-mail"></i> Send Message</a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
