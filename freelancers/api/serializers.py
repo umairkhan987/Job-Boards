@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from employer.models import Offers
 from freelancers.models import Proposal
+from notification.models import Notification
 
 
 class ProposalSerializer(serializers.ModelSerializer):
@@ -68,3 +69,32 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_title(self, instance):
         return instance.task.title
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    actor_name = serializers.SerializerMethodField(read_only=True)
+    action_desc = serializers.SerializerMethodField(read_only=True)
+    target_title = serializers.SerializerMethodField(read_only=True)
+    target_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = ("id", "is_seen", "timestamp", "actor_name", "action_desc", "target_title", "target_url")
+
+    def get_actor_name(self, instance):
+        return instance.get_actor_full_name()
+
+    def get_action_desc(self, instance):
+        return instance.get_action_display()
+
+    def get_target_title(self, instance):
+        if instance.compare_action():
+            return str(instance.target)
+        else:
+            return None
+
+    def get_target_url(self, instance):
+        if instance.compare_action():
+            return instance.get_absolute_url()
+        else:
+            return None

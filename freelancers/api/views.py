@@ -9,12 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.api.permissions import IsFreelancer
-from employer.api.serializers import NotificationSerializer
 from employer.models import PostTask, Offers
 from hireo.api.pagination import GeneralPaginationClass
 from hireo.models import HitCount
 from .permissions import IsValidUser
-from .serializers import ProposalSerializer, OfferSerializer, ReviewSerializer
+from .serializers import ProposalSerializer, OfferSerializer, ReviewSerializer, NotificationSerializer
 from ..models import Proposal
 
 
