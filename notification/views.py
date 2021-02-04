@@ -7,7 +7,7 @@ from .models import MessageNotification, Notification
 
 
 @login_required
-def unread(request):
+def read_msg_notifications(request):
     notifications = MessageNotification.objects.filter(recipient=request.user).select_related('actor').\
         order_by('-timestamp')
     notifications.update(is_seen=True)
@@ -30,7 +30,7 @@ def mark_all_as_read(request):
 
 
 @login_required
-def notification_unread(request):
+def read_user_notifications(request):
     notifications = Notification.objects.filter(recipient=request.user).select_related('actor')
     notifications.update(is_seen=True)
     html = render_to_string("Notification/include/partial_notification_list.html",
