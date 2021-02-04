@@ -57,6 +57,15 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+    def get_full_name(self):
+        return self.first_name + " " + self.last_name
+
+    def get_profile_image_url(self):
+        if self.profileImg:
+            return self.profileImg.url
+        else:
+            return None
+
     def task_completed(self):
         if self.is_Freelancer:
             return self.proposals.filter(status__exact="completed").count()

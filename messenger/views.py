@@ -144,6 +144,7 @@ def get_users_list(request):
         return JsonResponse({"success": True, "users_list": users_list})
 
 
+# Deprecated
 @login_required
 def mark_as_read_message(request):
     if request.is_ajax():
