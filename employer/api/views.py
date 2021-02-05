@@ -6,10 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from accounts.models import User, Profile
+from freelancers.api.serializers import NotificationSerializer
 from freelancers.models import Proposal
 from hireo.api.pagination import GeneralPaginationClass
+from notification.models import notification_handler, Notification
 from .permissions import IsEmployer, IsValidUser
-from .serializers import PostTaskSerializer, ProposalListSerializer, NotificationSerializer, ReviewProposalSerializer, \
+from .serializers import PostTaskSerializer, ProposalListSerializer, ReviewProposalSerializer, \
     OfferSerializer
 from ..models import PostTask
 from hireo.api.serializers import PostTaskSerializer as TaskListSerializer
@@ -131,7 +133,7 @@ class AcceptProposalView(generics.UpdateAPIView):
         instance.user.profile.save()
         instance.task.save()
         instance.save()
-        # TODO: add notification handler when proposal accepted
+        notification_handler(self.request.user, instance.user, Notification.ACCEPT_OFFER, target=instance)
         return Response({"detail": "Proposal accepted"}, status=200)
 
 
@@ -156,7 +158,6 @@ def dashboard_view(request, *args, **kwargs):
     paginator.page_size = 4
     paginator_qs = paginator.paginate_queryset(notifications_list, request)
     notification_serializer = NotificationSerializer(paginator_qs, many=True)
-    # TODO: change the notifications object and send string API
     context = {
         "data": data,
         "notifications": notification_serializer.data,
@@ -185,11 +186,10 @@ class PostReviewView(generics.UpdateAPIView):
         instance = self.get_object()
         if instance.task.user != self.request.user:
             return Response({"detail": "You are not permitted to perform this action."}, status=403)
-        # TODO: set notification handler
         serializer = self.get_serializer(instance, data=request.data)
-
         if serializer.is_valid():
             serializer.save()
+            notification_handler(self.request.user, instance.user, Notification.POST_REVIEW, target=instance.task)
             return Response(serializer.data, status=200)
         else:
             return Response(serializer.errors, status=400)

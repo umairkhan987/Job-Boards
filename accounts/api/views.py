@@ -50,6 +50,7 @@ class UpdateProfileView(UpdateAPIView):
         return self.request.user.profile
 
 
+# Deprecated
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, ])
 def update_profile_view(request, *args, **kwargs):

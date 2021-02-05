@@ -12,6 +12,7 @@ from accounts.api.permissions import IsFreelancer
 from employer.models import PostTask, Offers
 from hireo.api.pagination import GeneralPaginationClass
 from hireo.models import HitCount
+from notification.models import notification_handler, Notification
 from .permissions import IsValidUser
 from .serializers import ProposalSerializer, OfferSerializer, ReviewSerializer, NotificationSerializer
 from ..models import Proposal
@@ -93,8 +94,7 @@ class CancelJobView(generics.UpdateAPIView):
         instance.save()
 
         calculate_profile_rating(self.request.user)
-
-        # TODO: add notification handler when cancel job
+        notification_handler(self.request.user, instance.task.user, Notification.TASK_CANCELLED, target=instance.task)
         return Response({"detail": "Job cancelled"}, status=200)
 
 
@@ -114,10 +114,9 @@ class JobCompletedView(generics.UpdateAPIView):
         instance.task.save()
         instance.user.profile.save()
         instance.save()
-
         calculate_profile_rating(self.request.user)
 
-        # TODO: add notification handler when job completed
+        notification_handler(self.request.user, instance.task.user, Notification.TASK_COMPLETED, target=instance.task)
         return Response({"detail": "Job Completed"}, status=200)
 
 
@@ -146,7 +145,6 @@ def dashboard_view(request, *args, **kwargs):
         "labels": labels,
         "notifications": notification_serializer.data,
     }
-    # TODO: change the notifications object and send string API
     return paginator.get_paginated_response(context)
 
 

@@ -29,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
         # extra_kwargs = {"password": {'write_only': True}}
 
     def validate_account_type(self, data):
-        print("validate account type called")
         if data is None:
             raise serializers.ValidationError("account type must be required.")
         return data
