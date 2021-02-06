@@ -24,7 +24,7 @@ class SendMessageView(generics.CreateAPIView):
         serializer.validated_data['receiver'] = receiver
         serializer.validated_data['sender'] = self.request.user
         self.perform_create(serializer)
-        # TODO: Broadcast message through channel
+        Messages.broadcast_msg(sender=self.request.user, receiver=receiver, message=serializer.instance, equal=True)
         return Response(serializer.data, status=201)
 
 

@@ -59,6 +59,9 @@ class PostTask(models.Model):
             return os.path.basename(self.task_file.name)
         return None
 
+    def in_progress(self):
+        return self.job_status == "In Progress"
+
     def get_avg_value(self):
         return int((self.min_price + self.max_price) / 2)
 

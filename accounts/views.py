@@ -127,7 +127,7 @@ def updateProfile(request):
         if request.method == "POST" and request.is_ajax():
             usercv = request.POST.get("userCV", None)
             profile = Profile.objects.get(user=request.user)
-            profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+            profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
 
             success = False
             if profile_form.is_valid():
@@ -140,8 +140,9 @@ def updateProfile(request):
                 if usercv == "null":
                     profile.userCV.delete()
                     profile_form.instance.userCV.delete()
-
-                profile_form.save()
+                updated_profile = profile_form.save(commit=False)
+                updated_profile.updated = True
+                updated_profile.save()
                 success = True
                 # return JsonResponse({'success': True, 'msg': 'Successfully updated'})
                 #     errors = profile_form.errors.as_data()

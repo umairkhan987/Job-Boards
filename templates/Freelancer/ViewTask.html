@@ -165,11 +165,11 @@
                                     <!-- Button -->
                                     <button type="submit"
                                             class="button ripple-effect move-on-hover full-width margin-top-30"
-                                            {% if task.user_submitted_proposal %}
+                                            {% if task.user_submitted_proposal or task.in_progress %}
                                             disabled
                                             style="cursor: not-allowed; background-color: #e0e0e0; color: #666"
                                             {% endif %}>
-                                        {% if  task.user_submitted_proposal %}
+                                        {% if  task.user_submitted_proposal or task.in_progress %}
                                             <span>Bid Placed</span>
                                         {% else %}
                                             <span hidden class="spinner-border spinner-border-sm mr-2 margin-bottom-3 js-place-bid-loading-spinner" role="status" aria-hidden="true"></span>

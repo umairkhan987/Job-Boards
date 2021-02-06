@@ -121,6 +121,7 @@ class Profile(models.Model):
     total_job_done = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    updated = models.IntegerField(default=False)
     # calculate success rate
     success_rate = models.IntegerField(default=0)
     rating = models.DecimalField(default=0, max_digits=5, decimal_places=1)

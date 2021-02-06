@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.db.models import F, Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, status
@@ -12,7 +15,7 @@ from hireo.api.pagination import GeneralPaginationClass
 from hireo.api.serializers import PostTaskSerializer, ProfileSerializer, ProposalSerializer, \
     WorkHistoryProposalSerializer, UserSerializer, ProfileBookmarkSerializer, TaskBookmarkSerializer, \
     BookmarkedSerializer
-from hireo.models import Bookmark
+from hireo.models import Bookmark, HitCount
 
 
 @api_view(['GET'])
@@ -24,7 +27,7 @@ def index(request):
         tasks_serializers = PostTaskSerializer(tasks, many=True)
         freelancers = Profile.objects.select_related('user').all()
         total_profile = freelancers.count()
-        freelancers = freelancers.filter(created_at__lt=F('updated_at')).order_by('-rating')[:6]
+        freelancers = freelancers.filter(updated=True).order_by('-rating')[:6]
         freelancers_serializer = ProfileSerializer(freelancers, many=True)
 
         context = {
@@ -47,6 +50,8 @@ class TaskListApiView(generics.ListAPIView):
         sortBy = self.request.query_params.get("sortBy", None)
         search = self.request.query_params.get("search", None)
         rate = self.request.query_params.get("rate", None)
+        skills = self.request.query_params.getlist("skills", None)
+
         queryset = self.queryset
         if sortBy:
             if sortBy == "oldest":
@@ -58,7 +63,8 @@ class TaskListApiView(generics.ListAPIView):
         if rate:
             rate = rate.split(',')
             queryset = queryset.filter(Q(min_price__gte=rate[0]) & Q(max_price__lte=rate[1]))
-        # TODO: skills_list query_parameter needed
+        if skills:
+            queryset = queryset.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skills)))
         return queryset
 
 
@@ -90,12 +96,13 @@ def task_detail_view(request, pk, *args, **kwargs):
 class FreelancersListApiView(generics.ListAPIView):
     pagination_class = GeneralPaginationClass
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by('created_at')
+    queryset = Profile.objects.filter(updated=True).select_related('user').order_by('created_at')
 
     def get_queryset(self):
         sortBy = self.request.query_params.get("sortBy", None)
         search = self.request.query_params.get("search", None)
         rate = self.request.query_params.get("rate", None)
+        skills = self.request.query_params.getlist("skills", None)
         queryset = self.queryset
         if sortBy:
             if sortBy == "oldest":
@@ -107,7 +114,8 @@ class FreelancersListApiView(generics.ListAPIView):
         if rate:
             rate = rate.split(',')
             queryset = queryset.filter(Q(rate__gte=rate[0]) & Q(rate__lte=rate[1]))
-        # TODO: skills_list query_parameter needed
+        if skills:
+            queryset = queryset.filter(reduce(operator.or_, (Q(skills__icontains=x) for x in skills)))
         return queryset
 
 
@@ -115,7 +123,22 @@ class FreelancersListApiView(generics.ListAPIView):
 def freelancer_profile(request, pk, *args, **kwargs):
     try:
         profile = Profile.objects.get(id=pk)
-        # TODO: Hit_count logic remaining
+        if not profile.updated:
+            return Response({"detail": "Not found."}, status=404)
+
+        ip = request.META['REMOTE_ADDR']
+        if request.user != profile.user:
+            if (request.user.is_authenticated and not HitCount.objects.filter(
+                    Q(profile=profile) & Q(user=request.user)).exists()) or (
+                    not request.user.is_authenticated and not (
+                    HitCount.objects.filter(Q(profile=profile) & Q(ip=ip)).exists())):
+
+                view = HitCount.objects.create(profile=profile)
+                if request.user.is_authenticated:
+                    view.user = request.user
+                else:
+                    view.ip = ip
+                view.save()
 
         work_history = profile.user.proposals.filter(Q(status__exact='completed') & Q(rating__gt=0)) \
             .select_related('task').order_by('created_at')

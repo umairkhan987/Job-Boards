@@ -17,7 +17,7 @@ from .models import Bookmark, HitCount
 def index(request):
     tasks = PostTask.objects.all()
     freelancers = Profile.objects.select_related('user').all()
-    freelancers_profile = freelancers.filter(created_at__lt=F('updated_at'))
+    freelancers_profile = freelancers.filter(updated=True)
     # sorted_freelancers = sorted(freelancers_profile, key=lambda a: a.calculate_rating(), reverse=True)
 
     context = {
@@ -69,6 +69,9 @@ def findTasks(request):
 
 def view_task(request, id):
     task = get_object_or_404(PostTask, pk=id)
+    if task.job_status == "Completed":
+        raise Http404()
+
     proposals = task.proposals.all().select_related('user', 'user__profile').order_by('created_at')
     page = request.GET.get("page", 1)
     paginator = Paginator(proposals, 4)
@@ -88,7 +91,7 @@ def view_task(request, id):
 
 
 def find_freelancer(request):
-    freelancer_list = Profile.objects.filter(created_at__lt=F('updated_at')).select_related('user').order_by(
+    freelancer_list = Profile.objects.filter(updated=True).select_related('user').order_by(
         'created_at')
     if request.GET:
         search = request.GET.get('search', None)
@@ -127,6 +130,9 @@ def find_freelancer(request):
 
 def freelancer_profile(request, id):
     profile = get_object_or_404(Profile, pk=id)
+    if not profile.updated:
+        raise Http404()
+
     session = request.session.session_key
     ip = request.META['REMOTE_ADDR']
 
