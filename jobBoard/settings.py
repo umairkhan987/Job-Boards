@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'multiselectfield',
     'sorl.thumbnail',
     'rest_framework',
+    'drf_yasg',
 
     # custom app
     'accounts.apps.AccountsConfig',

@@ -44,7 +44,7 @@ class ReviewProposalSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class OfferSerializer(serializers.ModelSerializer):
+class OffersSerializer(serializers.ModelSerializer):
     profile_id = serializers.IntegerField(required=True)
 
     class Meta:

@@ -1,7 +1,8 @@
 import operator
 from functools import reduce
 
-from django.db.models import F, Q
+from django.db.models import Q
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
@@ -12,19 +13,20 @@ from rest_framework.response import Response
 from accounts.models import Profile, User
 from employer.models import PostTask
 from hireo.api.pagination import GeneralPaginationClass
-from hireo.api.serializers import PostTaskSerializer, ProfileSerializer, ProposalSerializer, \
+from hireo.api.serializers import TasksSerializer, ProfileSerializer, ProposalSerializer, \
     WorkHistoryProposalSerializer, UserSerializer, ProfileBookmarkSerializer, TaskBookmarkSerializer, \
     BookmarkedSerializer
 from hireo.models import Bookmark, HitCount
 
 
+@swagger_auto_schema(tags=['Index'], method='GET')
 @api_view(['GET'])
 def index(request):
     try:
         tasks = PostTask.objects.all()
         total_task = tasks.count()
         tasks = tasks.exclude(job_status__exact="Completed").order_by('-created_at')[:5]
-        tasks_serializers = PostTaskSerializer(tasks, many=True)
+        tasks_serializers = TasksSerializer(tasks, many=True)
         freelancers = Profile.objects.select_related('user').all()
         total_profile = freelancers.count()
         freelancers = freelancers.filter(updated=True).order_by('-rating')[:6]
@@ -43,7 +45,7 @@ def index(request):
 
 class TaskListApiView(generics.ListAPIView):
     pagination_class = GeneralPaginationClass
-    serializer_class = PostTaskSerializer
+    serializer_class = TasksSerializer
     queryset = PostTask.objects.exclude(job_status__exact="Completed").order_by('-created_at')
 
     def get_queryset(self):
@@ -82,7 +84,7 @@ def task_detail_view(request, pk, *args, **kwargs):
         paginator_qs = paginator.paginate_queryset(proposal, request)
         proposal_serializer = ProposalSerializer(paginator_qs, many=True)
 
-        serializer = PostTaskSerializer(task, many=False, context={"request": request})
+        serializer = TasksSerializer(task, many=False, context={"request": request})
         context = {
             "task": serializer.data,
             "proposals": proposal_serializer.data,

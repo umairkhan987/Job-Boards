@@ -17,6 +17,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
 
 urlpatterns = [
     path("", include('hireo.urls')),
@@ -29,14 +33,32 @@ urlpatterns = [
     path('change-the-admin/', admin.site.urls),
 
     #     REST_API urls
-    path("api/", include('hireo.api.urls')),
-    path("api/", include("accounts.api.urls")),
-    path("api/", include("employer.api.urls")),
-    path("api/", include("freelancers.api.urls")),
-    path("api/", include("notification.api.urls")),
-    path("api/", include("messenger.api.urls")),
+    path("api/", include('hireo.api.urls'),  name="Hireo"),
+    path("api/", include("accounts.api.urls"), name="accounts"),
+    path("api/", include("employer.api.urls"), name="employer"),
+    path("api/", include("freelancers.api.urls"), name="freelancer"),
+    path("api/", include("notification.api.urls"), name="notifications"),
+    path("api/", include("messenger.api.urls"), name="messenger"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Hireo API",
+      default_version='v1',
+      description="Api for Hireo App",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny, ),
+)
+
+urlpatterns += [
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+]
 
 if settings.DEBUG:
     import mimetypes

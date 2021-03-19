@@ -3,10 +3,9 @@ from rest_framework import serializers
 from accounts.models import Profile, User
 from employer.models import PostTask
 from freelancers.models import Proposal
-from hireo.models import Bookmark
 
 
-class PostTaskSerializer(serializers.ModelSerializer):
+class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostTask
         fields = "__all__"

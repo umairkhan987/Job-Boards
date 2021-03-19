@@ -12,9 +12,9 @@ from hireo.api.pagination import GeneralPaginationClass
 from notification.models import notification_handler, Notification
 from .permissions import IsEmployer, IsValidUser
 from .serializers import PostTaskSerializer, ProposalListSerializer, ReviewProposalSerializer, \
-    OfferSerializer
+    OffersSerializer
+from hireo.api.serializers import TasksSerializer
 from ..models import PostTask
-from hireo.api.serializers import PostTaskSerializer as TaskListSerializer
 
 
 # TODO: test with file
@@ -27,7 +27,7 @@ class PostTaskView(generics.CreateAPIView):
 
 
 class MyTaskList(generics.ListAPIView):
-    serializer_class = TaskListSerializer
+    serializer_class = TasksSerializer
     permission_classes = (IsAuthenticated, IsEmployer)
     pagination_class = GeneralPaginationClass
 
@@ -196,7 +196,7 @@ class PostReviewView(generics.UpdateAPIView):
 
 
 class SendOfferView(generics.CreateAPIView):
-    serializer_class = OfferSerializer
+    serializer_class = OffersSerializer
     permission_classes = [IsAuthenticated, IsEmployer]
 
     def perform_create(self, serializer):
